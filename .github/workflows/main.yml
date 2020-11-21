@@ -7,7 +7,7 @@ jobs:
     name: Push to Adrien and Arthurs' repository
     runs-on: ubuntu-latest
     steps:
-      - uses: webfactory/ssh-agent@v0.2.0
+      - uses: webfactory/ssh-agent@v0.4.1
         with:
           ssh-private-key: |
             ${{ secrets.SSH_KEY_DEPLOY_ADRIEN }}
@@ -23,7 +23,7 @@ jobs:
     name: Push to Mathias and Albert's repository
     runs-on: ubuntu-latest
     steps:
-      - uses: webfactory/ssh-agent@v0.2.0
+      - uses: webfactory/ssh-agent@v0.4.1
         with:
           ssh-private-key: |
             ${{ secrets.SSH_KEY_DEPLOY_ALBERT }}
