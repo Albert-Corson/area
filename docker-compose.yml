@@ -2,10 +2,11 @@ version: "3"
 
 services:
   client:
-    image: vuejs/ci:latest # TODO
-    restart: on-failure
+    build: ./client
     ports:
-      - 80:80
+      - 80:8080
+    volumes:
+      - ./client:/app
 
   server:
     build: ./api
