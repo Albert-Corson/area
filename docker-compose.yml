@@ -1,0 +1,37 @@
+version: "3"
+
+services:
+  client:
+    image: vuejs/ci:latest # TODO
+    restart: on-failure
+    ports:
+      - 80:80
+
+  server:
+    build: ./api
+    restart: on-failure
+    env_file: postgres.env
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+    networks:
+      - db-tier
+    ports:
+      - 8080:80
+
+  db:
+    container_name: postgres
+    image: postgres:13.1-alpine
+    restart: on-failure
+    env_file: ./postgres.env
+    networks:
+      - db-tier
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      # - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql TODO
+
+networks:
+  db-tier: {}
+
+volumes:
+  db-data: {}
