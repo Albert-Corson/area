@@ -1,0 +1,387 @@
+openapi: 3.0.0
+
+servers:
+  - url: http://{ipAddr}:{port}
+    description: New Server 1
+    variables:
+      ipAddr:
+        default: localhost
+        description: The IP address of the server hosting the API
+      port:
+        default: "8080"
+        description: The port on which the API is listening
+
+info:
+  version: "1.0.0"
+  title: Dashboard
+  description: This is the documentation of the Dashboards' API
+
+tags:
+  - name: auth
+    description: Authentication related requests
+  - name: user
+    description: User related requests
+  - name: widget
+    description: Widget related requests
+  - name: service
+    description: Service related requests
+
+security:
+  - bearer: []
+
+components:
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+  parameters:
+    userId:
+      in: path
+      name: userId
+      description: The ID of a user
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 2147483647
+    widgetId:
+      in: path
+      name: widgetId
+      description: The ID of a widget
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 2147483647
+    serviceId:
+      in: path
+      name: serviceId
+      description: The ID of a service
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 2147483647
+  responses:
+    UserTokensResponse:
+      description: The users' access and refresh token
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - data
+            properties:
+              data:
+                $ref: "#/components/schemas/UserTokens"
+            allOf:
+              - $ref: "#/components/schemas/Status"
+    EmptyConfirmationResponse:
+      description: A response without data use to confirm a request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Status"
+  schemas:
+    Status:
+      additionalProperties: false
+      type: object
+      required:
+        - successful
+      properties:
+        error:
+          type: string
+        successful:
+          type: boolean
+    Credentials:
+      additionalProperties: false
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    UserTokens:
+      additionalProperties: false
+      type: object
+      required:
+        - refresh_token
+        - access_token
+        - expires_in
+      properties:
+        refresh_token:
+          type: string
+        access_token:
+          type: string
+        expires_in:
+          type: integer
+          format: int64
+    User:
+      additionalProperties: false
+      type: object
+      required:
+        - id
+        - username
+      properties:
+        id:
+          type: integer
+          minimum: 1
+          maximum: 2147483647
+        username:
+          type: string
+        email:
+          type: string
+    Service:
+      additionalProperties: false
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+          minimum: 1
+          maximum: 2147483647
+        name:
+          type: string
+    Widget:
+      additionalProperties: false
+      type: object
+      required:
+        - id
+        - name
+        - parent_service
+      properties:
+        id:
+          type: integer
+          minimum: 1
+          maximum: 2147483647
+        name:
+          type: string
+        parent_service:
+          $ref: "#/components/schemas/Service"
+
+paths:
+  /auth/token:
+    post:
+      summary: Ask for for a users' access token and refresh token
+      tags:
+        - auth
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Credentials"
+      responses:
+        default:
+          $ref: "#/components/responses/UserTokensResponse"
+  /auth/refresh:
+    post:
+      summary: Ask for the users' refreshed access token
+      tags:
+        - auth
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - refresh_token
+              properties:
+                refresh_token:
+                  type: string
+      responses:
+        default:
+          $ref: "#/components/responses/UserTokensResponse"
+  /auth/revoke:
+    delete:
+      summary: Revoke a users' access and refresh token
+      tags:
+        - auth
+      responses:
+        default:
+          $ref: "#/components/responses/EmptyConfirmationResponse"
+  /users:
+    post:
+      summary: Create an account
+      tags:
+        - user
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+              allOf:
+                - $ref: "#/components/schemas/Credentials"
+      responses:
+        default:
+          $ref: "#/components/responses/EmptyConfirmationResponse"
+  /users/{userId}:
+    parameters:
+      - $ref: "#/components/parameters/userId"
+    get:
+      summary: Get a users' information by his ID
+      tags:
+        - user
+      responses:
+        default:
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    $ref: "#/components/schemas/User"
+                allOf:
+                  - $ref: "#/components/schemas/Status"
+    delete:
+      summary: Delete a users' account
+      tags:
+        - user
+      parameters:
+        - $ref: "#/components/parameters/userId"
+      responses:
+        default:
+          $ref: "#/components/responses/EmptyConfirmationResponse"
+  /widgets:
+    get:
+      summary: List widgets
+      tags:
+        - widget
+      parameters:
+        - in: query
+          name: serviceId
+          description: The service ID to get the widgets from. If unspecified, get all widgets
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 2147483647
+      responses:
+        default:
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    items:
+                      $ref: "#/components/schemas/Widget"
+                allOf:
+                  - $ref: "#/components/schemas/Status"
+  /widgets/{widgetId}:
+    parameters:
+      - $ref: "#/components/parameters/widgetId"
+    get:
+      summary: Get a widget by its ID
+      tags:
+        - widget
+      responses:
+        default:
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Widget"
+                allOf:
+                  - $ref: "#/components/schemas/Status"
+    post:
+      summary: Subscribe the user to a widget
+      tags:
+        - widget
+      responses:
+        default:
+          $ref: "#/components/responses/EmptyConfirmationResponse"
+    delete:
+      summary: Unsubscribe the user to a widget
+      tags:
+        - widget
+      responses:
+        default:
+          $ref: "#/components/responses/EmptyConfirmationResponse"
+  /services:
+    get:
+      summary: List all existing services
+      tags:
+        - service
+      responses:
+        default:
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    items:
+                      $ref: "#/components/schemas/Service"
+                allOf:
+                  - $ref: "#/components/schemas/Status"
+  /services/{serviceId}:
+    parameters:
+      - $ref: "#/components/parameters/serviceId"
+    get:
+      summary: Get a service by its ID
+      tags:
+        - service
+      responses:
+        default:
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Service"
+                allOf:
+                  - $ref: "#/components/schemas/Status"
+    post:
+      summary: Login to a service
+      tags:
+        - service
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Credentials"
+      responses:
+        default:
+          $ref: "#/components/responses/EmptyConfirmationResponse"
+    delete:
+      summary: Logout from a service
+      tags:
+        - service
+      responses:
+        default:
+          $ref: "#/components/responses/EmptyConfirmationResponse"
