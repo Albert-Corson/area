@@ -29,7 +29,9 @@ services:
       - db-tier
     volumes:
       - db-data:/var/lib/postgresql/data
-      # - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql TODO
+      - ./dashboard.sql:/docker-entrypoint-initdb.d/dashboard.sql
+    ports:
+      - 5432:5432
 
 networks:
   db-tier: {}

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>DATABASE</ID>
+  <OriginalElement>aa9d894a-ae08-4994-8500-da2037e1daca.DATABASE:dashboard</OriginalElement>
+  <nodes>
+    <node x="251.5" y="0.0">aa9d894a-ae08-4994-8500-da2037e1daca.TABLE:dashboard.public.services</node>
+    <node x="31.23437500000003" y="406.0">aa9d894a-ae08-4994-8500-da2037e1daca.TABLE:dashboard.public.user_has_widget</node>
+    <node x="148.0" y="148.0">aa9d894a-ae08-4994-8500-da2037e1daca.TABLE:dashboard.public.users</node>
+    <node x="0.0" y="192.0">aa9d894a-ae08-4994-8500-da2037e1daca.TABLE:dashboard.public.widgets</node>
+    <node x="199.0" y="406.0">aa9d894a-ae08-4994-8500-da2037e1daca.TABLE:dashboard.public.user_has_service</node>
+    <node x="363.0" y="384.0">aa9d894a-ae08-4994-8500-da2037e1daca.TABLE:dashboard.public.user_service_credentials</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="aa9d894a-ae08-4994-8500-da2037e1daca.TABLE:dashboard.public.widgets" target="aa9d894a-ae08-4994-8500-da2037e1daca.TABLE:dashboard.public.services">
+      <point x="0.0" y="-49.0" />
+      <point x="64.0" y="123.0" />
+      <point x="272.83333333333337" y="123.0" />
+      <point x="-42.66666666666666" y="49.0" />
+    </edge>
+    <edge source="aa9d894a-ae08-4994-8500-da2037e1daca.TABLE:dashboard.public.user_has_widget" target="aa9d894a-ae08-4994-8500-da2037e1daca.TABLE:dashboard.public.users">
+      <point x="34.25" y="-37.5" />
+      <point x="133.98437500000003" y="364.0" />
+      <point x="174.16666666666666" y="364.0" />
+      <point x="-52.33333333333334" y="93.0" />
+    </edge>
+    <edge source="aa9d894a-ae08-4994-8500-da2037e1daca.TABLE:dashboard.public.user_has_service" target="aa9d894a-ae08-4994-8500-da2037e1daca.TABLE:dashboard.public.users">
+      <point x="-36.0" y="-37.5" />
+      <point x="235.0" y="364.0" />
+      <point x="226.5" y="364.0" />
+      <point x="0.0" y="93.0" />
+    </edge>
+    <edge source="aa9d894a-ae08-4994-8500-da2037e1daca.TABLE:dashboard.public.user_service_credentials" target="aa9d894a-ae08-4994-8500-da2037e1daca.TABLE:dashboard.public.services">
+      <point x="50.0" y="-59.5" />
+      <point x="513.0" y="123.0" />
+      <point x="358.16666666666663" y="123.0" />
+      <point x="42.66666666666663" y="49.0" />
+    </edge>
+    <edge source="aa9d894a-ae08-4994-8500-da2037e1daca.TABLE:dashboard.public.user_has_widget" target="aa9d894a-ae08-4994-8500-da2037e1daca.TABLE:dashboard.public.widgets">
+      <point x="-34.25" y="-37.5" />
+      <point x="65.48437500000003" y="364.0" />
+      <point x="64.0" y="364.0" />
+      <point x="0.0" y="49.0" />
+    </edge>
+    <edge source="aa9d894a-ae08-4994-8500-da2037e1daca.TABLE:dashboard.public.user_service_credentials" target="aa9d894a-ae08-4994-8500-da2037e1daca.TABLE:dashboard.public.users">
+      <point x="-50.0" y="-59.5" />
+      <point x="413.0" y="354.0" />
+      <point x="278.83333333333337" y="354.0" />
+      <point x="52.33333333333334" y="93.0" />
+    </edge>
+    <edge source="aa9d894a-ae08-4994-8500-da2037e1daca.TABLE:dashboard.public.user_has_service" target="aa9d894a-ae08-4994-8500-da2037e1daca.TABLE:dashboard.public.services">
+      <point x="36.0" y="-37.5" />
+      <point x="307.0" y="364.0" />
+      <point x="315.5" y="364.0" />
+      <point x="0.0" y="49.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="1.0" x="275.5" y="382.0" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Key columns</Category>
+    <Category>Columns</Category>
+    <Category>Virtual foreign keys</Category>
+  </Categories>
+</Diagram>
+
