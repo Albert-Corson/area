@@ -24,6 +24,7 @@ create table if not exists services
     service_id    serial not null
         constraint service_pk
             primary key,
+    name          varchar,
     client_id     text,
     client_secret text
 );
