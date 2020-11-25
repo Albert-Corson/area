@@ -7,20 +7,20 @@ namespace Dashboard.API.Models.Response
         public UserTokenModel()
         { }
 
-        public UserTokenModel(string refreshToken = "", string accessToken = "", long expiresIn = 0)
+        public UserTokenModel(string accessToken = "", long expiresIn = 0, string? refreshToken = null)
         {
-            RefreshToken = refreshToken;
             AccessToken = accessToken;
             ExpiresIn = expiresIn;
+            RefreshToken = refreshToken;
         }
-
-        [JsonProperty("refresh_token")]
-        public string RefreshToken { get; set; } = "";
 
         [JsonProperty("access_token")]
         public string AccessToken { get; set; } = "";
 
         [JsonProperty("expires_in")]
         public long ExpiresIn { get; set; }
+
+        [JsonProperty("refresh_token")]
+        public string? RefreshToken { get; set; }
     }
 }
