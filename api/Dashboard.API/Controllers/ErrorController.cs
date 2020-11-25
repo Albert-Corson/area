@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Dashboard.API.Controllers
 {
     [ApiController]
-    [Route("")]
+    [Route("/Error")]
     public class Default : Controller
     {
         public IActionResult Index()
