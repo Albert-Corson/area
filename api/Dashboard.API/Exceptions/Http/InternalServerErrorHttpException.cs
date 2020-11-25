@@ -8,6 +8,8 @@ namespace Dashboard.API.Exceptions.Http
     {
         private const HttpStatusCode ExceptionStatusCode = HttpStatusCode.InternalServerError;
 
+        private new const string Message = "Internal server error";
+
         public InternalServerErrorHttpException(string message) : base(ExceptionStatusCode, message)
         { }
 
@@ -15,7 +17,7 @@ namespace Dashboard.API.Exceptions.Http
             inner)
         { }
 
-        public InternalServerErrorHttpException() : base(ExceptionStatusCode)
+        public InternalServerErrorHttpException() : base(ExceptionStatusCode, Message)
         { }
 
         protected InternalServerErrorHttpException(SerializationInfo info, StreamingContext context) : base(info,

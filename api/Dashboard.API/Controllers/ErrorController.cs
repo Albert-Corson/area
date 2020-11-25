@@ -9,7 +9,7 @@ namespace Dashboard.API.Controllers
     {
         public IActionResult Index()
         {
-            throw new NotFoundHttpException("Resource not found");
+            throw new NotFoundHttpException();
         }
     }
 }

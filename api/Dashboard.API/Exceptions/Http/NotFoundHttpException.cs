@@ -8,13 +8,15 @@ namespace Dashboard.API.Exceptions.Http
     {
         private const HttpStatusCode ExceptionStatusCode = HttpStatusCode.NotFound;
 
+        private new const string Message = "Resource not found";
+
         public NotFoundHttpException(string message) : base(ExceptionStatusCode, message)
         { }
 
         public NotFoundHttpException(string message, Exception inner) : base(ExceptionStatusCode, message, inner)
         { }
 
-        public NotFoundHttpException() : base(ExceptionStatusCode)
+        public NotFoundHttpException() : base(ExceptionStatusCode, Message)
         { }
 
         protected NotFoundHttpException(SerializationInfo info, StreamingContext context) : base(info, context)

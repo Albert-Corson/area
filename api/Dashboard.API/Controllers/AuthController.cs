@@ -1,25 +1,20 @@
-using System;
-using System.Diagnostics;
 using Dashboard.API.Attributes;
+using Dashboard.API.Models.Request;
 using Dashboard.API.Models.Response;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 
 namespace Dashboard.API.Controllers
 {
-    [ApiController]
     public class AuthController : Controller
     {
         [HttpPost]
         [Route("/auth/refresh")]
-        // [ValidateModelState]
-        public virtual IActionResult AuthRefreshPost([Fro])
+        [ValidateModelState]
+        public IActionResult AuthRefreshPost([FromBody] RefreshTokenModel body)
         {
             var responseModel = new ResponseModel<UserTokenModel> {
                 Data = {
-                    // AccessToken = body.RefreshToken ?? "NOON",
+                    AccessToken = body.RefreshToken,
                     ExpiresIn = 42
                 },
                 Successful = true
@@ -40,7 +35,7 @@ namespace Dashboard.API.Controllers
         // [Route("/auth/revoke")]
         // [Authorize(AuthenticationSchemes = BearerAuthenticationHandler.SchemeName)]
         // [ValidateModelState]
-        // public virtual IActionResult AuthRevokeDelete()
+        // public IActionResult AuthRevokeDelete()
         // {
         //     //TODO: Uncomment the next line to return response 0 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
         //     // return StatusCode(0, default(Status));
@@ -56,7 +51,7 @@ namespace Dashboard.API.Controllers
         // [HttpPost]
         // [Route("/auth/token")]
         // [ValidateModelState]
-        // public virtual IActionResult AuthTokenPost([FromBody]Credentials body)
+        // public IActionResult AuthTokenPost([FromBody]Credentials body)
         // {
         //     //TODO: Uncomment the next line to return response 0 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
         //     // return StatusCode(0, default(InlineResponseDefault));
