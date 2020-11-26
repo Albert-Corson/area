@@ -23,7 +23,7 @@ namespace Dashboard.API.Models.Response
         public string? Error { get; set; }
 
         [JsonProperty("successful")]
-        public bool Successful { get; set; }
+        public bool Successful { get; set; } = true;
 
         public override string ToString()
         {
@@ -35,6 +35,21 @@ namespace Dashboard.API.Models.Response
             return new JsonResult(this) {
                 SerializerSettings = SerializerSettings
             };
+        }
+
+        public static StatusModel Failed(string? error = null)
+        {
+            return new StatusModel(false, error);
+        }
+
+        public static StatusModel Success()
+        {
+            return new StatusModel(true);
+        }
+
+        public static implicit operator JsonResult(StatusModel self)
+        {
+            return self.ToJsonResult();
         }
     }
 }

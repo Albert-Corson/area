@@ -18,50 +18,49 @@ namespace Dashboard.API.Controllers
         [HttpPost]
         [Route("/auth/refresh")]
         [ValidateModelState]
-        public IActionResult AuthRefreshPost([FromBody] RefreshTokenModel body)
+        public JsonResult AuthRefreshPost(
+            [FromBody] RefreshTokenModel body
+        )
         {
             // TODO: check if the refresh_token is valid
 
-            var responseModel = new ResponseModel<UserTokenModel> {
+            return new ResponseModel<UserTokenModel> {
                 Data = {
                     AccessToken = "", // TODO: get a new access_token
                     ExpiresIn = 42
-                },
-                Successful = true
+                }
             };
-            return new StatusModel(false).ToJsonResult(); // TODO: if failed
-            return responseModel.ToJsonResult();
+            return StatusModel.Failed("error message"); // TODO: if failed
         }
 
         [HttpDelete]
         [Route("/auth/revoke")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public IActionResult AuthRevokeDelete()
+        public JsonResult AuthRevokeDelete()
         {
             // TODO: revoke the credentials, check with Adrien how this is supposed to be done
-            return new StatusModel(false).ToJsonResult(); // TODO: if failed
-            return new StatusModel(true).ToJsonResult();
+            return StatusModel.Failed("error message"); // TODO: if failed
+            return StatusModel.Success();
         }
 
         [HttpPost]
         [Route("/auth/token")]
         [ValidateModelState]
-        public IActionResult AuthTokenPost([FromBody] LoginModel body)
+        public JsonResult AuthTokenPost(
+            [FromBody] LoginModel body
+        )
         {
-            var responseModel = new ResponseModel<UserTokenModel> {
+            return new ResponseModel<UserTokenModel> {
                 Data = {
                     RefreshToken = Startup.Configuration[AppConstants.ValidIssuer], // TODO: get the users' tokens
                     AccessToken = GenerateAccessToken("some username"),
                     ExpiresIn = TimeSpan.FromDays(14).Ticks
-                },
-                Successful = true
+                }
             };
-
-            return responseModel.ToJsonResult();
-            return new StatusModel(false).ToJsonResult(); // TODO: if failed
+            return StatusModel.Failed("error message"); // TODO: if failed
         }
 
-        private string GenerateAccessToken(string username)
+        private static string GenerateAccessToken(string username)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Startup.Configuration["SECRET_SALT"]));
             const string algorithm = SecurityAlgorithms.HmacSha256;

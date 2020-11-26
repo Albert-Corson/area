@@ -1,8 +1,9 @@
+using System;
 using Newtonsoft.Json;
 
 namespace Dashboard.API.Models.Response
 {
-    public class ResponseModel<T> : StatusModel where T : new()
+    public class ResponseModel<T> : StatusModel where T: class, new()
     {
         public ResponseModel()
         { }
