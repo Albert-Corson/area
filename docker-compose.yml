@@ -11,7 +11,9 @@ services:
   server:
     build: ./api
     restart: on-failure
-    env_file: postgres.env
+    env_file:
+     - postgres.env
+     - ./api/secret.env
     environment:
       - POSTGRES_HOST=postgres
       - POSTGRES_PORT=5432

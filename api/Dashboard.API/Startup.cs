@@ -1,9 +1,13 @@
+using System;
+using System.Text;
 using Dashboard.API.Middlewares;
+using Dashboard.API.Constants;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Dashboard.API
 {
@@ -14,7 +18,7 @@ namespace Dashboard.API
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
+        public static IConfiguration Configuration { get; private set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -22,6 +26,19 @@ namespace Dashboard.API
             services
                 .AddControllers()
                 .AddNewtonsoftJson();
+
+            services
+                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, config => {
+                    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration[AppConstants.SecretKeyName]));
+
+                    config.TokenValidationParameters = new TokenValidationParameters {
+                        ClockSkew = TimeSpan.Zero,
+                        ValidIssuer = Configuration[AppConstants.ValidIssuer],
+                        ValidAudience = Configuration[AppConstants.ValidAudience],
+                        IssuerSigningKey = key
+                    };
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
