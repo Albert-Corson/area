@@ -199,7 +199,27 @@ paths:
                   type: string
       responses:
         default:
-          $ref: "#/components/responses/UserTokensResponse"
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    type: object
+                    required:
+                      - access_token
+                      - expires_in
+                    properties:
+                      access_token:
+                        type: string
+                      expires_in:
+                        type: integer
+                        format: int64
+                allOf:
+                  - $ref: "#/components/schemas/Status"
   /auth/revoke:
     delete:
       summary: Revoke a users' access and refresh token
@@ -230,6 +250,25 @@ paths:
       responses:
         default:
           $ref: "#/components/responses/EmptyConfirmationResponse"
+    get:
+      summary: Get a list of all users
+      tags:
+        - user
+      responses:
+        default:
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    items:
+                      $ref: "#/components/schemas/User"
+                allOf:
+                  - $ref: "#/components/schemas/Status"
   /users/{userId}:
     parameters:
       - $ref: "#/components/parameters/userId"
