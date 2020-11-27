@@ -26,7 +26,8 @@ namespace Dashboard.API.Controllers
 
             return new ResponseModel<UserTokenModel> {
                 Data = {
-                    AccessToken = "", // TODO: get a new access_token
+                    AccessToken = "", // TODO: get a new access_token and refresh_token
+                    RefreshToken = "",
                     ExpiresIn = 42
                 }
             };

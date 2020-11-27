@@ -37,21 +37,6 @@ namespace Dashboard.API.Controllers
         }
 
         [HttpGet]
-        [Route("/users")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [ValidateModelState]
-        public JsonResult UserGet()
-        {
-            var users = new ArrayList();
-            // TODO: check the access level of the connected user (from Bearer)
-            // TODO: get all users (users.Add(...))
-
-            return new ResponseModel<ArrayList> {
-                Data = users
-            };
-        }
-
-        [HttpGet]
         [Route("/users/{userId}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateModelState]
