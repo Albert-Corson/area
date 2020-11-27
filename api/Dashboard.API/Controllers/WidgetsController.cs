@@ -1,6 +1,7 @@
 using System.Collections;
 using System.ComponentModel.DataAnnotations;
 using Dashboard.API.Attributes;
+using Dashboard.API.Constants;
 using Dashboard.API.Models.Response;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -8,10 +9,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Dashboard.API.Controllers
 {
-    public class WidgetController : ControllerBase
+    public class WidgetsController : ControllerBase
     {
         [HttpGet]
-        [Route("/widgets")]
+        [Route(RoutesConstants.Widgets.GetWidgets)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateModelState]
         public JsonResult WidgetsGet(
@@ -27,7 +28,7 @@ namespace Dashboard.API.Controllers
         }
 
         [HttpDelete]
-        [Route("/widgets/{widgetId}")]
+        [Route(RoutesConstants.Widgets.WidgetIdUnsubscribe)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateModelState]
         public JsonResult WidgetsWidgetIdDelete(
@@ -41,7 +42,7 @@ namespace Dashboard.API.Controllers
         }
 
         [HttpGet]
-        [Route("/widgets/{widgetId}")]
+        [Route(RoutesConstants.Widgets.WidgetIdGetWidget)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateModelState]
         public JsonResult WidgetsWidgetIdGet(
@@ -64,7 +65,7 @@ namespace Dashboard.API.Controllers
         }
 
         [HttpPost]
-        [Route("/widgets/{widgetId}")]
+        [Route(RoutesConstants.Widgets.WidgetIdSubscribe)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateModelState]
         public JsonResult WidgetsWidgetIdPost(

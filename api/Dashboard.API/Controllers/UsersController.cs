@@ -1,6 +1,7 @@
 using System.Collections;
 using System.ComponentModel.DataAnnotations;
 using Dashboard.API.Attributes;
+using Dashboard.API.Constants;
 using Dashboard.API.Models.Request;
 using Dashboard.API.Models.Response;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -9,10 +10,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Dashboard.API.Controllers
 {
-    public class UserController : ControllerBase
+    public class UsersController : ControllerBase
     {
         [HttpPost]
-        [Route("/users")]
+        [Route(RoutesConstants.Users.CreateUser)]
         [ValidateModelState]
         public JsonResult UsersPost(
             [FromBody] RegisterModel body
@@ -24,7 +25,7 @@ namespace Dashboard.API.Controllers
         }
 
         [HttpDelete]
-        [Route("/users/{userId}")]
+        [Route(RoutesConstants.Users.UserIdDeleteUser)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateModelState]
         public JsonResult UsersUserIdDelete(
@@ -37,7 +38,7 @@ namespace Dashboard.API.Controllers
         }
 
         [HttpGet]
-        [Route("/users/{userId}")]
+        [Route(RoutesConstants.Users.UserIdGetUser)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateModelState]
         public JsonResult UsersUserIdGet(

@@ -30,12 +30,12 @@ namespace Dashboard.API
             services
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, config => {
-                    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration[AppConstants.SecretKeyName]));
+                    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration[JwtConstants.SecretKeyName]));
 
                     config.TokenValidationParameters = new TokenValidationParameters {
                         ClockSkew = TimeSpan.Zero,
-                        ValidIssuer = Configuration[AppConstants.ValidIssuer],
-                        ValidAudience = Configuration[AppConstants.ValidAudience],
+                        ValidIssuer = Configuration[JwtConstants.ValidIssuer],
+                        ValidAudience = Configuration[JwtConstants.ValidAudience],
                         IssuerSigningKey = key
                     };
                 });

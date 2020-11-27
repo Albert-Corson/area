@@ -1,6 +1,7 @@
 using System.Collections;
 using System.ComponentModel.DataAnnotations;
 using Dashboard.API.Attributes;
+using Dashboard.API.Constants;
 using Dashboard.API.Models.Request;
 using Dashboard.API.Models.Response;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -9,10 +10,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Dashboard.API.Controllers
 {
-    public class ServiceController : ControllerBase
+    public class ServicesController : ControllerBase
     {
         [HttpGet]
-        [Route("/services")]
+        [Route(RoutesConstants.Services.GetServices)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public JsonResult ServicesGet()
         {
@@ -24,7 +25,7 @@ namespace Dashboard.API.Controllers
         }
 
         [HttpDelete]
-        [Route("/services/{serviceId}")]
+        [Route(RoutesConstants.Services.ServiceIdLogout)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateModelState]
         public JsonResult ServicesServiceIdDelete(
@@ -38,7 +39,7 @@ namespace Dashboard.API.Controllers
         }
 
         [HttpGet]
-        [Route("/services/{serviceId}")]
+        [Route(RoutesConstants.Services.ServiceIdGetService)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateModelState]
         public JsonResult ServicesServiceIdGet(
@@ -55,7 +56,7 @@ namespace Dashboard.API.Controllers
         }
 
         [HttpPost]
-        [Route("/services/{serviceId}")]
+        [Route(RoutesConstants.Services.ServiceIdLogin)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateModelState]
         public JsonResult ServicesServiceIdPost(

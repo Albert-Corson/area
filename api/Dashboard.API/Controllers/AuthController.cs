@@ -10,13 +10,14 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using JwtConstants = Dashboard.API.Constants.JwtConstants;
 
 namespace Dashboard.API.Controllers
 {
     public class AuthController : Controller
     {
         [HttpPost]
-        [Route("/auth/refresh")]
+        [Route(RoutesConstants.Auth.RefreshAccessToken)]
         [ValidateModelState]
         public JsonResult AuthRefreshPost(
             [FromBody] RefreshTokenModel body
@@ -35,7 +36,7 @@ namespace Dashboard.API.Controllers
         }
 
         [HttpDelete]
-        [Route("/auth/revoke")]
+        [Route(RoutesConstants.Auth.RevokeAccountTokens)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public JsonResult AuthRevokeDelete()
         {
@@ -45,7 +46,7 @@ namespace Dashboard.API.Controllers
         }
 
         [HttpPost]
-        [Route("/auth/token")]
+        [Route(RoutesConstants.Auth.Login)]
         [ValidateModelState]
         public JsonResult AuthTokenPost(
             [FromBody] LoginModel body
@@ -53,7 +54,7 @@ namespace Dashboard.API.Controllers
         {
             return new ResponseModel<UserTokenModel> {
                 Data = {
-                    RefreshToken = Startup.Configuration[AppConstants.ValidIssuer], // TODO: get the users' tokens
+                    RefreshToken = Startup.Configuration[JwtConstants.ValidIssuer], // TODO: get the users' tokens
                     AccessToken = GenerateAccessToken("some username"),
                     ExpiresIn = TimeSpan.FromDays(14).Ticks
                 }
