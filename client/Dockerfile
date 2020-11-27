@@ -2,6 +2,6 @@ FROM node:latest
 
 WORKDIR /app
 
-EXPOSE 3000
+EXPOSE 80
 
 CMD npm install && npm run dev

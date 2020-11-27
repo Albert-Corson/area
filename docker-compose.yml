@@ -3,17 +3,12 @@ version: "3"
 services:
   client:
     build: ./client
+    environment:
+      HOST: 0.0.0.0
     ports:
-      - 3000:3000
+      - 80:3000
     volumes:
       - ./client:/app
-    #image: node:latest
-    #command: npm run docker
-    #volumes:
-    #  - ./client:/app
-    #working_dir: /app
-    #ports:
-    #  - 80:3000
 
   server:
     build: ./api
