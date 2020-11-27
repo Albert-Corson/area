@@ -1,27 +1,22 @@
-using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using Dashboard.API.Attributes;
 using Dashboard.API.Constants;
+using Dashboard.API.Exceptions.Http;
 using Dashboard.API.Models.Request;
 using Dashboard.API.Models.Response;
+using Dashboard.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using JwtConstants = Dashboard.API.Constants.JwtConstants;
 
 namespace Dashboard.API.Controllers
 {
     public class AuthController : Controller
     {
-        private readonly IConfiguration _configuration;
+        private readonly AuthService _service;
 
-        public AuthController(IConfiguration configuration)
+        public AuthController(AuthService service)
         {
-            _configuration = configuration;
+            _service = service;
         }
 
         [HttpPost]
@@ -31,16 +26,17 @@ namespace Dashboard.API.Controllers
             [FromBody] RefreshTokenModel body
         )
         {
-            // TODO: check if the refresh_token is valid
+            var userId = _service.GetUserIdFromRefreshToken(body.RefreshToken!);
+
+            if (userId == null)
+                throw new UnauthorizedHttpException("Invalid refresh token");
 
             return new ResponseModel<UserTokenModel> {
                 Data = {
-                    AccessToken = "", // TODO: get a new access_token and refresh_token
-                    RefreshToken = "",
-                    ExpiresIn = 42
+                    RefreshToken = _service.GenerateRefreshToken(userId.Value),
+                    AccessToken = _service.GenerateAccessToken(userId.Value)
                 }
             };
-            return StatusModel.Failed("error message"); // TODO: if failed
         }
 
         [HttpDelete]
@@ -62,36 +58,11 @@ namespace Dashboard.API.Controllers
         {
             return new ResponseModel<UserTokenModel> {
                 Data = {
-                    RefreshToken = _configuration[JwtConstants.ValidIssuer], // TODO: get the users' tokens
-                    AccessToken = GenerateAccessToken("some username"),
-                    ExpiresIn = TimeSpan.FromDays(14).Ticks
+                    RefreshToken = _service.GenerateRefreshToken(0), // TODO: put real userId
+                    AccessToken = _service.GenerateAccessToken(0), // TODO: put real userId
                 }
             };
             return StatusModel.Failed("error message"); // TODO: if failed
-        }
-
-        private string GenerateAccessToken(string username)
-        {
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["SECRET_SALT"]));
-            const string algorithm = SecurityAlgorithms.HmacSha256;
-            var signingCredentials = new SigningCredentials(key, algorithm);
-            var claims = new[] {
-                new Claim(JwtRegisteredClaimNames.NameId, username),
-                new Claim(JwtRegisteredClaimNames.AuthTime, DateTime.Now.ToLongTimeString()),
-                new Claim(JwtRegisteredClaimNames.Iss, _configuration["ValidIssuer"]),
-            };
-
-            var token = new JwtSecurityToken(
-                issuer: _configuration["ValidIssuer"],
-                audience: _configuration["ValidAudience"],
-                claims: claims,
-                notBefore: DateTime.Now,
-                expires: DateTime.Now.AddDays(14),
-                signingCredentials: signingCredentials
-            );
-            var tokenJson = new JwtSecurityTokenHandler().WriteToken(token);
-
-            return tokenJson;
         }
     }
 }

@@ -1,7 +1,7 @@
-using System;
 using System.Text;
 using Dashboard.API.Constants;
 using Dashboard.API.Middlewares;
+using Dashboard.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -13,34 +13,40 @@ namespace Dashboard.API
 {
     public class Startup
     {
+        private readonly IConfiguration _configuration;
+
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            _configuration = configuration;
         }
-
-        public IConfiguration Configuration { get; private set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton(Configuration);
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration[JwtConstants.SecretKeyName]));
+            var tokenValidationParameters = new TokenValidationParameters {
+                ValidIssuer = _configuration[JwtConstants.ValidIssuer],
+                ValidAudience = _configuration[JwtConstants.ValidAudience],
+                IssuerSigningKey = key,
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true
+            };
+
+            services
+                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(config => {
+                    config.TokenValidationParameters = tokenValidationParameters;
+                });
+
+            services.AddSingleton(_configuration);
+            services.AddSingleton(tokenValidationParameters);
+            services.AddSingleton<AuthService>();
 
             services
                 .AddControllers()
                 .AddNewtonsoftJson();
-
-            services
-                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, config => {
-                    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration[JwtConstants.SecretKeyName]));
-
-                    config.TokenValidationParameters = new TokenValidationParameters {
-                        ClockSkew = TimeSpan.Zero,
-                        ValidIssuer = Configuration[JwtConstants.ValidIssuer],
-                        ValidAudience = Configuration[JwtConstants.ValidAudience],
-                        IssuerSigningKey = key
-                    };
-                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

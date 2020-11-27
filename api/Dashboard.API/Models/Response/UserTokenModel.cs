@@ -1,3 +1,4 @@
+using Dashboard.API.Constants;
 using Newtonsoft.Json;
 
 namespace Dashboard.API.Models.Response
@@ -18,7 +19,7 @@ namespace Dashboard.API.Models.Response
         public string AccessToken { get; set; } = "";
 
         [JsonProperty("expires_in")]
-        public long ExpiresIn { get; set; }
+        public long ExpiresIn { get; set; } = JwtConstants.AccessTokenLifespan;
 
         [JsonProperty("refresh_token")]
         public string? RefreshToken { get; set; }
