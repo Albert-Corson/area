@@ -9,6 +9,7 @@ using Dashboard.API.Models.Response;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using JwtConstants = Dashboard.API.Constants.JwtConstants;
 
@@ -16,6 +17,13 @@ namespace Dashboard.API.Controllers
 {
     public class AuthController : Controller
     {
+        private readonly IConfiguration _configuration;
+
+        public AuthController(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         [HttpPost]
         [Route(RoutesConstants.Auth.RefreshAccessToken)]
         [ValidateModelState]
@@ -54,7 +62,7 @@ namespace Dashboard.API.Controllers
         {
             return new ResponseModel<UserTokenModel> {
                 Data = {
-                    RefreshToken = Startup.Configuration[JwtConstants.ValidIssuer], // TODO: get the users' tokens
+                    RefreshToken = _configuration[JwtConstants.ValidIssuer], // TODO: get the users' tokens
                     AccessToken = GenerateAccessToken("some username"),
                     ExpiresIn = TimeSpan.FromDays(14).Ticks
                 }
@@ -62,20 +70,20 @@ namespace Dashboard.API.Controllers
             return StatusModel.Failed("error message"); // TODO: if failed
         }
 
-        private static string GenerateAccessToken(string username)
+        private string GenerateAccessToken(string username)
         {
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Startup.Configuration["SECRET_SALT"]));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["SECRET_SALT"]));
             const string algorithm = SecurityAlgorithms.HmacSha256;
             var signingCredentials = new SigningCredentials(key, algorithm);
             var claims = new[] {
                 new Claim(JwtRegisteredClaimNames.NameId, username),
                 new Claim(JwtRegisteredClaimNames.AuthTime, DateTime.Now.ToLongTimeString()),
-                new Claim(JwtRegisteredClaimNames.Iss, Startup.Configuration["ValidIssuer"]),
+                new Claim(JwtRegisteredClaimNames.Iss, _configuration["ValidIssuer"]),
             };
 
             var token = new JwtSecurityToken(
-                issuer: Startup.Configuration["ValidIssuer"],
-                audience: Startup.Configuration["ValidAudience"],
+                issuer: _configuration["ValidIssuer"],
+                audience: _configuration["ValidAudience"],
                 claims: claims,
                 notBefore: DateTime.Now,
                 expires: DateTime.Now.AddDays(14),

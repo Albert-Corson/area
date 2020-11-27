@@ -1,7 +1,7 @@
 using System;
 using System.Text;
-using Dashboard.API.Middlewares;
 using Dashboard.API.Constants;
+using Dashboard.API.Middlewares;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -18,11 +18,13 @@ namespace Dashboard.API
             Configuration = configuration;
         }
 
-        public static IConfiguration Configuration { get; private set; }
+        public IConfiguration Configuration { get; private set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton(Configuration);
+
             services
                 .AddControllers()
                 .AddNewtonsoftJson();
