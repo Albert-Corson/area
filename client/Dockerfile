@@ -1,7 +1,7 @@
-FROM vuejs/ci:latest
+FROM node:latest
 
 WORKDIR /app
 
-EXPOSE 80
+EXPOSE 3000
 
-CMD npm install && npm run serve
+CMD npm install && npm run dev

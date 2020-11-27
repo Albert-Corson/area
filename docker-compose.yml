@@ -4,9 +4,16 @@ services:
   client:
     build: ./client
     ports:
-      - 80:8080
+      - 3000:3000
     volumes:
       - ./client:/app
+    #image: node:latest
+    #command: npm run docker
+    #volumes:
+    #  - ./client:/app
+    #working_dir: /app
+    #ports:
+    #  - 80:3000
 
   server:
     build: ./api
