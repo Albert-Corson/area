@@ -23,7 +23,7 @@ namespace Dashboard.API.Models.Response
         public string? Error { get; set; }
 
         [JsonProperty("successful")]
-        public bool Successful { get; set; } = true;
+        public bool? Successful { get; set; } = true;
 
         public override string ToString()
         {

@@ -3,11 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Dashboard.API.Controllers
 {
-    [ApiController]
-    [Route("/Error")]
-    public class Default : Controller
+    public class ErrorController : ControllerBase
     {
-        public IActionResult Index()
+        [Route("/Error")]
+        public JsonResult Index()
         {
             throw new NotFoundHttpException();
         }

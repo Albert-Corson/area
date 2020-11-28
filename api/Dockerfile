@@ -1,4 +1,13 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1-alpine as build
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-alpine AS runtime
+
+ENV ASPNETCORE_ENVIRONMENT=Production
+ENV DOTNET_CLI_TELEMETRY_OPTOUT=true
+
+EXPOSE 80
+
+WORKDIR /app
+
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1-alpine AS build
 
 ENV ASPNETCORE_ENVIRONMENT=Production
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=true
@@ -15,16 +24,9 @@ RUN dotnet restore ./Dashboard.API/*.csproj
 RUN dotnet publish ./Dashboard.API/*.csproj -c Release -o /app
 
 # ---- Runtime image ----
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-alpine
-
-WORKDIR /app
-
-ENV ASPNETCORE_ENVIRONMENT=Production
-ENV DOTNET_CLI_TELEMETRY_OPTOUT=true
+FROM runtime
 
 # SOURCES
 COPY --from=build /app .
 
-EXPOSE 80
-
-CMD ["dotnet", "Dashboard.API.dll"]
+CMD dotnet Dashboard.API.dll

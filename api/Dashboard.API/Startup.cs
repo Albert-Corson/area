@@ -1,10 +1,12 @@
 using System.Text;
 using Dashboard.API.Constants;
 using Dashboard.API.Middlewares;
+using Dashboard.API.Repositories;
 using Dashboard.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -36,9 +38,16 @@ namespace Dashboard.API
 
             services
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(config => {
-                    config.TokenValidationParameters = tokenValidationParameters;
-                });
+                .AddJwtBearer(config => { config.TokenValidationParameters = tokenValidationParameters; });
+
+            services.AddDbContext<DatabaseRepository>(builder => {
+                string connectionString = $"Host={_configuration[PostgresConstants.HostKeyName]};" +
+                                          $"Port={_configuration[PostgresConstants.PortKeyName]};" +
+                                          $"Username={_configuration[PostgresConstants.UserKeyName]};" +
+                                          $"Password={_configuration[PostgresConstants.PasswdKeyName]};" +
+                                          $"Database={_configuration[PostgresConstants.DbKeyName]};";
+                builder.UseNpgsql(connectionString);
+            });
 
             services.AddSingleton(_configuration);
             services.AddSingleton(tokenValidationParameters);

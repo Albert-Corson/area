@@ -1,6 +1,7 @@
 using Dashboard.API.Attributes;
 using Dashboard.API.Constants;
 using Dashboard.API.Exceptions.Http;
+using Dashboard.API.Models;
 using Dashboard.API.Models.Request;
 using Dashboard.API.Models.Response;
 using Dashboard.API.Services;
@@ -10,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Dashboard.API.Controllers
 {
-    public class AuthController : Controller
+    public class AuthController : ControllerBase
     {
         private readonly AuthService _service;
 

@@ -2,6 +2,7 @@ using System.Collections;
 using System.ComponentModel.DataAnnotations;
 using Dashboard.API.Attributes;
 using Dashboard.API.Constants;
+using Dashboard.API.Models;
 using Dashboard.API.Models.Response;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -55,7 +56,7 @@ namespace Dashboard.API.Controllers
                 Data = {
                     Id = 42,
                     Name = "widget name",
-                    ParentService = {
+                    Service = new ServiceModel {
                         Id = 42,
                         Name = "service name"
                     }

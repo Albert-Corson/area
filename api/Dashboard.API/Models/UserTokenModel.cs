@@ -1,7 +1,7 @@
 using Dashboard.API.Constants;
 using Newtonsoft.Json;
 
-namespace Dashboard.API.Models.Response
+namespace Dashboard.API.Models
 {
     public class UserTokenModel
     {
@@ -16,10 +16,10 @@ namespace Dashboard.API.Models.Response
         }
 
         [JsonProperty("access_token")]
-        public string AccessToken { get; set; } = "";
+        public string? AccessToken { get; set; }
 
         [JsonProperty("expires_in")]
-        public long ExpiresIn { get; set; } = JwtConstants.AccessTokenLifespan;
+        public long? ExpiresIn { get; set; } = JwtConstants.AccessTokenLifespan;
 
         [JsonProperty("refresh_token")]
         public string? RefreshToken { get; set; }
