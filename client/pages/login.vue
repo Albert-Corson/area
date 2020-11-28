@@ -1,6 +1,7 @@
 <template>
   <div class="login">
     {{ token }}
+    <router-link to="/"><div>FOLDER TO GO TO ABOUT</div></router-link>
   </div>
 </template>
 
