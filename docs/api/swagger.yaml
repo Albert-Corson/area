@@ -76,6 +76,31 @@ components:
                 $ref: "#/components/schemas/UserTokens"
             allOf:
               - $ref: "#/components/schemas/Status"
+    UserInformationResponse:
+      description: Users' information
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: "#/components/schemas/User"
+            allOf:
+              - $ref: "#/components/schemas/Status"
+    WidgetListResponse:
+      description: A list of widgets
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                items:
+                  allOf:
+                    - $ref: "#/components/schemas/Widget"
+                    - $ref: '#/components/schemas/WidgetDetails'
+            allOf:
+              - $ref: "#/components/schemas/Status"
     EmptyConfirmationResponse:
       description: A response without data use to confirm a request
       content:
@@ -163,10 +188,92 @@ components:
           type: string
         service:
           $ref: "#/components/schemas/Service"
+    Param:
+      type: object
+      required:
+        - name
+        - type
+      properties:
+        name:
+          type: string
+          description: Indicates the identifier of this parameter
+        type:
+          type: string
+          description: "Indicates the type of this parameter. Supported types are: integer, string"
+    WidgetDetails:
+      type: object
+      required:
+        - name
+        - params
+      properties:
+        name:
+          type: string
+          description: Indicates the identifier of this Widget
+        params:
+          description: Indicates the list of parameters to configure this Widget
+          items:
+            $ref: '#/components/schemas/Param'
+    ServiceDetails:
+      type: object
+      required:
+        - name
+        - widgets
+      properties:
+        name:
+          type: string
+          description: Indicates the name of the Service
+        widgets:
+          description: Indicates the list of Widgets supported by this Service
+          items:
+            $ref: '#/components/schemas/WidgetDetails'
+    Server:
+      type: object
+      required:
+        - current_time
+        - services
+      properties:
+        current_time:
+          type: integer
+          description: Indicates the server time in the Epoch Unix Time Stamp format
+        services:
+          description: Indicates the list of Services supported by the server
+          items:
+            $ref: '#/components/schemas/ServiceDetails'
+    Client:
+      type: object
+      required:
+        - host
+      properties:
+        host:
+          type: string
+          description: Indicates the IP address of the client performing the HTTP request
+    About.json:
+      type: object
+      required:
+        - client
+        - server
+      properties:
+        client:
+          $ref: '#/components/schemas/Client'
+        server:
+          $ref: '#/components/schemas/Server'
 
 paths:
+  /about.json:
+    get:
+      operationId: "About.json"
+      summary: Describes the APIs' available content
+      security: []
+      responses:
+        default:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/About.json'
   /auth/token:
     post:
+      operationId: Sign in
       summary: Ask for for a users' access token and refresh token
       tags:
         - auth
@@ -182,7 +289,8 @@ paths:
           $ref: "#/components/responses/UserTokensResponse"
   /auth/refresh:
     post:
-      summary: Ask for the users' refreshed access token
+      operationId: Refresh access token
+      summary: Ask for new refresh and access tokens
       tags:
         - auth
       security: []
@@ -202,6 +310,7 @@ paths:
           $ref: "#/components/responses/UserTokensResponse"
   /auth/revoke:
     delete:
+      operationId: Revoke account access
       summary: Revoke a users' access and refresh tokens
       tags:
         - auth
@@ -210,6 +319,7 @@ paths:
           $ref: "#/components/responses/EmptyConfirmationResponse"
   /users:
     post:
+      operationId: Sign up
       summary: Create an account
       tags:
         - user
@@ -230,28 +340,28 @@ paths:
       responses:
         default:
           $ref: "#/components/responses/EmptyConfirmationResponse"
+  /users/me:
+    get:
+      operationId: Get user information
+      summary: Get the current users' information
+      tags:
+        - user
+      responses:
+        default:
+          $ref: '#/components/responses/UserInformationResponse'
   /users/{userId}:
     parameters:
       - $ref: "#/components/parameters/userId"
     get:
+      operationId: Get user
       summary: Get a users' information by his ID
       tags:
         - user
       responses:
         default:
-          description: ""
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - data
-                properties:
-                  data:
-                    $ref: "#/components/schemas/User"
-                allOf:
-                  - $ref: "#/components/schemas/Status"
+          $ref: '#/components/responses/UserInformationResponse'
     delete:
+      operationId: Delete account
       summary: Delete a users' account
       tags:
         - user
@@ -262,7 +372,8 @@ paths:
           $ref: "#/components/responses/EmptyConfirmationResponse"
   /widgets:
     get:
-      summary: List widgets
+      operationId: Get widgets
+      summary: Get a list of widgets
       tags:
         - widget
       parameters:
@@ -276,26 +387,31 @@ paths:
             maximum: 2147483647
       responses:
         default:
-          description: ""
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - data
-                properties:
-                  data:
-                    items:
-                      $ref: "#/components/schemas/Widget"
-                allOf:
-                  - $ref: "#/components/schemas/Status"
+          $ref: '#/components/responses/WidgetListResponse'
+  /widgets/me:
+    get:
+      operationId: Get subscribed widgets
+      summary: Get the widgets that the current user is subscribed to
+      tags:
+        - widget
+      responses:
+        default:
+          $ref: '#/components/responses/WidgetListResponse'
   /widgets/{widgetId}:
     parameters:
       - $ref: "#/components/parameters/widgetId"
     get:
-      summary: Get a widget by its ID
+      operationId: Fetch widget data
+      summary: Fetch data from a widget according to the query parameters and user specific default input values
       tags:
         - widget
+      parameters:
+        - in: query
+          name: input
+          description: Multiple key=value query parameters to override default inputs
+          schema:
+            items:
+              type: string
       responses:
         default:
           description: ""
@@ -303,22 +419,29 @@ paths:
             application/json:
               schema:
                 type: object
-                required:
-                  - data
                 properties:
                   data:
-                    $ref: "#/components/schemas/Widget"
+                    type: object
+                    description: An object of key/value depending on the widget fetched
                 allOf:
                   - $ref: "#/components/schemas/Status"
     post:
+      operationId: Subscribe to widget
       summary: Subscribe the user to a widget
       tags:
         - widget
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: An object of key/value of default input depending on the widget fetched
+              type: object
       responses:
         default:
           $ref: "#/components/responses/EmptyConfirmationResponse"
     delete:
-      summary: Unsubscribe the user to a widget
+      operationId: Unsubscribe from widget
+      summary: Unsubscribe the user from a widget
       tags:
         - widget
       responses:
@@ -326,6 +449,7 @@ paths:
           $ref: "#/components/responses/EmptyConfirmationResponse"
   /services:
     get:
+      operationId: List services
       summary: List all existing services
       tags:
         - service
@@ -336,8 +460,6 @@ paths:
             application/json:
               schema:
                 type: object
-                required:
-                  - data
                 properties:
                   data:
                     items:
@@ -348,6 +470,7 @@ paths:
     parameters:
       - $ref: "#/components/parameters/serviceId"
     get:
+      operationId: Get service
       summary: Get a service by its ID
       tags:
         - service
@@ -358,14 +481,13 @@ paths:
             application/json:
               schema:
                 type: object
-                required:
-                  - data
                 properties:
                   data:
                     $ref: "#/components/schemas/Service"
                 allOf:
                   - $ref: "#/components/schemas/Status"
     post:
+      operationId: Login to service
       summary: Login to a service
       tags:
         - service
@@ -374,11 +496,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Credentials"
+              type: object
+              description: Credential information depending on the service
       responses:
         default:
           $ref: "#/components/responses/EmptyConfirmationResponse"
     delete:
+      operationId: Logout from service
       summary: Logout from a service
       tags:
         - service
