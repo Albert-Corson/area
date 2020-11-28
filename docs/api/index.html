@@ -865,7 +865,7 @@
   "additionalProperties" : false
 };
             defs["Widget"] = {
-  "required" : [ "id", "name", "parent_service" ],
+  "required" : [ "id", "name", "service" ],
   "type" : "object",
   "properties" : {
     "id" : {
@@ -876,7 +876,7 @@
     "name" : {
       "type" : "string"
     },
-    "parent_service" : {
+    "service" : {
       "$ref" : "#/components/schemas/Service"
     }
   },
@@ -1280,7 +1280,7 @@ except ApiException as e:
                       <article id="api-Auth-authRevokeDelete-0" data-group="User" data-name="authRevokeDelete" data-version="0">
                         <div class="pull-left">
                           <h1>authRevokeDelete</h1>
-                          <p>Revoke a users&#x27; access and refresh token</p>
+                          <p>Revoke a users&#x27; access and refresh tokens</p>
                         </div>
                         <div class="pull-right"></div>
                         <div class="clearfix"></div>
@@ -1366,7 +1366,7 @@ public class AuthApiExample {
 
 AuthApi *apiInstance = [[AuthApi alloc] init];
 
-// Revoke a users' access and refresh token
+// Revoke a users' access and refresh tokens
 [apiInstance authRevokeDeleteWithCompletionHandler: 
               ^(Status output, NSError* error) {
                             if (output) {
@@ -1418,7 +1418,7 @@ namespace Example
 
             try
             {
-                // Revoke a users' access and refresh token
+                // Revoke a users' access and refresh tokens
                 Status result = apiInstance.authRevokeDelete();
                 Debug.WriteLine(result);
             }
@@ -1477,7 +1477,7 @@ from pprint import pprint
 api_instance = swagger_client.AuthApi()
 
 try: 
-    # Revoke a users' access and refresh token
+    # Revoke a users' access and refresh tokens
     api_response = api_instance.auth_revoke_delete()
     pprint(api_response)
 except ApiException as e:
