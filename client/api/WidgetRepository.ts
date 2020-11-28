@@ -12,20 +12,28 @@ export interface IWidgetRepository {
    * @param serviceId id of service to list widgets of
    */
   listWidgets(serviceId?: number): Promise<ResponseModel<Array<WidgetModel>>>
+
+  /**
+   * List all widgets the currently logged in user is registered to
+   * 
+   * @param serviceId id of service to list registered widgets of
+   */
+  listRegisteredWidgets(serviceId?: number): Promise<ResponseModel<Array<WidgetModel>>>
   
   /**
    * Get a widget by id
    * 
    * @param widgetId widget id
+   * @param params optional query parameters
    */
-  getWidget(widgetId: number): Promise<ResponseModel<WidgetModel>>
+  fetchWidgetData(widgetId: number, params?: object): Promise<ResponseModel<WidgetModel>>
 
   /**
    * Register the user to a widget
    * 
    * @param widgetId widget id
    */
-  registerWidget(widgetId: number): Promise<ResponseModel>
+  registerWidget(widgetId: number, params?: object): Promise<ResponseModel>
 
   /**
    * Unregister the user from a widget
@@ -44,7 +52,7 @@ const makeWidgetRepository = ($axios: NuxtAxiosInstance): IWidgetRepository => (
         {
           id: 1,
           name: 'ipsum',
-          parent_service: {
+          service: {
             id: 1,
             name: 'lorem'
           }
@@ -52,7 +60,7 @@ const makeWidgetRepository = ($axios: NuxtAxiosInstance): IWidgetRepository => (
         {
           id: 2,
           name: 'dolor',
-          parent_service: {
+          service: {
             id: 1,
             name: 'lorem'
           }
@@ -63,31 +71,56 @@ const makeWidgetRepository = ($axios: NuxtAxiosInstance): IWidgetRepository => (
     if (serviceId) {
       return $axios.$get(`/widgets?serviceId=${serviceId}`)
     } else {
-      return $axios.$get(`widgets`)
+      return $axios.$get(`/widgets`)
     }
     */
   },
 
-  getWidget(widgetId: number): Promise<ResponseModel<WidgetModel>> {
+  listRegisteredWidgets(serviceId?: number): Promise<ResponseModel<Array<WidgetModel>>>
+  {
+    return new Promise((resolve) => resolve({
+      successful: true,
+      data: [
+        {
+          id: 1,
+          name: 'ipsum',
+          service: {
+            id: 1,
+            name: 'lorem'
+          }
+        }
+      ]
+    }))
+    /*
+    if (serviceId) {
+      return $axios.$get(`/widgets/me?serviceId=${serviceId}`)
+    } else {
+      return $axios.$get(`/widgets/me`)
+    }
+    */
+  },
+
+  fetchWidgetData(widgetId: number, params?: object): Promise<ResponseModel<WidgetModel>> {
     return new Promise((resolve) => resolve({
       successful: true,
       data: {
         id: widgetId,
         name: 'lorem',
-        parent_service: {
+        service: {
           id: 1,
           name: 'lorem'
         }
       }
     }))
+    // TODO: pass params object to query parameters
     // return $axios.$get(`/widgets/${widgetId}`)
   },
 
-  registerWidget(): Promise<ResponseModel> {
+  registerWidget(widgetId: number, params?: object): Promise<ResponseModel> {
     return new Promise((resolve) => resolve({
       successful: true
     }))
-    // return $axios.$post('/widgets', { username, password, email })
+    // return $axios.$post(`/widgets/${widgetId}`, params)
   },
 
   unregisterWidget(widgetId: number): Promise<ResponseModel> {

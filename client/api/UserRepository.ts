@@ -3,29 +3,31 @@ import UserModel from './models/UserModel'
 import ResponseModel from './models/ResponseModel'
 
 export interface IUserRepository {
-  
+
   /**
    * Create a user
    *
-   * @param username
-   * @param password 
-   * @param email
+   * @param username user name
+   * @param password user password
+   * @param email user email
    */
   createUser(username: string, password: string, email: string): Promise<ResponseModel>
   
   /**
    * Delete user by id
    *
-   * @param userId 
+   * @param userId user id
    */
   deleteUser(userId: number): Promise<ResponseModel>
   
   /**
    * Get user info by id
+   * 
+   * To get the currently logged in user's info, don't provide the userId
    *
-   * @param userId
+   * @param userId user id
    */
-  getUser(userId: number): Promise<ResponseModel<UserModel>>
+  getUser(userId?: number): Promise<ResponseModel<UserModel>>
 }
 
 const makeUserRepository = ($axios: NuxtAxiosInstance): IUserRepository => ({
@@ -44,16 +46,22 @@ const makeUserRepository = ($axios: NuxtAxiosInstance): IUserRepository => ({
     // return $axios.$delete(`/users/${userId}`)
   },
 
-  getUser(userId: number): Promise<ResponseModel<UserModel>> {
+  getUser(userId?: number): Promise<ResponseModel<UserModel>> {
     return new Promise((resolve) => resolve({
       successful: true,
       data: {
-        id: userId,
+        id: userId ?? 1,
         username: 'lorem',
         email: 'lorem@ipsum.dolor'
       }
     }))
-    // return $axios.$get(`/users/${userId}`)
+    /*
+    if (userId === undefined) {
+      return $axios.$get(`/users/me`)
+    } else {
+      return $axios.$get(`/users/${userId}`)
+    }
+    */
   }
 
 })

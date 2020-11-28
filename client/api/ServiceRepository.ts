@@ -10,6 +10,11 @@ export interface IServiceRepository {
   listServices(): Promise<ResponseModel<Array<ServiceModel>>>
 
   /**
+   * List all services the currently logged in user is regestered to
+   */
+  listRegisteredServices(): Promise<ResponseModel<Array<ServiceModel>>>
+
+  /**
    * Get a service by id
    * 
    * @param serviceId service id
@@ -52,6 +57,19 @@ const makeServiceRepository = ($axios: NuxtAxiosInstance): IServiceRepository =>
     // return $axios.$get('/services')
   },
 
+  listRegisteredServices(): Promise<ResponseModel<Array<ServiceModel>>> {
+    return new Promise((resolve) => resolve({
+      successful: true,
+      data: [
+        {
+          id: 1,
+          name: 'lorem'
+        }
+      ]
+    }))
+    // return $axios.$get('/services/me')
+  },
+
   getService(serviceId: number): Promise<ResponseModel<ServiceModel>> {
     return new Promise((resolve) => resolve({
       successful: true,
@@ -74,7 +92,7 @@ const makeServiceRepository = ($axios: NuxtAxiosInstance): IServiceRepository =>
     return new Promise((resolve) => resolve({
       successful: true
     }))
-    // return $axios.$post(`/services/${serviceId}`, { username, password })
+    // return $axios.$put(`/services/${serviceId}`, { username, password })
   }
 
 })
