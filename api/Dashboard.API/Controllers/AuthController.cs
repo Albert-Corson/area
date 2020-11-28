@@ -1,23 +1,32 @@
+using System;
+using System.Linq;
 using Dashboard.API.Attributes;
+using Dashboard.API.Common;
 using Dashboard.API.Constants;
 using Dashboard.API.Exceptions.Http;
 using Dashboard.API.Models;
 using Dashboard.API.Models.Request;
 using Dashboard.API.Models.Response;
+using Dashboard.API.Repositories;
 using Dashboard.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
 namespace Dashboard.API.Controllers
 {
     public class AuthController : ControllerBase
     {
         private readonly AuthService _service;
+        private readonly IConfiguration _configuration;
+        private readonly DatabaseRepository _database;
 
-        public AuthController(AuthService service)
+        public AuthController(AuthService service, DatabaseRepository database, IConfiguration configuration)
         {
             _service = service;
+            _database = database;
+            _configuration = configuration;
         }
 
         [HttpPost]
@@ -45,9 +54,8 @@ namespace Dashboard.API.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public JsonResult AuthRevokeDelete()
         {
-            // TODO: revoke the credentials, check with Adrien how this is supposed to be done
-            return StatusModel.Failed("error message"); // TODO: if failed
-            return StatusModel.Success();
+            // TODO: revoke the credentials
+            throw new NotImplementedException();
         }
 
         [HttpPost]
@@ -57,13 +65,18 @@ namespace Dashboard.API.Controllers
             [FromBody] LoginModel body
         )
         {
+            var encryptedPasswd = Encryptor.Encrypt(_configuration[JwtConstants.SecretKeyName], body.Password!);
+
+            var user = _database.Users.FirstOrDefault(model => model.Username == body.Username && model.Password == encryptedPasswd);
+            if (user?.Id == null)
+                throw new UnauthorizedAccessException();
+
             return new ResponseModel<UserTokenModel> {
                 Data = {
-                    RefreshToken = _service.GenerateRefreshToken(0), // TODO: put real userId
-                    AccessToken = _service.GenerateAccessToken(0), // TODO: put real userId
+                    RefreshToken = _service.GenerateRefreshToken(user.Id.Value),
+                    AccessToken = _service.GenerateAccessToken(user.Id.Value)
                 }
             };
-            return StatusModel.Failed("error message"); // TODO: if failed
         }
     }
 }
