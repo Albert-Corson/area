@@ -1,6 +1,6 @@
 import { Mutation, Action, VuexModule, getModule, Module } from 'vuex-module-decorators'
 import { store } from '~/store'
-import AuthToken from '~/api/models/AuthToken'
+import AuthTokenModel from '~/api/models/AuthTokenModel'
 import { $api } from '~/globals/api'
 
 @Module({
@@ -10,9 +10,9 @@ import { $api } from '~/globals/api'
   stateFactory: true,
   namespaced: true
 })
-export class AuthModule extends VuexModule {
+class AuthModule extends VuexModule {
   // state
-  _token?: AuthToken
+  _token?: AuthTokenModel
 
   // getters
   public get token() {
@@ -20,19 +20,20 @@ export class AuthModule extends VuexModule {
   }
 
   public get authenticated() {
+    console.log(this._token)
     return Boolean(this._token)
   }
 
   // mutations
   @Mutation
-  private setToken(token: AuthToken) {
+  private setToken(token: AuthTokenModel) {
     this._token = token
   }
 
   // actions
-  @Action({ rawError: true })
-  public async login(username: string, password: string) {
-    const response = await $api.auth.login(username, password)
+  @Action
+  public async getToken(username: string, password: string) {
+    const response = await $api.auth.getToken(username, password)
     if (response.successful) {
       this.context.commit('setToken', response.data!)
     }
