@@ -12,7 +12,7 @@ import { $api } from '~/globals/api'
 })
 class AuthModule extends VuexModule {
   // state
-  _token?: AuthTokenModel
+  private _token?: AuthTokenModel
 
   // getters
   public get token() {
@@ -38,6 +38,26 @@ class AuthModule extends VuexModule {
       this.context.commit('setToken', response.data!)
     }
   }
+
+  @Action
+  public async refreshToken() {
+    if (!this.authenticated) {
+      return
+    }
+    const response = await $api.auth.refreshToken(this._token?.refresh_token!)
+    if (response.successful) {
+      this.context.commit('setToken', response.data!)
+    }
+  }
+
+  @Action
+  public async revokeToken() {
+    const response = await $api.auth.revokeToken()
+    if (response.successful) {
+      // TODO
+    }
+  }
+
 }
 
 export default getModule(AuthModule)
