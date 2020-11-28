@@ -1,7 +1,13 @@
-import { AuthRepository } from '~/api/auth'
+import { IAuthRepository } from '~/api/AuthRepository'
+import { IServiceRepository } from '~/api/ServiceRepository'
+import { IUserRepository } from '~/api/UserRepository'
+import { IWidgetRepository } from '~/api/WidgetRepository'
 
 interface Api {
-  auth: AuthRepository
+  auth: IAuthRepository,
+  user: IUserRepository,
+  service: IServiceRepository,
+  widget: IWidgetRepository
 }
 
 let $api: Api
