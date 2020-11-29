@@ -1,6 +1,7 @@
 import ResponseModel from './models/ResponseModel'
 import { NuxtAxiosInstance } from '@nuxtjs/axios'
 import ServiceModel from './models/ServiceModel'
+import dbConnector from '~/tmp/dbConnector'
 
 export interface IServiceRepository {
   
@@ -41,55 +42,56 @@ export interface IServiceRepository {
 const makeServiceRepository = ($axios: NuxtAxiosInstance): IServiceRepository => ({
 
   listServices(): Promise<ResponseModel<Array<ServiceModel>>> {
-    return new Promise((resolve) => resolve({
-      successful: true,
-      data: [
-        {
-          id: 1,
-          name: 'lorem'
-        },
-        {
-          id: 2,
-          name: 'ipsum'
-        },
-        {
-          id: 3,
-          name: 'dolor'
-        },
-        {
-          id: 4,
-          name: 'sit'
-        },
-        {
-          id: 5,
-          name: 'amet'
-        }
-      ]
-    }))
+    return new Promise((resolve, reject) => {
+      try {
+        const services = dbConnector.listServices()
+        return resolve({
+          successful: true,
+          data: services
+        })
+      } catch (e) {
+        return reject({
+          successful: false,
+          error: e.message
+        })
+      }
+    })
     // return $axios.$get('/services')
   },
 
   listRegisteredServices(): Promise<ResponseModel<Array<ServiceModel>>> {
-    return new Promise((resolve) => resolve({
-      successful: true,
-      data: [
-        {
-          id: 1,
-          name: 'lorem'
-        }
-      ]
-    }))
+    return new Promise((resolve, reject) => {
+      try {
+        const services = dbConnector.listRegisteredServices()
+        return resolve({
+          successful: true,
+          data: services
+        })
+      } catch (e) {
+        return reject({
+          successful: false,
+          error: e.message
+        })
+      }
+    })
     // return $axios.$get('/services/me')
   },
 
   getService(serviceId: number): Promise<ResponseModel<ServiceModel>> {
-    return new Promise((resolve) => resolve({
-      successful: true,
-      data: {
-        id: serviceId,
-        name: 'lorem'
+    return new Promise((resolve, reject) => {
+      try {
+        const service = dbConnector.getService(serviceId)
+        return resolve({
+          successful: true,
+          data: service
+        })
+      } catch (e) {
+        return reject({
+          successful: false,
+          error: e.message
+        })
       }
-    }))
+    })
     // return $axios.$get(`/services/${serviceId}`)
   },
 

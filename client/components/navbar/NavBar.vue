@@ -33,22 +33,22 @@ export default class NavBar extends Vue {
   // data
   public navButtons : Array<INavButton> = [
     {
-      icon: "svg/home.svg",
+      icon: "/svg/home.svg",
       title: "Home",
       to: "/"
     },
     {
-      icon: "svg/services.svg",
+      icon: "/svg/services.svg",
       title: "Services",
       to: "/"
     },
     {
-      icon: "svg/widgets.svg",
+      icon: "/svg/widgets.svg",
       title: "Widgets",
       to: "/"
     },
     {
-      icon: "svg/profil.svg",
+      icon: "/svg/profil.svg",
       title: "Profil",
       to: "/about"
     }
