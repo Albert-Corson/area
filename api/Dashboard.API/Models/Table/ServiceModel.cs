@@ -1,20 +1,12 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using Dashboard.API.Models.Table.ManyToMany;
 using Newtonsoft.Json;
 
-namespace Dashboard.API.Models
+namespace Dashboard.API.Models.Table
 {
     public class ServiceModel
     {
-        public ServiceModel()
-        { }
-
-        public ServiceModel(int id = 0, string name = "")
-        {
-            Id = id;
-            Name = name;
-        }
-
         [ForeignKey("ServiceId")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [JsonProperty("id")]

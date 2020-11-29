@@ -1,4 +1,5 @@
-using Dashboard.API.Models;
+using Dashboard.API.Models.Table;
+using Dashboard.API.Models.Table.ManyToMany;
 using Microsoft.EntityFrameworkCore;
 
 namespace Dashboard.API.Repositories
@@ -47,6 +48,18 @@ namespace Dashboard.API.Repositories
                     .HasOne(userWidget => userWidget.Service)
                     .WithMany(widget => widget!.Users)
                     .HasForeignKey(userWidget => userWidget.ServiceId);
+            }
+
+            // A user owns many widget parameters
+            {
+                modelBuilder.Entity<UserModel>()
+                    .OwnsMany(model => model.WidgetParams);
+            }
+
+            // A widget owns many default parameters
+            {
+                modelBuilder.Entity<WidgetModel>()
+                    .OwnsMany(model => model.DefaultParams);
             }
         }
 

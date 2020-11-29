@@ -41,11 +41,11 @@ namespace Dashboard.API
                 .AddJwtBearer(config => { config.TokenValidationParameters = tokenValidationParameters; });
 
             services.AddDbContext<DatabaseRepository>(builder => {
-                string connectionString = $"Host={_configuration[PostgresConstants.HostKeyName]};" +
-                                          $"Port={_configuration[PostgresConstants.PortKeyName]};" +
-                                          $"Username={_configuration[PostgresConstants.UserKeyName]};" +
-                                          $"Password={_configuration[PostgresConstants.PasswdKeyName]};" +
-                                          $"Database={_configuration[PostgresConstants.DbKeyName]};";
+                string connectionString = $"Host={_configuration[PostgresConstants.HostKeyName] ?? "localhost"};" +
+                                          $"Port={_configuration[PostgresConstants.PortKeyName] ?? "5432"};" +
+                                          $"Username={_configuration[PostgresConstants.UserKeyName] ?? "postgres"};" +
+                                          $"Password={_configuration[PostgresConstants.PasswdKeyName] ?? "postgres"};" +
+                                          $"Database={_configuration[PostgresConstants.DbKeyName] ?? "dashboard"};";
                 builder.UseNpgsql(connectionString);
             });
 
@@ -61,7 +61,7 @@ namespace Dashboard.API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseStatusCodePagesWithReExecute("/Error");
+            app.UseStatusCodePagesWithReExecute(RoutesConstants.Default.Error);
 
             app.UseRouting();
 

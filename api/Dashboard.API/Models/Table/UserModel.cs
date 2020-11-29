@@ -1,21 +1,13 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using Dashboard.API.Models.Table.ManyToMany;
+using Dashboard.API.Models.Table.Owned;
 using Newtonsoft.Json;
 
-namespace Dashboard.API.Models
+namespace Dashboard.API.Models.Table
 {
     public class UserModel
     {
-        public UserModel()
-        { }
-
-        public UserModel(int id = 0, string username = "", string? email = null)
-        {
-            Id = id;
-            Username = username;
-            Email = email;
-        }
-
         [ForeignKey("UserId")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [JsonProperty("id")]
@@ -35,5 +27,8 @@ namespace Dashboard.API.Models
 
         [JsonIgnore]
         public ICollection<UserServiceModel>? Services { get; set; }
+
+        [JsonIgnore]
+        public ICollection<WidgetParamModel>? WidgetParams { get; set; }
     }
 }

@@ -4,7 +4,6 @@ using Dashboard.API.Attributes;
 using Dashboard.API.Common;
 using Dashboard.API.Constants;
 using Dashboard.API.Exceptions.Http;
-using Dashboard.API.Models;
 using Dashboard.API.Models.Request;
 using Dashboard.API.Models.Response;
 using Dashboard.API.Repositories;
@@ -30,9 +29,30 @@ namespace Dashboard.API.Controllers
         }
 
         [HttpPost]
+        [Route(RoutesConstants.Auth.SignIn)]
+        [ValidateModelState]
+        public JsonResult SignIn(
+            [FromBody] LoginModel body
+        )
+        {
+            var encryptedPasswd = Encryptor.Encrypt(_configuration[JwtConstants.SecretKeyName], body.Password!);
+
+            var user = _database.Users.FirstOrDefault(model => model.Username == body.Username && model.Password == encryptedPasswd);
+            if (user?.Id == null)
+                throw new UnauthorizedAccessException();
+
+            return new ResponseModel<UserTokenModel> {
+                Data = {
+                    RefreshToken = _service.GenerateRefreshToken(user.Id.Value),
+                    AccessToken = _service.GenerateAccessToken(user.Id.Value)
+                }
+            };
+        }
+
+        [HttpPost]
         [Route(RoutesConstants.Auth.RefreshAccessToken)]
         [ValidateModelState]
-        public JsonResult AuthRefreshPost(
+        public JsonResult RefreshAccessToken(
             [FromBody] RefreshTokenModel body
         )
         {
@@ -50,33 +70,12 @@ namespace Dashboard.API.Controllers
         }
 
         [HttpDelete]
-        [Route(RoutesConstants.Auth.RevokeAccountTokens)]
+        [Route(RoutesConstants.Auth.RevokeUserTokens)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public JsonResult AuthRevokeDelete()
+        public JsonResult RevokeUserTokens()
         {
-            // TODO: revoke the credentials
-            throw new NotImplementedException();
-        }
-
-        [HttpPost]
-        [Route(RoutesConstants.Auth.Login)]
-        [ValidateModelState]
-        public JsonResult AuthTokenPost(
-            [FromBody] LoginModel body
-        )
-        {
-            var encryptedPasswd = Encryptor.Encrypt(_configuration[JwtConstants.SecretKeyName], body.Password!);
-
-            var user = _database.Users.FirstOrDefault(model => model.Username == body.Username && model.Password == encryptedPasswd);
-            if (user?.Id == null)
-                throw new UnauthorizedAccessException();
-
-            return new ResponseModel<UserTokenModel> {
-                Data = {
-                    RefreshToken = _service.GenerateRefreshToken(user.Id.Value),
-                    AccessToken = _service.GenerateAccessToken(user.Id.Value)
-                }
-            };
+            // TODO: (optional) revoke the credentials
+            return StatusModel.Failed("Not implemented");
         }
     }
 }

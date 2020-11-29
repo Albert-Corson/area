@@ -1,10 +1,9 @@
-using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Dashboard.API.Attributes;
 using Dashboard.API.Constants;
-using Dashboard.API.Models;
-using Dashboard.API.Models.Request;
 using Dashboard.API.Models.Response;
+using Dashboard.API.Models.Table;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,34 +15,32 @@ namespace Dashboard.API.Controllers
         [HttpGet]
         [Route(RoutesConstants.Services.GetServices)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public JsonResult ServicesGet()
+        public JsonResult GetServices()
         {
-            var serviceModels = new ArrayList(); // TODO: get a real list of services
+            // TODO: get a real list of services
 
-            return new ResponseModel<ArrayList> {
-                Data = serviceModels
+            return new ResponseModel<List<ServiceModel>> {
+                Data = new List<ServiceModel>()
             };
         }
 
-        [HttpDelete]
-        [Route(RoutesConstants.Services.ServiceIdLogout)]
+        [HttpGet]
+        [Route(RoutesConstants.Services.GetMyServices)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [ValidateModelState]
-        public JsonResult ServicesServiceIdDelete(
-            [FromRoute] [Required] [Range(1, 2147483647)] int? serviceId
-        )
+        public JsonResult GetMyService()
         {
-            // TODO: logout of a user from a service
+            // TODO: get a real list of services used by the user
 
-            return StatusModel.Failed("error message");
-            return StatusModel.Success();
+            return new ResponseModel<List<ServiceModel>> {
+                Data = new List<ServiceModel>()
+            };
         }
 
         [HttpGet]
-        [Route(RoutesConstants.Services.ServiceIdGetService)]
+        [Route(RoutesConstants.Services.GetService)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateModelState]
-        public JsonResult ServicesServiceIdGet(
+        public JsonResult GetService(
             [FromRoute] [Required] [Range(1, 2147483647)] int? serviceId
         )
         {
@@ -57,11 +54,11 @@ namespace Dashboard.API.Controllers
         }
 
         [HttpPost]
-        [Route(RoutesConstants.Services.ServiceIdLogin)]
+        [Route(RoutesConstants.Services.SignInService)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateModelState]
-        public JsonResult ServicesServiceIdPost(
-            [FromBody] LoginModel body,
+        public JsonResult SignInService(
+            // TODO: somehow get service specific credentials
             [FromRoute] [Required] [Range(1, 2147483647)] int? serviceId
         )
         {
@@ -69,6 +66,20 @@ namespace Dashboard.API.Controllers
 
             return StatusModel.Success();
             return StatusModel.Failed("error message");
+        }
+
+        [HttpDelete]
+        [Route(RoutesConstants.Services.SignOutService)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [ValidateModelState]
+        public JsonResult SignOutService(
+            [FromRoute] [Required] [Range(1, 2147483647)] int? serviceId
+        )
+        {
+            // TODO: logout of a user from a service
+
+            return StatusModel.Failed("error message");
+            return StatusModel.Success();
         }
     }
 }

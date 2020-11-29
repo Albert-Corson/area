@@ -1,23 +1,13 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using Dashboard.API.Models.Response;
+using Dashboard.API.Models.Table.ManyToMany;
+using Dashboard.API.Models.Table.Owned;
 using Newtonsoft.Json;
 
-namespace Dashboard.API.Models
+namespace Dashboard.API.Models.Table
 {
     public class WidgetModel
     {
-        public WidgetModel()
-        { }
-
-        public WidgetModel(int id = 0, string name = "", ServiceModel? service = null)
-        {
-            Id = id;
-            Name = name;
-            if (service != null)
-                Service = service;
-        }
-
         [ForeignKey("WidgetId")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [JsonProperty("id")]
@@ -25,6 +15,9 @@ namespace Dashboard.API.Models
 
         [JsonProperty("name")]
         public string? Name { get; set; }
+
+        [JsonProperty("requires_auth")]
+        public bool? RequiresAuth { get; set; }
 
         [JsonIgnore]
         public int? ServiceId { get; set; }
@@ -34,5 +27,8 @@ namespace Dashboard.API.Models
 
         [JsonIgnore]
         public ICollection<UserWidgetModel>? Users { get; set; }
+
+        [JsonProperty("params")]
+        public ICollection<WidgetParamModel>? DefaultParams;
     }
 }
