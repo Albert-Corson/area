@@ -28,7 +28,10 @@ export default class ServicePage extends Vue {
   async beforeCreate() {
     this.id = parseInt(this.$route.params.id)
     this.service = await ServiceStore.fetchService(this.id)
-    this.widgets = await WidgetStore.fetchWidgets(this.id)
+    const widgets = await WidgetStore.fetchWidgets(this.id)
+    if (widgets !== undefined) {
+      this.widgets = widgets
+    }
   }
 }
 </script>

@@ -1,8 +1,10 @@
 <template>
   <clickable><hoverable>
     <div class="service-list-item">
-      <icon :src="icon" width="70" height="70"/>
-      <div class="service-name">{{ name }}</div>
+      <nuxt-link :to="`/services/${ id }`">
+        <icon :src="icon" width="70" height="70"/>
+        <div class="service-name">{{ name }}</div>
+      </nuxt-link>
     </div>
   </hoverable></clickable>
 </template>
@@ -38,6 +40,10 @@ export default class ServiceListItem extends Vue {
   display: inline-block;
   padding: .5em 1em;
 
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 
   .service-name {
     text-align: center;
