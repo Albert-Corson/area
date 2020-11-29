@@ -20,9 +20,9 @@ import Icon from "../icon.vue"
 })
 export default class NavButton  extends Vue {
   // data
-    @Prop({required: true}) readonly src: string
-    @Prop({required: true}) readonly title: string
-    @Prop({required: true}) readonly redirect: string
+    @Prop({required: true}) readonly src!: string
+    @Prop({required: true}) readonly title!: string
+    @Prop({required: true}) readonly redirect!: string
 
 }
 </script>

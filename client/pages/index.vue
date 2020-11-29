@@ -1,5 +1,5 @@
 <template>
-  <div class="main">
+  <div class="page">
     <h1>Home (authenticated)</h1>
   </div>
 </template>
@@ -15,12 +15,3 @@
   //   @Prop({required: false, type: String, default: 'Developer'}) readonly job: string
   // }
 </script>>
-
-<style scoped>
-.main
-{
-  grid-area: main;
-  background-color: var(--secondary-bg-color);
-}
-
-</style>
