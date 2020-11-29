@@ -1,6 +1,7 @@
 import { NuxtAxiosInstance } from '@nuxtjs/axios'
 import UserModel from './models/UserModel'
 import ResponseModel from './models/ResponseModel'
+import dbConnector from '~/tmp/dbConnector'
 
 export interface IUserRepository {
 
@@ -19,7 +20,7 @@ export interface IUserRepository {
    * @param userId user id
    */
   deleteUser(userId: number): Promise<ResponseModel>
-  
+
   /**
    * Get user info by id
    * 
@@ -31,7 +32,7 @@ export interface IUserRepository {
 }
 
 const makeUserRepository = ($axios: NuxtAxiosInstance): IUserRepository => ({
-  
+
   createUser(username: string, password: string, email: string): Promise<ResponseModel> {
     return new Promise((resolve) => resolve({
       successful: true
@@ -47,21 +48,27 @@ const makeUserRepository = ($axios: NuxtAxiosInstance): IUserRepository => ({
   },
 
   getUser(userId?: number): Promise<ResponseModel<UserModel>> {
-    return new Promise((resolve) => resolve({
-      successful: true,
-      data: {
-        id: userId ?? 1,
-        username: 'lorem',
-        email: 'lorem@ipsum.dolor'
+    return new Promise((resolve, reject) => {
+      try {
+        const user = dbConnector.getUser(userId)
+        return resolve({
+          successful: true,
+          data: user
+        })
+      } catch (e) {
+        return reject({
+          successful: false,
+          error: e.message
+        })
       }
-    }))
+    })
     /*
-    if (userId === undefined) {
-      return $axios.$get(`/users/me`)
-    } else {
-      return $axios.$get(`/users/${userId}`)
-    }
-    */
+       if (userId === undefined) {
+       return $axios.$get(`/users/me`)
+       } else {
+       return $axios.$get(`/users/${userId}`)
+       }
+       */
   }
 
 })

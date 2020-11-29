@@ -1,6 +1,6 @@
 <template>
   <clickable><hoverable>
-    <div class="service">
+    <div class="service-list-item">
       <icon :src="icon" width="70" height="70"/>
       <div class="service-name">{{ name }}</div>
     </div>
@@ -14,14 +14,14 @@ import Clickable from '~/components/Clickable.vue'
 import Hoverable from '~/components/Hoverable.vue'
 
 @Component({
-  name: 'Service',
+  name: 'ServiceListItem',
   components: {
     Icon,
     Clickable,
     Hoverable
   }
 })
-export default class Service extends Vue {
+export default class ServiceListItem extends Vue {
   @Prop({ required: true }) readonly name!: string
   @Prop({ required: true }) readonly id!: number
   @Prop({ default: false }) readonly empty!: boolean
@@ -33,7 +33,7 @@ export default class Service extends Vue {
 </script>
 
 <style lang="scss" scoped>
-.service {
+.service-list-item {
   position: relative;
   display: inline-block;
   padding: .5em 1em;

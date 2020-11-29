@@ -2,6 +2,6 @@ import Vue from 'vue'
 import Toasted from 'vue-toasted'
 
 Vue.use(Toasted, {
-  duration: 3000,
+  duration: 10000,
   closeOnSwipe: true
 })

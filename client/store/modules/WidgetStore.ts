@@ -1,3 +1,4 @@
+import Vue from 'vue'
 import { Mutation, Action, VuexModule, getModule, Module } from 'vuex-module-decorators'
 import { store } from '~/store'
 import WidgetModel from '~/api/models/WidgetModel'
@@ -16,7 +17,7 @@ class WidgetModule extends VuexModule {
   private _registeredWidgets: Array<WidgetModel> = []
 
   // getters
-  public get widget() {
+  public get widgets() {
     return this._widgets
   }
 
@@ -27,29 +28,43 @@ class WidgetModule extends VuexModule {
   // mutations
   @Mutation
   private setWidgets(widgets: Array<WidgetModel>) {
-    this._widgets = widgets
+    // merge without duplicates
+    const newWidgets = widgets.filter(w => this._widgets
+      .find(i => i.id === w.id) === undefined
+    )
+    this._widgets = this._widgets.concat(newWidgets)
   }
 
   @Mutation
   private setRegisteredWidgets(widgets: Array<WidgetModel>) {
-    this._registeredWidgets = widgets
+    // merge without duplicates
+    const newWidgets = widgets.filter(w => this._registeredWidgets
+      .find(i => i.id === w.id) === undefined
+    )
+    this._registeredWidgets = this._registeredWidgets.concat(newWidgets)
   }
 
   // actions
   @Action
-  public async fetchWidgets() {
-    const response = await $api.widget.listWidgets()
+  public async fetchWidgets(serviceId?: number) {
+    const response = await $api.widget.listWidgets(serviceId)
     if (response.successful) {
       this.context.commit('setWidgets', response.data!)
+    } else {
+      Vue.toasted.error('Error while fetching widgets')
     }
+    return response.data
   }
 
   @Action
-  public async fetchRegisteredWidgets() {
-    const response = await $api.widget.listRegisteredWidgets()
+  public async fetchRegisteredWidgets(serviceId?: number) {
+    const response = await $api.widget.listRegisteredWidgets(serviceId)
     if (response.successful) {
       this.context.commit('setRegisteredWidgets', response.data!)
+    } else {
+      Vue.toasted.error('Error while fetching widgets')
     }
+    return response.data
   }
 
   @Action
@@ -57,8 +72,10 @@ class WidgetModule extends VuexModule {
     const response = await $api.widget.fetchWidgetData(widgetId, params)
     if (response.successful) {
       // TODO ?
-      return response.data!
+    } else {
+      Vue.toasted.error('Error while fetching widget data')
     }
+    return response.data
   }
 
   @Action
@@ -66,6 +83,10 @@ class WidgetModule extends VuexModule {
     const response = await $api.widget.registerWidget(widgetId, params)
     if (response.successful) {
       // TODO
+      return true
+    } else {
+      Vue.toasted.error('Error while subscribing to a widget')
+      return false
     }
   }
 
@@ -74,6 +95,10 @@ class WidgetModule extends VuexModule {
     const response = await $api.widget.unregisterWidget(widgetId)
     if (response.successful) {
       // TODO
+      return true
+    } else {
+      Vue.toasted.error('Error while unsubscribing from a widget')
+      return false
     }
   }
 }

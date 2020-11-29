@@ -1,3 +1,4 @@
+import Vue from 'vue'
 import { Mutation, Action, VuexModule, getModule, Module } from 'vuex-module-decorators'
 import { store } from '~/store'
 import { $api } from '~/globals/api'
@@ -27,12 +28,20 @@ class ServiceModule extends VuexModule {
   // mutations
   @Mutation
   private setServices(services: Array<ServiceModel>) {
-    this._services = services
+    // merge without duplicates
+    const newServices = services.filter(s => this._services
+      .find(i => i.id === s.id) === undefined
+    )
+    this._services = this._services.concat(newServices)
   }
 
   @Mutation
   private setRegisteredServices(services: Array<ServiceModel>) {
-    this._registeredServices = services
+    // merge without duplicates
+    const newServices = services.filter(s => this._registeredServices
+      .find(i => i.id === s.id) === undefined
+    )
+    this._registeredServices = this._registeredServices.concat(newServices)
   }
 
   // actions
@@ -41,7 +50,10 @@ class ServiceModule extends VuexModule {
     const response = await $api.service.listServices()
     if (response.successful) {
       this.context.commit('setServices', response.data!)
+    } else {
+      Vue.toasted.error('Error while fetching services')
     }
+    return response.data
   }
 
   @Action
@@ -49,7 +61,10 @@ class ServiceModule extends VuexModule {
     const response = await $api.service.listRegisteredServices()
     if (response.successful) {
       this.context.commit('setRegisteredServices', response.data!)
+    } else {
+      Vue.toasted.error('Error while fetching services')
     }
+    return response.data
   }
 
   @Action
@@ -57,8 +72,10 @@ class ServiceModule extends VuexModule {
     const response = await $api.service.getService(serviceId)
     if (response.successful) {
       // TODO ?
-      return response.data!
+    } else {
+      Vue.toasted.error('Error while fetching service data')
     }
+    return response.data
   }
 
   @Action
@@ -66,6 +83,10 @@ class ServiceModule extends VuexModule {
     const response = await $api.service.registerService(serviceId, username, password)
     if (response.successful) {
       // TODO
+      return true
+    } else {
+      Vue.toasted.error('Error while subscribing to a service')
+      return false
     }
   }
 
@@ -74,6 +95,10 @@ class ServiceModule extends VuexModule {
     const response = await $api.service.unregisterService(serviceId)
     if (response.successful) {
       // TODO
+      return true
+    } else {
+      Vue.toasted.error('Error while unsubscribing from a service')
+      return false
     }
   }
 }
