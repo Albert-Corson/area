@@ -1,18 +1,24 @@
 <template>
-  <div class="service clickable hoverable">
-    <icon :src="icon" width="70" height="70"/>
-    <div class="service-name">{{ name }}</div>
-  </div>
+  <clickable><hoverable>
+    <div class="service">
+      <icon :src="icon" width="70" height="70"/>
+      <div class="service-name">{{ name }}</div>
+    </div>
+  </hoverable></clickable>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import Icon from '~/components/Icon.vue'
+import Clickable from '~/components/Clickable.vue'
+import Hoverable from '~/components/Hoverable.vue'
 
 @Component({
   name: 'Service',
   components: {
-    Icon
+    Icon,
+    Clickable,
+    Hoverable
   }
 })
 export default class Service extends Vue {
