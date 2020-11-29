@@ -27,24 +27,25 @@ export default class NavButton extends Vue {
 
 <style scoped lang="scss">
 
-.link {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  left: 0;
-  top: 0;
-}
-
 .nav-button {
   position: relative;
   width: 100%;
   padding: .75em 0 .75em 1.25em;
   display: flex;
   align-items: center;
-}
+  min-width: 200px;
 
-p {
-  margin-left: 15px;
+  .link {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+  }
+
+  p {
+    margin-left: 15px;
+  }
 }
 
 </style>
