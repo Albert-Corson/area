@@ -1,5 +1,5 @@
 <template>
-  <div class="services-list">
+  <div class="service-list">
     <mosaic-list>
       <service-list-item v-for="service in services" :key="service.id"
                :id="service.id"
