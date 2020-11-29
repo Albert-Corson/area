@@ -1,16 +1,16 @@
 <template>
   <div class="page index">
-    <services-list/>
+    <service-list/>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
-import ServicesList from '~/components/services/ServicesList.vue'
+import ServiceList from '~/components/services/ServiceList.vue'
 
 @Component({
   components: {
-    ServicesList
+    ServiceList
   }
 })
 export default class IndexPage extends Vue {
