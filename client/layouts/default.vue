@@ -2,7 +2,6 @@
   <div class="default">
     <dashboard-nav-bar />
     <dashboard-header />
-    <!-- <router-link to="/login">To Login</router-link> -->
     <nuxt />
     <dashboard-footer />
   </div>
@@ -10,9 +9,9 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'nuxt-property-decorator'
-import DashboardNavBar from "../components/navbar/navbar.vue"
-import DashboardFooter from "../components/footer/footer.vue"
-import DashboardHeader from "../components/header/header.vue"
+import DashboardNavBar from "../components/navbar/NavBar.vue"
+import DashboardFooter from "../components/footer/Footer.vue"
+import DashboardHeader from "../components/header/Header.vue"
 
 @Component({
   name: 'DefaultLayout',
@@ -24,18 +23,16 @@ import DashboardHeader from "../components/header/header.vue"
 })
 export default class DefaultLayout extends Vue {
   // data
-
 }
 </script>
 
-<style>
+<style lang="scss">
 :root {
   --main-bg-color: #1B2224;
   --secondary-bg-color: #222B2E;
-  --focus-color: #2eb3982a;
+  --focus-color: #2eb398;
   --active-color: #E4E4E4;
   --inactive-color: #474747;
-  --input-radius: 5px;
 }
 
 /* todo create image that follow cursor */
@@ -48,10 +45,19 @@ body {
   margin: 0;
   padding: 0;
   color: var(--active-color);
+  font-family: sans-serif;
 }
 
-.clickable {
+.clickable, .hoverable {
   cursor: pointer;
+}
+
+.hoverable {
+  transition: background .1s ease-in-out;
+
+  &:hover {
+    background: var(--focus-color);
+  }
 }
 
 </style>
@@ -65,17 +71,17 @@ body {
   display: grid;
   grid-template-columns: 0.75fr 5fr;
   grid-template-rows: 0.75fr 10fr 0.75fr;
-  gap: 0px 0px;
+  grid-gap: 0px 0px;
   grid-template-areas:
     "header header"
     "nav-bar page"
     "footer footer";
 }
 
-.page
-{
+.page {
   grid-area: page;
   background-color: var(--secondary-bg-color);
+  border: 3px solid #2EB398;
 }
 
 </style>

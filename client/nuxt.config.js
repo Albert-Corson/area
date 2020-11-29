@@ -17,7 +17,7 @@ export default {
       { hid: 'description', name: 'description', content: '' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      { rel: 'icon', type: 'image/png', href: '/favicon.png' }
     ]
   },
 
@@ -29,7 +29,8 @@ export default {
   plugins: [
     '~/plugins/vuex-persist',
     '~/plugins/axios',
-    '~/plugins/api'
+    '~/plugins/api',
+    '~/plugins/vue-toasted'
   ],
 
   // Auto import components (https://go.nuxtjs.dev/config-components)

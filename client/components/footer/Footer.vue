@@ -4,8 +4,7 @@
 
 <style scoped>
 
-.footer
-{
+.footer {
   grid-area: footer;
 }
 

@@ -1,16 +1,14 @@
 <template>
-  <div class="nav-button clickable">
-    <nuxt-link class="link" :to="redirect" />
-    <icon :src="src" width="30" height="30" />
-    <p>{{title}}</p>
+  <div class="nav-button clickable hoverable">
+    <nuxt-link class="link" :to="to" />
+    <icon :src="icon" width="32" height="32" />
+    <p>{{ title }}</p>
   </div>
 </template>
 
-
 <script lang="ts">
 import { Component, Vue, Prop } from 'nuxt-property-decorator'
-import Icon from "../icon.vue"
-
+import Icon from "~/components/Icon.vue"
 
 @Component({
   name: 'NavButton',
@@ -18,11 +16,11 @@ import Icon from "../icon.vue"
     Icon
   }
 })
-export default class NavButton  extends Vue {
+export default class NavButton extends Vue {
   // data
-    @Prop({required: true}) readonly src!: string
+    @Prop({required: true}) readonly icon!: string
     @Prop({required: true}) readonly title!: string
-    @Prop({required: true}) readonly redirect!: string
+    @Prop({required: true}) readonly to!: string
 
 }
 </script>
@@ -40,19 +38,13 @@ export default class NavButton  extends Vue {
 .nav-button {
   position: relative;
   width: 100%;
-  border-radius: var(--input-radius);
-  padding: 10px 5%;
+  padding: .75em 0 .75em 1.25em;
   display: flex;
   align-items: center;
-
-  &:hover {
-    background: var(--focus-color);
-  };
 }
 
 p {
   margin-left: 15px;
-  font-size: 0.75em;
 }
 
 </style>
