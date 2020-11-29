@@ -68,8 +68,14 @@ body {
   gap: 0px 0px;
   grid-template-areas:
     "header header"
-    "nav-bar main"
+    "nav-bar page"
     "footer footer";
+}
+
+.page
+{
+  grid-area: page;
+  background-color: var(--secondary-bg-color);
 }
 
 </style>
