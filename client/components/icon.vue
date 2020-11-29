@@ -16,8 +16,8 @@ import { Component, Vue, Prop } from 'nuxt-property-decorator'
 })
 export default class Icon  extends Vue {
   // data
-    @Prop({required: true}) readonly src: string
-    @Prop({required: true}) readonly width: number
-    @Prop({required: true}) readonly height: number
+    @Prop({required: true}) readonly src!: string
+    @Prop({required: true}) readonly width!: number
+    @Prop({required: true}) readonly height!: number
 }
 </script>
