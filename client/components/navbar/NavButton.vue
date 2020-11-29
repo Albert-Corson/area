@@ -1,27 +1,32 @@
 <template>
-  <div class="nav-button clickable hoverable">
-    <nuxt-link class="link" :to="to" />
-    <icon :src="icon" width="32" height="32" />
-    <p>{{ title }}</p>
-  </div>
+  <clickable><hoverable>
+    <div class="nav-button">
+      <nuxt-link class="link" :to="to" />
+      <icon :src="icon" width="32" height="32" />
+      <p>{{ title }}</p>
+    </div>
+  </hoverable></clickable>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'nuxt-property-decorator'
 import Icon from "~/components/Icon.vue"
+import Hoverable from '~/components/Hoverable.vue'
+import Clickable from '~/components/Clickable.vue'
 
 @Component({
   name: 'NavButton',
   components: {
+    Clickable,
+    Hoverable,
     Icon
   }
 })
 export default class NavButton extends Vue {
-  // data
-    @Prop({required: true}) readonly icon!: string
-    @Prop({required: true}) readonly title!: string
-    @Prop({required: true}) readonly to!: string
-
+  // props
+  @Prop({required: true}) readonly icon!: string
+  @Prop({required: true}) readonly title!: string
+  @Prop({required: true}) readonly to!: string
 }
 </script>
 
