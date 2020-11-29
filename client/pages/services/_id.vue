@@ -1,6 +1,7 @@
 <template>
-  <div class="service">
-    {{ widgets }}
+  <div class="page service">
+    <widget-list :widgets="widgets">
+    </widget-list>
   </div>
 </template>
 
@@ -10,10 +11,12 @@ import ServiceStore from '~/store/modules/ServiceStore'
 import ServiceModel from '~/api/models/ServiceModel'
 import WidgetStore from '~/store/modules/WidgetStore'
 import WidgetModel from '~/api/models/WidgetModel'
+import WidgetList from '~/components/widgets/WidgetList.vue'
 
 @Component({
   name: 'Service',
   components: {
+    WidgetList
   },
   validate({ params }) {
     const id = parseInt(params.id)
