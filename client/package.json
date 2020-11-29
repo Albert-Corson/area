@@ -14,6 +14,7 @@
     "@nuxtjs/axios": "^5.12.2",
     "core-js": "^3.6.5",
     "nuxt": "^2.14.6",
+    "vue-toasted": "^1.1.28",
     "vuex-module-decorators": "^1.0.1",
     "vuex-persist": "^3.1.3"
   },

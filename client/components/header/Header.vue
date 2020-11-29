@@ -4,8 +4,7 @@
 
 <style scoped>
 
-.header
-{
+.header {
   grid-area: header;
 }
 
