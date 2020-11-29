@@ -1,3 +1,4 @@
+import path from 'path'
 import colors from 'vuetify/es5/util/colors'
 
 export default {
@@ -75,9 +76,13 @@ export default {
   // Build Configuration (https://go.nuxtjs.dev/config-build)
   build: {
     extend(config, { isClient }) {
+      // enable source map
       if (isClient) {
         config.devtool = 'source-map'
       }
+
+      config.resolve.alias['@components'] = path.resolve('./components')
+      config.resolve.alias['@stores'] = path.resolve('./store/modules')
     }
   },
 
