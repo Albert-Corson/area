@@ -51,6 +51,18 @@ const makeServiceRepository = ($axios: NuxtAxiosInstance): IServiceRepository =>
         {
           id: 2,
           name: 'ipsum'
+        },
+        {
+          id: 3,
+          name: 'dolor'
+        },
+        {
+          id: 4,
+          name: 'sit'
+        },
+        {
+          id: 5,
+          name: 'amet'
         }
       ]
     }))
