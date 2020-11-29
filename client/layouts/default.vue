@@ -48,18 +48,6 @@ body {
   font-family: sans-serif;
 }
 
-.clickable, .hoverable {
-  cursor: pointer;
-}
-
-.hoverable {
-  transition: background .1s ease-in-out;
-
-  &:hover {
-    background: var(--focus-color);
-  }
-}
-
 </style>
 
 <style scoped>
