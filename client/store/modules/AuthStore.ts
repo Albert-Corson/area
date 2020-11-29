@@ -1,4 +1,5 @@
 import { Mutation, Action, VuexModule, getModule, Module } from 'vuex-module-decorators'
+import Vue from 'vue'
 import { store } from '~/store'
 import AuthTokenModel from '~/api/models/AuthTokenModel'
 import { $api } from '~/globals/api'
@@ -20,7 +21,6 @@ class AuthModule extends VuexModule {
   }
 
   public get authenticated() {
-    console.log(this._token)
     return Boolean(this._token)
   }
 
@@ -54,7 +54,7 @@ class AuthModule extends VuexModule {
   public async revokeToken() {
     const response = await $api.auth.revokeToken()
     if (response.successful) {
-      // TODO
+      Vue.toasted.success('HERE WE GO')
     }
   }
 
