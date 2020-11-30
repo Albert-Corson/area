@@ -148,7 +148,7 @@ namespace Dashboard.API.Migrations
 
             modelBuilder.Entity("Dashboard.API.Models.Table.UserModel", b =>
                 {
-                    b.OwnsMany("Dashboard.API.Models.Table.Owned.WidgetParamModel", "WidgetParams", b1 =>
+                    b.OwnsMany("Dashboard.API.Models.Table.Owned.UserWidgetParamModel", "WidgetParams", b1 =>
                         {
                             b1.Property<int>("UserModelId")
                                 .HasColumnType("integer");
@@ -167,12 +167,23 @@ namespace Dashboard.API.Migrations
                             b1.Property<string>("Value")
                                 .HasColumnType("text");
 
+                            b1.Property<int?>("WidgetId")
+                                .HasColumnType("integer");
+
                             b1.HasKey("UserModelId", "Id");
 
-                            b1.ToTable("Users_WidgetParams");
+                            b1.HasIndex("WidgetId");
+
+                            b1.ToTable("UserHasWidgetParams");
 
                             b1.WithOwner()
                                 .HasForeignKey("UserModelId");
+
+                            b1.HasOne("Dashboard.API.Models.Table.WidgetModel", "Widget")
+                                .WithMany()
+                                .HasForeignKey("WidgetId");
+
+                            b1.Navigation("Widget");
                         });
 
                     b.Navigation("WidgetParams");
@@ -205,7 +216,7 @@ namespace Dashboard.API.Migrations
 
                             b1.HasKey("WidgetModelId", "Id");
 
-                            b1.ToTable("Widgets_DefaultParams");
+                            b1.ToTable("WidgetHasParams");
 
                             b1.WithOwner()
                                 .HasForeignKey("WidgetModelId");

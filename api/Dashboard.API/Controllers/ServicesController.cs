@@ -1,26 +1,36 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using Dashboard.API.Attributes;
 using Dashboard.API.Constants;
+using Dashboard.API.Exceptions.Http;
 using Dashboard.API.Models.Response;
 using Dashboard.API.Models.Table;
+using Dashboard.API.Repositories;
+using Dashboard.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Dashboard.API.Controllers
 {
     public class ServicesController : ControllerBase
     {
+        private readonly DatabaseRepository _database;
+
+        public ServicesController(DatabaseRepository database)
+        {
+            _database = database;
+        }
+
         [HttpGet]
         [Route(RoutesConstants.Services.GetServices)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public JsonResult GetServices()
         {
-            // TODO: get a real list of services
-
             return new ResponseModel<List<ServiceModel>> {
-                Data = new List<ServiceModel>()
+                Data = _database.Services.AsQueryable().ToList()
             };
         }
 
@@ -29,10 +39,24 @@ namespace Dashboard.API.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public JsonResult GetMyService()
         {
-            // TODO: get a real list of services used by the user
+            var userId = AuthService.GetUserIdFromPrincipal(User);
+
+            if (userId == null)
+                throw new UnauthorizedHttpException();
+
+            var user = _database.Users
+                .Include(model => model.Services)
+                .FirstOrDefault(model => model.Id == userId);
+
+            if (user == null)
+                throw new NotFoundHttpException();
+
+            List<ServiceModel> services = new List<ServiceModel>();
+            if (user.Services != null)
+                services.AddRange(user.Services.Select(userService => userService.Service!));
 
             return new ResponseModel<List<ServiceModel>> {
-                Data = new List<ServiceModel>()
+                Data = services
             };
         }
 
@@ -44,13 +68,14 @@ namespace Dashboard.API.Controllers
             [FromRoute] [Required] [Range(1, 2147483647)] int? serviceId
         )
         {
+            var service = _database.Services.FirstOrDefault(model => model.Id == serviceId);
+
+            if (service == null)
+                throw new NotFoundHttpException();
+
             return new ResponseModel<ServiceModel> {
-                Data = new ServiceModel {
-                    Id = 0,
-                    Name = "" // TODO: get the real associated service
-                }
+                Data = service
             };
-            return StatusModel.Failed("error message");
         }
 
         [HttpPost]

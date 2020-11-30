@@ -1,9 +1,11 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 namespace Dashboard.API.Models.Table.Owned
 {
     [Owned]
+    [Table("WidgetHasParams")]
     public class WidgetParamModel
     {
         [JsonProperty("name")]

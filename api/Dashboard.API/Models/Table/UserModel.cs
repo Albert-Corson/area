@@ -29,6 +29,6 @@ namespace Dashboard.API.Models.Table
         public ICollection<UserServiceModel>? Services { get; set; }
 
         [JsonIgnore]
-        public ICollection<WidgetParamModel>? WidgetParams { get; set; }
+        public ICollection<UserWidgetParamModel>? WidgetParams { get; set; }
     }
 }

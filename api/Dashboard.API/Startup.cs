@@ -40,13 +40,13 @@ namespace Dashboard.API
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(config => { config.TokenValidationParameters = tokenValidationParameters; });
 
-            services.AddDbContext<DatabaseRepository>(builder => {
+            services.AddDbContext<DatabaseRepository>(options => {
                 string connectionString = $"Host={_configuration[PostgresConstants.HostKeyName] ?? "localhost"};" +
                                           $"Port={_configuration[PostgresConstants.PortKeyName] ?? "5432"};" +
                                           $"Username={_configuration[PostgresConstants.UserKeyName] ?? "postgres"};" +
                                           $"Password={_configuration[PostgresConstants.PasswdKeyName] ?? "postgres"};" +
                                           $"Database={_configuration[PostgresConstants.DbKeyName] ?? "dashboard"};";
-                builder.UseNpgsql(connectionString);
+                options.UseNpgsql(connectionString);
             });
 
             services.AddSingleton(_configuration);
@@ -68,6 +68,8 @@ namespace Dashboard.API
             app.UseAuthorization();
 
             app.UseMiddleware<HttpExceptionHandlingMiddleware>();
+
+            app.UseMiddleware<AuthorizationMiddleware>();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }

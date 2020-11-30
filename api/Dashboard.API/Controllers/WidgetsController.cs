@@ -6,7 +6,9 @@ using Dashboard.API.Constants;
 using Dashboard.API.Exceptions.Http;
 using Dashboard.API.Models.Response;
 using Dashboard.API.Models.Table;
+using Dashboard.API.Models.Table.ManyToMany;
 using Dashboard.API.Repositories;
+using Dashboard.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -35,7 +37,11 @@ namespace Dashboard.API.Controllers
 
             if (serviceId != null) {
                 var service = _database.Services
-                    .Include(model => model.Widgets!.Select(widgetModel => widgetModel.DefaultParams))
+                    .Include(model => model.Widgets!
+                        .Select(widgetModel => new {
+                            widgetModel.Service,
+                            widgetModel.DefaultParams
+                        }))
                     .FirstOrDefault(model => model.Id == serviceId);
 
                 if (service?.Id == null)
@@ -44,10 +50,11 @@ namespace Dashboard.API.Controllers
                 widgets = service.Widgets?.ToList() ?? new List<WidgetModel>();
             } else {
                 widgets = _database.Widgets
-                    .Include(model => model.DefaultParams)
                     .Include(model => model.Service)
+                    .Include(model => model.DefaultParams)
                     .AsQueryable().ToList();
             }
+
             return new ResponseModel<List<WidgetModel>> {
                 Data = widgets.ToList()
             };
@@ -60,11 +67,30 @@ namespace Dashboard.API.Controllers
             [FromQuery] [Range(1, 2147483647)] int? serviceId
         )
         {
-            // TODO: get the widgets associated to the current user and sort by serviceId
-            var widgets = _database.Widgets.AsQueryable();
+            var userId = AuthService.GetUserIdFromPrincipal(User);
 
-            return new ResponseModel<List<WidgetModel>> {
-                Data = widgets.ToList()
+            if (userId == null)
+                throw new UnauthorizedHttpException();
+
+            var userToWidgets = _database.Users
+                .Include(user => user.Widgets).ThenInclude(userWidget => userWidget.Widget).ThenInclude(widget => widget.Service)
+                .Include(user => user.Widgets).ThenInclude(userWidget => userWidget.Widget).ThenInclude(widget => widget.DefaultParams)
+                .FirstOrDefault(model => model.Id == userId)
+                ?.Widgets;
+
+            List<WidgetModel?> widgets;
+            if (serviceId != null && userToWidgets != null) {
+                widgets = userToWidgets
+                    .Where(model => model.Widget!.ServiceId == serviceId)
+                    .Select(model => model.Widget).ToList();
+            } else if (userToWidgets != null) {
+                widgets = userToWidgets.Select(model => model.Widget).ToList();
+            } else {
+                widgets = new List<WidgetModel?>();
+            }
+
+            return new ResponseModel<List<WidgetModel?>> {
+                Data = widgets
             };
         }
 
@@ -89,10 +115,32 @@ namespace Dashboard.API.Controllers
             [FromRoute] [Required] [Range(1, 2147483647)] int? widgetId
         )
         {
-            // TODO: Unsubscribe use from widget
+            var userId = AuthService.GetUserIdFromPrincipal(User);
+            if (userId == null)
+                throw new UnauthorizedHttpException();
+
+
+            var user = _database.Users
+                .Include(model => model.WidgetParams)
+                .FirstOrDefault(model => model.Id == userId);
+            if (user == null)
+                throw new NotFoundHttpException("This access token may belong to a deleted user");
+
+            _database.Remove(new UserWidgetModel {
+                UserId = userId,
+                WidgetId = widgetId
+            });
+
+            var userWidgetParams = user.WidgetParams?.Where(model => model.WidgetId == widgetId);
+            if (userWidgetParams != null) {
+                foreach (var param in userWidgetParams) {
+                    _database.Remove(param);
+                }
+            }
+
+            _database.SaveChanges();
 
             return StatusModel.Success();
-            return StatusModel.Failed("Not subscribed");
         }
 
         [HttpPost]
@@ -103,10 +151,27 @@ namespace Dashboard.API.Controllers
             [FromRoute] [Required] [Range(1, 2147483647)] int? widgetId
         )
         {
-            // TODO: subscribe user to widget
+            var userId = AuthService.GetUserIdFromPrincipal(User);
+            if (userId == null)
+                throw new UnauthorizedHttpException();
+
+            var widget = _database.Widgets.FirstOrDefault(model => model.Id == widgetId);
+            if (widget == null)
+                throw new NotFoundHttpException();
+
+            var user = _database.Users.First(model => model.Id == userId);
+            if (user == null)
+                throw new NotFoundHttpException("This access token may belong to a deleted user");
+
+            user.Widgets ??= new List<UserWidgetModel>();
+
+            user.Widgets.Add(new UserWidgetModel {
+                UserId = userId,
+                WidgetId = widgetId
+            });
+            _database.SaveChanges();
 
             return StatusModel.Success();
-            return StatusModel.Failed("error message");
         }
     }
 }

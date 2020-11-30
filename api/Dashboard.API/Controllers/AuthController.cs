@@ -59,7 +59,7 @@ namespace Dashboard.API.Controllers
             var userId = _service.GetUserIdFromRefreshToken(body.RefreshToken!);
 
             if (userId == null)
-                throw new UnauthorizedHttpException("Invalid refresh token");
+                throw new UnauthorizedHttpException();
 
             return new ResponseModel<UserTokenModel> {
                 Data = {

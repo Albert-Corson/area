@@ -12,22 +12,32 @@ namespace Dashboard.API.Services
 {
     public class AuthService
     {
+        private const string ClaimTypeUserId = "uid";
         private const string Algorithm = SecurityAlgorithms.HmacSha256;
         private readonly IConfiguration _configuration;
         private readonly TokenValidationParameters _validationParameters;
-        private readonly JwtSecurityTokenHandler _tokenHandler = new JwtSecurityTokenHandler();
 
         public AuthService(IConfiguration configuration, TokenValidationParameters validationParameters)
         {
             _configuration = configuration;
             _validationParameters = validationParameters;
-            _tokenHandler.InboundClaimTypeMap.Clear();
+        }
+
+        public static int? GetUserIdFromPrincipal(ClaimsPrincipal principal)
+        {
+            var userIdClaim = principal.FindFirst(claim => claim.Type == ClaimTypeUserId);
+
+            if (userIdClaim == null)
+                return null;
+            if (!int.TryParse(userIdClaim.Value, out var userId))
+                return null;
+            return userId;
         }
 
         public string GenerateAccessToken(int userId)
         {
             return GenerateToken(DateTime.Now.AddTicks(JwtConstants.AccessTokenLifespan), new[] {
-                new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
+                new Claim(ClaimTypeUserId, userId.ToString()),
                 new Claim(JwtRegisteredClaimNames.AuthTime, DateTime.Now.Ticks.ToString()),
                 new Claim(JwtRegisteredClaimNames.Typ, "access_token"),
             });
@@ -36,7 +46,7 @@ namespace Dashboard.API.Services
         public string GenerateRefreshToken(int userId)
         {
             return GenerateToken(DateTime.Now.AddTicks(JwtConstants.RefreshTokenLifespan), new[] {
-                new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
+                new Claim(ClaimTypeUserId, userId.ToString()),
                 new Claim(JwtRegisteredClaimNames.AuthTime, DateTime.Now.Ticks.ToString()),
                 new Claim(JwtRegisteredClaimNames.Typ, "refresh_token"),
             });
@@ -58,7 +68,6 @@ namespace Dashboard.API.Services
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-
         public int? GetUserIdFromRefreshToken(string refreshToken)
         {
             var claimsPrincipal = GetPrincipalFromToken(refreshToken);
@@ -67,7 +76,7 @@ namespace Dashboard.API.Services
                 return null;
             try {
                 var typ = claimsPrincipal.Claims.First(claim => claim.Type == JwtRegisteredClaimNames.Typ);
-                var nameId = claimsPrincipal.Claims.First(claim => claim.Type == JwtRegisteredClaimNames.Sub);
+                var nameId = claimsPrincipal.Claims.First(claim => claim.Type == ClaimTypeUserId);
                 if (typ.Value != "refresh_token" || nameId == null)
                     return null;
                 return int.Parse(nameId.Value);
@@ -79,7 +88,7 @@ namespace Dashboard.API.Services
         private ClaimsPrincipal? GetPrincipalFromToken(string token)
         {
             try {
-                var principal = _tokenHandler.ValidateToken(token, _validationParameters, out var validatedToken);
+                var principal = new JwtSecurityTokenHandler().ValidateToken(token, _validationParameters, out var validatedToken);
                 return !IsJwtWithValidSecurityAlgorithm(validatedToken) ? null : principal;
             } catch {
                 return null;

@@ -57,28 +57,6 @@ namespace Dashboard.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Users_WidgetParams",
-                columns: table => new
-                {
-                    UserModelId = table.Column<int>(type: "integer", nullable: false),
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: true),
-                    Type = table.Column<string>(type: "text", nullable: true),
-                    Value = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Users_WidgetParams", x => new { x.UserModelId, x.Id });
-                    table.ForeignKey(
-                        name: "FK_Users_WidgetParams_Users_UserModelId",
-                        column: x => x.UserModelId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "UsersToServices",
                 columns: table => new
                 {
@@ -100,6 +78,35 @@ namespace Dashboard.API.Migrations
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserHasWidgetParams",
+                columns: table => new
+                {
+                    UserModelId = table.Column<int>(type: "integer", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    WidgetId = table.Column<int>(type: "integer", nullable: true),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Type = table.Column<string>(type: "text", nullable: true),
+                    Value = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserHasWidgetParams", x => new { x.UserModelId, x.Id });
+                    table.ForeignKey(
+                        name: "FK_UserHasWidgetParams_Users_UserModelId",
+                        column: x => x.UserModelId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserHasWidgetParams_Widgets_WidgetId",
+                        column: x => x.WidgetId,
+                        principalTable: "Widgets",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -127,7 +134,7 @@ namespace Dashboard.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Widgets_DefaultParams",
+                name: "WidgetHasParams",
                 columns: table => new
                 {
                     WidgetModelId = table.Column<int>(type: "integer", nullable: false),
@@ -139,14 +146,19 @@ namespace Dashboard.API.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Widgets_DefaultParams", x => new { x.WidgetModelId, x.Id });
+                    table.PrimaryKey("PK_WidgetHasParams", x => new { x.WidgetModelId, x.Id });
                     table.ForeignKey(
-                        name: "FK_Widgets_DefaultParams_Widgets_WidgetModelId",
+                        name: "FK_WidgetHasParams_Widgets_WidgetModelId",
                         column: x => x.WidgetModelId,
                         principalTable: "Widgets",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserHasWidgetParams_WidgetId",
+                table: "UserHasWidgetParams",
+                column: "WidgetId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UsersToServices_ServiceId",
@@ -167,7 +179,7 @@ namespace Dashboard.API.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Users_WidgetParams");
+                name: "UserHasWidgetParams");
 
             migrationBuilder.DropTable(
                 name: "UsersToServices");
@@ -176,7 +188,7 @@ namespace Dashboard.API.Migrations
                 name: "UsersToWidgets");
 
             migrationBuilder.DropTable(
-                name: "Widgets_DefaultParams");
+                name: "WidgetHasParams");
 
             migrationBuilder.DropTable(
                 name: "Users");
