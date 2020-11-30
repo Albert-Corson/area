@@ -1,10 +1,12 @@
-using System;
 using System.Text;
-using Dashboard.API.Middlewares;
 using Dashboard.API.Constants;
+using Dashboard.API.Middlewares;
+using Dashboard.API.Repositories;
+using Dashboard.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -13,44 +15,61 @@ namespace Dashboard.API
 {
     public class Startup
     {
+        private readonly IConfiguration _configuration;
+
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            _configuration = configuration;
         }
-
-        public static IConfiguration Configuration { get; private set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services
-                .AddControllers()
-                .AddNewtonsoftJson();
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration[JwtConstants.SecretKeyName]));
+            var tokenValidationParameters = new TokenValidationParameters {
+                ValidIssuer = _configuration[JwtConstants.ValidIssuer],
+                ValidAudience = _configuration[JwtConstants.ValidAudience],
+                IssuerSigningKey = key,
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true
+            };
 
             services
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, config => {
-                    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration[AppConstants.SecretKeyName]));
+                .AddJwtBearer(config => { config.TokenValidationParameters = tokenValidationParameters; });
 
-                    config.TokenValidationParameters = new TokenValidationParameters {
-                        ClockSkew = TimeSpan.Zero,
-                        ValidIssuer = Configuration[AppConstants.ValidIssuer],
-                        ValidAudience = Configuration[AppConstants.ValidAudience],
-                        IssuerSigningKey = key
-                    };
-                });
+            services.AddDbContext<DatabaseRepository>(options => {
+                string connectionString = $"Host={_configuration[PostgresConstants.HostKeyName] ?? "localhost"};" +
+                                          $"Port={_configuration[PostgresConstants.PortKeyName] ?? "5432"};" +
+                                          $"Username={_configuration[PostgresConstants.UserKeyName] ?? "postgres"};" +
+                                          $"Password={_configuration[PostgresConstants.PasswdKeyName] ?? "postgres"};" +
+                                          $"Database={_configuration[PostgresConstants.DbKeyName] ?? "dashboard"};";
+                options.UseNpgsql(connectionString);
+            });
+
+            services.AddSingleton(_configuration);
+            services.AddSingleton(tokenValidationParameters);
+            services.AddSingleton<AuthService>();
+
+            services
+                .AddControllers()
+                .AddNewtonsoftJson();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseStatusCodePagesWithReExecute("/Error");
+            app.UseStatusCodePagesWithReExecute(RoutesConstants.Default.Error);
 
             app.UseRouting();
 
             app.UseAuthorization();
 
             app.UseMiddleware<HttpExceptionHandlingMiddleware>();
+
+            app.UseMiddleware<AuthorizationMiddleware>();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }

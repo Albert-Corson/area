@@ -33,7 +33,6 @@ services:
       - db-tier
     volumes:
       - db-data:/var/lib/postgresql/data
-      - ./dashboard.sql:/docker-entrypoint-initdb.d/dashboard.sql
     ports:
       - 5432:5432
 
