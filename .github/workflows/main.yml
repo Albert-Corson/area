@@ -23,7 +23,7 @@ jobs:
       - shell: bash
         run: git remote add epitech git@github.com:EpitechIT2020/B-DEV-500-BDX-5-1-cardgames-arthur.lemeux.git
       - shell: bash
-        run: git push --force-with-lease epitech ${{ steps.extract_branch.outputs.branch }}
+        run: git push --force epitech
 
   push-albert-and-mathias:
     name: Push to Mathias and Albert's repository
@@ -45,4 +45,4 @@ jobs:
       - shell: bash
         run: git remote add epitech git@github.com:EpitechIT2020/B-DEV-500-BDX-5-1-cardgames-albert.corson.git
       - shell: bash
-        run: git push --force-with-lease epitech ${{ steps.extract_branch.outputs.branch }}
+        run: git push --force epitech
