@@ -9,9 +9,9 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'nuxt-property-decorator'
-import DashboardNavBar from "../components/navbar/NavBar.vue"
-import DashboardFooter from "../components/footer/Footer.vue"
-import DashboardHeader from "../components/header/Header.vue"
+import DashboardNavBar from "~/components/navbar/NavBar.vue"
+import DashboardFooter from "~/components/footer/Footer.vue"
+import DashboardHeader from "~/components/header/Header.vue"
 
 @Component({
   name: 'DefaultLayout',
@@ -33,6 +33,7 @@ export default class DefaultLayout extends Vue {
   --focus-color: #2eb398;
   --active-color: #E4E4E4;
   --inactive-color: #474747;
+  --active-filter-color : invert(100%) sepia(0%) saturate(7495%) hue-rotate(273deg) brightness(87%) contrast(106%); 
 }
 
 /* todo create image that follow cursor */
@@ -58,7 +59,7 @@ body {
   width: 100vw;
   display: grid;
   grid-template-columns: 0.75fr 5fr;
-  grid-template-rows: 0.75fr 10fr 0.75fr;
+  grid-template-rows: 1fr 10fr 0.75fr;
   grid-gap: 0px 0px;
   grid-template-areas:
     "header header"

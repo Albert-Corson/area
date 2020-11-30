@@ -40,17 +40,17 @@ export default class NavBar extends Vue {
     {
       icon: "/svg/services.svg",
       title: "Services",
-      to: "/"
+      to: "/services"
     },
     {
       icon: "/svg/widgets.svg",
       title: "Widgets",
-      to: "/"
+      to: "/widgets"
     },
     {
       icon: "/svg/profil.svg",
       title: "Profil",
-      to: "/about"
+      to: "/"
     }
   ]
 
