@@ -62,6 +62,16 @@ components:
         type: integer
         minimum: 1
         maximum: 2147483647
+    serviceIdInQuery:
+      in: query
+      name: serviceId
+      description: The service ID to get the widgets from. If unspecified, get all widgets
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 2147483647
+
   responses:
     UserTokensResponse:
       description: The users' access and refresh token
@@ -69,8 +79,6 @@ components:
         application/json:
           schema:
             type: object
-            required:
-              - data
             properties:
               data:
                 $ref: "#/components/schemas/UserTokens"
@@ -98,7 +106,19 @@ components:
                 items:
                   allOf:
                     - $ref: "#/components/schemas/Widget"
-                    - $ref: '#/components/schemas/WidgetDetails'
+            allOf:
+              - $ref: "#/components/schemas/Status"
+    ServiceListResponse:
+      description: A list of services
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                items:
+                  allOf:
+                    - $ref: "#/components/schemas/Service"
             allOf:
               - $ref: "#/components/schemas/Status"
     EmptyConfirmationResponse:
@@ -172,81 +192,43 @@ components:
           maximum: 2147483647
         name:
           type: string
+    WidgetParamList:
+      additionalProperties: false
+      description: Indicates the list of parameters to configure this Widget
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+            description: Indicates the identifier of this parameter
+          type:
+            type: string
+            description: "Indicates the type of this parameter. Supported types are: integer, string"
     Widget:
       additionalProperties: false
       type: object
       required:
         - id
         - name
+        - requires_auth
         - service
+        - params
       properties:
         id:
           type: integer
+          description: The unique ID of the widget
           minimum: 1
           maximum: 2147483647
         name:
           type: string
+          description: The name of the widget
+        requires_auth:
+          type: boolean
+          description: Indicates whether or not this widget needs authentication to be used or not
         service:
           $ref: "#/components/schemas/Service"
-    Param:
-      type: object
-      required:
-        - name
-        - type
-      properties:
-        name:
-          type: string
-          description: Indicates the identifier of this parameter
-        type:
-          type: string
-          description: "Indicates the type of this parameter. Supported types are: integer, string"
-    WidgetDetails:
-      type: object
-      required:
-        - name
-        - params
-      properties:
-        name:
-          type: string
-          description: Indicates the identifier of this Widget
         params:
-          description: Indicates the list of parameters to configure this Widget
-          items:
-            $ref: '#/components/schemas/Param'
-    ServiceDetails:
-      type: object
-      required:
-        - name
-        - widgets
-      properties:
-        name:
-          type: string
-          description: Indicates the name of the Service
-        widgets:
-          description: Indicates the list of Widgets supported by this Service
-          items:
-            $ref: '#/components/schemas/WidgetDetails'
-    Server:
-      type: object
-      required:
-        - current_time
-        - services
-      properties:
-        current_time:
-          type: integer
-          description: Indicates the server time in the Epoch Unix Time Stamp format
-        services:
-          description: Indicates the list of Services supported by the server
-          items:
-            $ref: '#/components/schemas/ServiceDetails'
-    Client:
-      type: object
-      required:
-        - host
-      properties:
-        host:
-          type: string
-          description: Indicates the IP address of the client performing the HTTP request
+          $ref: '#/components/schemas/WidgetParamList'
     About.json:
       type: object
       required:
@@ -254,14 +236,51 @@ components:
         - server
       properties:
         client:
-          $ref: '#/components/schemas/Client'
+          type: object
+          required:
+            - host
+          properties:
+            host:
+              type: string
+              description: Indicates the IP address of the client performing the HTTP request
         server:
-          $ref: '#/components/schemas/Server'
+          type: object
+          required:
+            - current_time
+            - services
+          properties:
+            current_time:
+              type: integer
+              description: Indicates the server time in the Epoch Unix Time Stamp format
+            services:
+              description: Indicates the list of Services supported by the server
+              items:
+                type: object
+                required:
+                  - name
+                  - widgets
+                properties:
+                  name:
+                    type: string
+                    description: Indicates the name of the Service
+                  widgets:
+                    description: Indicates the list of Widgets supported by this Service
+                    items:
+                      type: object
+                      required:
+                        - name
+                        - params
+                      properties:
+                        name:
+                          type: string
+                          description: Indicates the identifier of this Widget
+                        params:
+                          $ref: '#/components/schemas/WidgetParamList'
 
 paths:
   /about.json:
     get:
-      operationId: "About.json"
+      operationId: About.json
       summary: Describes the APIs' available content
       security: []
       responses:
@@ -273,7 +292,7 @@ paths:
                 $ref: '#/components/schemas/About.json'
   /auth/token:
     post:
-      operationId: Sign in
+      operationId: SignIn
       summary: Ask for for a users' access token and refresh token
       tags:
         - auth
@@ -289,7 +308,7 @@ paths:
           $ref: "#/components/responses/UserTokensResponse"
   /auth/refresh:
     post:
-      operationId: Refresh access token
+      operationId: RefreshAccessToken
       summary: Ask for new refresh and access tokens
       tags:
         - auth
@@ -310,7 +329,7 @@ paths:
           $ref: "#/components/responses/UserTokensResponse"
   /auth/revoke:
     delete:
-      operationId: Revoke account access
+      operationId: RevokeUserTokens
       summary: Revoke a users' access and refresh tokens
       tags:
         - auth
@@ -319,7 +338,7 @@ paths:
           $ref: "#/components/responses/EmptyConfirmationResponse"
   /users:
     post:
-      operationId: Sign up
+      operationId: SignUp
       summary: Create an account
       tags:
         - user
@@ -342,7 +361,7 @@ paths:
           $ref: "#/components/responses/EmptyConfirmationResponse"
   /users/me:
     get:
-      operationId: Get user information
+      operationId: GetMyUser
       summary: Get the current users' information
       tags:
         - user
@@ -353,7 +372,7 @@ paths:
     parameters:
       - $ref: "#/components/parameters/userId"
     get:
-      operationId: Get user
+      operationId: GetUser
       summary: Get a users' information by his ID
       tags:
         - user
@@ -361,7 +380,7 @@ paths:
         default:
           $ref: '#/components/responses/UserInformationResponse'
     delete:
-      operationId: Delete account
+      operationId: DeleteUser
       summary: Delete a users' account
       tags:
         - user
@@ -372,28 +391,23 @@ paths:
           $ref: "#/components/responses/EmptyConfirmationResponse"
   /widgets:
     get:
-      operationId: Get widgets
+      operationId: GetWidgets
       summary: Get a list of widgets
       tags:
         - widget
       parameters:
-        - in: query
-          name: serviceId
-          description: The service ID to get the widgets from. If unspecified, get all widgets
-          required: false
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 2147483647
+        - $ref: '#/components/parameters/serviceIdInQuery'
       responses:
         default:
           $ref: '#/components/responses/WidgetListResponse'
   /widgets/me:
     get:
-      operationId: Get subscribed widgets
+      operationId: GetMyWidgets
       summary: Get the widgets that the current user is subscribed to
       tags:
         - widget
+      parameters:
+        - $ref: '#/components/parameters/serviceIdInQuery'
       responses:
         default:
           $ref: '#/components/responses/WidgetListResponse'
@@ -401,7 +415,7 @@ paths:
     parameters:
       - $ref: "#/components/parameters/widgetId"
     get:
-      operationId: Fetch widget data
+      operationId: CallWidget
       summary: Fetch data from a widget according to the query parameters and user specific default input values
       tags:
         - widget
@@ -426,7 +440,7 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/Status"
     post:
-      operationId: Subscribe to widget
+      operationId: SubscribeWidget
       summary: Subscribe the user to a widget
       tags:
         - widget
@@ -440,7 +454,7 @@ paths:
         default:
           $ref: "#/components/responses/EmptyConfirmationResponse"
     delete:
-      operationId: Unsubscribe from widget
+      operationId: UnsubscribeWidget
       summary: Unsubscribe the user from a widget
       tags:
         - widget
@@ -449,28 +463,27 @@ paths:
           $ref: "#/components/responses/EmptyConfirmationResponse"
   /services:
     get:
-      operationId: List services
+      operationId: GetServices
       summary: List all existing services
       tags:
         - service
       responses:
         default:
-          description: ""
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    items:
-                      $ref: "#/components/schemas/Service"
-                allOf:
-                  - $ref: "#/components/schemas/Status"
+          $ref: '#/components/responses/ServiceListResponse'
+  /services/me:
+    get:
+      operationId: GetMyServices
+      summary: List services  where the user has widgets
+      tags:
+        - service
+      responses:
+        default:
+          $ref: '#/components/responses/ServiceListResponse'
   /services/{serviceId}:
     parameters:
       - $ref: "#/components/parameters/serviceId"
     get:
-      operationId: Get service
+      operationId: GetService
       summary: Get a service by its ID
       tags:
         - service
@@ -487,7 +500,7 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/Status"
     post:
-      operationId: Login to service
+      operationId: SignInService
       summary: Login to a service
       tags:
         - service
@@ -502,7 +515,7 @@ paths:
         default:
           $ref: "#/components/responses/EmptyConfirmationResponse"
     delete:
-      operationId: Logout from service
+      operationId: SignOutService
       summary: Logout from a service
       tags:
         - service
