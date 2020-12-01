@@ -19,7 +19,7 @@ namespace Dashboard.API.Middlewares
 
         public async Task InvokeAsync(HttpContext context, DatabaseRepository database)
         {
-            if (context.User != null) {
+            if (context.Request.Headers.ContainsKey("Authorization") && context.User != null) {
                 var userId = AuthService.GetUserIdFromPrincipal(context.User);
 
                 if (userId == null) {
