@@ -1,9 +1,11 @@
 using System;
 using System.Linq;
+using System.Net;
 using Dashboard.API.Constants;
 using Dashboard.API.Exceptions.Http;
 using Dashboard.API.Models.Response;
 using Dashboard.API.Repositories;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,6 +23,8 @@ namespace Dashboard.API.Controllers
         [Route(RoutesConstants.Default.Error)]
         public JsonResult Error()
         {
+            if (Response.StatusCode == (int) HttpStatusCode.Unauthorized)
+                throw new UnauthorizedHttpException();
             throw new NotFoundHttpException();
         }
 
