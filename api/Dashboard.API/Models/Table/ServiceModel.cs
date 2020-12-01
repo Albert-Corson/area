@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using Dashboard.API.Models.Table.ManyToMany;
 using Newtonsoft.Json;
 
 namespace Dashboard.API.Models.Table
@@ -17,8 +16,5 @@ namespace Dashboard.API.Models.Table
 
         [JsonIgnore]
         public ICollection<WidgetModel>? Widgets { get; set; }
-
-        [JsonIgnore]
-        public ICollection<UserServiceModel>? Users { get; set; }
     }
 }

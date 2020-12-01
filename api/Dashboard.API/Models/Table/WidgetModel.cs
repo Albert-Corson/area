@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 
 namespace Dashboard.API.Models.Table
 {
+    [Table("Widgets")]
     public class WidgetModel
     {
         [ForeignKey("WidgetId")]
@@ -15,6 +16,9 @@ namespace Dashboard.API.Models.Table
 
         [JsonProperty("name")]
         public string? Name { get; set; }
+
+        [JsonProperty("description")]
+        public string? Description { get; set; }
 
         [JsonProperty("requires_auth")]
         public bool? RequiresAuth { get; set; }

@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Dashboard.API.Migrations
 {
     [DbContext(typeof(DatabaseRepository))]
-    [Migration("20201130003339_InitialCreate")]
+    [Migration("20201201000043_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -20,21 +20,6 @@ namespace Dashboard.API.Migrations
                 .UseIdentityByDefaultColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("ProductVersion", "5.0.0");
-
-            modelBuilder.Entity("Dashboard.API.Models.Table.ManyToMany.UserServiceModel", b =>
-                {
-                    b.Property<int?>("UserId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("ServiceId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("UserId", "ServiceId");
-
-                    b.HasIndex("ServiceId");
-
-                    b.ToTable("UsersToServices");
-                });
 
             modelBuilder.Entity("Dashboard.API.Models.Table.ManyToMany.UserWidgetModel", b =>
                 {
@@ -94,6 +79,9 @@ namespace Dashboard.API.Migrations
                         .HasColumnType("integer")
                         .UseIdentityByDefaultColumn();
 
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
@@ -108,25 +96,6 @@ namespace Dashboard.API.Migrations
                     b.HasIndex("ServiceId");
 
                     b.ToTable("Widgets");
-                });
-
-            modelBuilder.Entity("Dashboard.API.Models.Table.ManyToMany.UserServiceModel", b =>
-                {
-                    b.HasOne("Dashboard.API.Models.Table.ServiceModel", "Service")
-                        .WithMany("Users")
-                        .HasForeignKey("ServiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Dashboard.API.Models.Table.UserModel", "User")
-                        .WithMany("Services")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Service");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Dashboard.API.Models.Table.ManyToMany.UserWidgetModel", b =>
@@ -150,6 +119,44 @@ namespace Dashboard.API.Migrations
 
             modelBuilder.Entity("Dashboard.API.Models.Table.UserModel", b =>
                 {
+                    b.OwnsMany("Dashboard.API.Models.Table.Owned.UserServiceTokensModel", "ServiceTokens", b1 =>
+                        {
+                            b1.Property<int>("UserModelId")
+                                .HasColumnType("integer");
+
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("integer")
+                                .UseIdentityByDefaultColumn();
+
+                            b1.Property<string>("AccessToken")
+                                .HasColumnType("text");
+
+                            b1.Property<string>("RefreshToken")
+                                .HasColumnType("text");
+
+                            b1.Property<string>("Scheme")
+                                .HasColumnType("text");
+
+                            b1.Property<int?>("ServiceId")
+                                .HasColumnType("integer");
+
+                            b1.HasKey("UserModelId", "Id");
+
+                            b1.HasIndex("ServiceId");
+
+                            b1.ToTable("UserHasServiceTokens");
+
+                            b1.HasOne("Dashboard.API.Models.Table.ServiceModel", "Service")
+                                .WithMany()
+                                .HasForeignKey("ServiceId");
+
+                            b1.WithOwner()
+                                .HasForeignKey("UserModelId");
+
+                            b1.Navigation("Service");
+                        });
+
                     b.OwnsMany("Dashboard.API.Models.Table.Owned.UserWidgetParamModel", "WidgetParams", b1 =>
                         {
                             b1.Property<int>("UserModelId")
@@ -188,6 +195,8 @@ namespace Dashboard.API.Migrations
                             b1.Navigation("Widget");
                         });
 
+                    b.Navigation("ServiceTokens");
+
                     b.Navigation("WidgetParams");
                 });
 
@@ -218,7 +227,7 @@ namespace Dashboard.API.Migrations
 
                             b1.HasKey("WidgetModelId", "Id");
 
-                            b1.ToTable("WidgetHasParams");
+                            b1.ToTable("WidgetHasDefaultParams");
 
                             b1.WithOwner()
                                 .HasForeignKey("WidgetModelId");
@@ -231,15 +240,11 @@ namespace Dashboard.API.Migrations
 
             modelBuilder.Entity("Dashboard.API.Models.Table.ServiceModel", b =>
                 {
-                    b.Navigation("Users");
-
                     b.Navigation("Widgets");
                 });
 
             modelBuilder.Entity("Dashboard.API.Models.Table.UserModel", b =>
                 {
-                    b.Navigation("Services");
-
                     b.Navigation("Widgets");
                 });
 

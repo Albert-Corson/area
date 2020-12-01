@@ -33,21 +33,10 @@ namespace Dashboard.API.Repositories
                     .HasForeignKey(userWidget => userWidget.WidgetId);
             }
 
-            // Many-to-many between users and services
+            // A user owns many service tokens
             {
-                modelBuilder.Entity<UserServiceModel>()
-                    .HasKey(model => new {
-                        model.UserId,
-                        model.ServiceId
-                    });
-                modelBuilder.Entity<UserServiceModel>()
-                    .HasOne(userWidgetModel => userWidgetModel.User)
-                    .WithMany(userModel => userModel!.Services)
-                    .HasForeignKey(userWidgetModel => userWidgetModel.UserId);
-                modelBuilder.Entity<UserServiceModel>()
-                    .HasOne(userWidget => userWidget.Service)
-                    .WithMany(widget => widget!.Users)
-                    .HasForeignKey(userWidget => userWidget.ServiceId);
+                modelBuilder.Entity<UserModel>()
+                    .OwnsMany(model => model.ServiceTokens);
             }
 
             // A user owns many widget parameters

@@ -44,9 +44,9 @@ namespace Dashboard.API.Constants
 
             public const string GetWidgets = Base;
             public const string GetMyWidgets = Base + "/me";
-            public const string CallWidget = "/widgets/{widgetId}";
-            public const string SubscribeWidget = "/widgets/{widgetId}";
-            public const string UnsubscribeWidget = "/widgets/{widgetId}";
+            public const string CallWidget = Base + "/{widgetId}";
+            public const string SubscribeWidget = Base + "/{widgetId}";
+            public const string UnsubscribeWidget = Base + "/{widgetId}";
         }
     }
 }

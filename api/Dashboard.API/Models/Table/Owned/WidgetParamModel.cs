@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 namespace Dashboard.API.Models.Table.Owned
 {
     [Owned]
-    [Table("WidgetHasParams")]
+    [Table("WidgetHasDefaultParams")]
     public class WidgetParamModel
     {
         [JsonProperty("name")]

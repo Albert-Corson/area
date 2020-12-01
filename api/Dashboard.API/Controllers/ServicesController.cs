@@ -45,15 +45,16 @@ namespace Dashboard.API.Controllers
                 throw new UnauthorizedHttpException();
 
             var user = _database.Users
-                .Include(model => model.Services)
-                .FirstOrDefault(model => model.Id == userId);
+                    .Include(model => model.ServiceTokens)
+                    .ThenInclude(model => model.Service)
+                    .FirstOrDefault(model => model.Id == userId);
 
             if (user == null)
                 throw new NotFoundHttpException();
 
             List<ServiceModel> services = new List<ServiceModel>();
-            if (user.Services != null)
-                services.AddRange(user.Services.Select(userService => userService.Service!));
+            if (user.ServiceTokens != null)
+                services.AddRange(user.ServiceTokens.Select(tokensModel => tokensModel.Service!));
 
             return new ResponseModel<List<ServiceModel>> {
                 Data = services

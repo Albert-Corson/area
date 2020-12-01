@@ -37,11 +37,8 @@ namespace Dashboard.API.Controllers
 
             if (serviceId != null) {
                 var service = _database.Services
-                    .Include(model => model.Widgets!
-                        .Select(widgetModel => new {
-                            widgetModel.Service,
-                            widgetModel.DefaultParams
-                        }))
+                    .Include(model => model.Widgets).ThenInclude(model => model.Service)
+                    .Include(model => model.Widgets).ThenInclude(model => model.DefaultParams)
                     .FirstOrDefault(model => model.Id == serviceId);
 
                 if (service?.Id == null)
@@ -56,7 +53,7 @@ namespace Dashboard.API.Controllers
             }
 
             return new ResponseModel<List<WidgetModel>> {
-                Data = widgets.ToList()
+                Data = widgets
             };
         }
 
@@ -118,7 +115,6 @@ namespace Dashboard.API.Controllers
             var userId = AuthService.GetUserIdFromPrincipal(User);
             if (userId == null)
                 throw new UnauthorizedHttpException();
-
 
             var user = _database.Users
                 .Include(model => model.WidgetParams)
