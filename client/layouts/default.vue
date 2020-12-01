@@ -1,8 +1,8 @@
 <template>
   <div class="default">
     <dashboard-nav-bar />
-    <dashboard-header />
-    <nuxt />
+    <dashboard-header v-on:reload="reload"/>
+    <nuxt ref="page"/>
     <dashboard-footer />
   </div>
 </template>
@@ -22,7 +22,11 @@ import DashboardHeader from "~/components/header/Header.vue"
   }
 })
 export default class DefaultLayout extends Vue {
-  // data
+  // methods
+  public reload() {
+    // @ts-ignore
+    this.$refs.page?.$children?.[0]?.reload?.()
+  }
 }
 </script>
 
@@ -64,13 +68,16 @@ body {
   grid-template-areas:
     "header header"
     "nav-bar page"
-    "footer footer";
+    "footer page";
 }
 
 .page {
+  padding: 1.5rem;
   grid-area: page;
   background-color: var(--secondary-bg-color);
   border: 3px solid #2EB398;
+  border-bottom-width: 0px;
+  border-right-width: 0px;
 }
 
 </style>
