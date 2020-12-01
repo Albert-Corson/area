@@ -1,7 +1,7 @@
 <template>
   <clickable><hoverable>
     <div class="service-list-item">
-      <nuxt-link :to="`/services/${ id }`">
+      <nuxt-link :to="`/${ name }/${ id }`">
         <icon :src="icon" width="70" height="70"/>
         <div class="service-name">{{ name }}</div>
       </nuxt-link>

@@ -53,8 +53,7 @@ export default class HeaderButton extends Vue {
   }
 
   public reload() {
-    // FETCH DATA STORE
-    console.log("reload")
+    this.$emit('reload')
   }
 
 }

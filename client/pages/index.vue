@@ -14,6 +14,13 @@ import ServiceList from '~/components/services/ServiceList.vue'
   }
 })
 export default class IndexPage extends Vue {
+  //methods
+  public reload() {
+    // TODO
+    this.$toasted.info('Reload services list...')
+  }
+
+  // hooks
   mounted() {
 
   }
