@@ -1,6 +1,6 @@
 <template>
     <div class="header">
-      <header-button/>
+      <header-button v-on:reload="reload"/>
       <header-glitter/>
     </div>
 </template>
@@ -18,7 +18,10 @@ import HeaderGlitter from "~/components/header/HeaderGlitter.vue"
   }
 })
 export default class Header extends Vue {
- 
+  // methods
+  public reload() {
+    this.$emit('reload')
+  }
 }
 </script>
 
