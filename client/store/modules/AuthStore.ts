@@ -32,9 +32,10 @@ class AuthModule extends VuexModule {
 
   // actions
   @Action
-  public async getToken(username: string, password: string) {
+  public async getToken({ username, password }: { username: string, password: string }) {
     const response = await $api.auth.getToken(username, password)
     if (response.successful) {
+      Vue.toasted.success('Successfully logged in')
       this.context.commit('setToken', response.data!)
     }
   }
@@ -54,7 +55,7 @@ class AuthModule extends VuexModule {
   public async revokeToken() {
     const response = await $api.auth.revokeToken()
     if (response.successful) {
-      Vue.toasted.success('HERE WE GO')
+      // TODO
     }
   }
 
