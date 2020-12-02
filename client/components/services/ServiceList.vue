@@ -9,12 +9,11 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
-import MosaicList from '@components/MosaicList.vue'
-import ServiceListItem from '@components/services/ServiceListItem.vue'
-
-import ServiceStore from '@stores/ServiceStore'
+import MosaicList from '~/components/MosaicList.vue'
+import ServiceListItem from '~/components/services/ServiceListItem.vue'
+import ServiceModel from '~/api/models/ServiceModel'
 
 @Component({
   name: 'ServiceList',
@@ -24,15 +23,8 @@ import ServiceStore from '@stores/ServiceStore'
   }
 })
 export default class ServiceList extends Vue {
-  // computed
-  get services() {
-    return ServiceStore.services
-  }
-
-  // hooks
-  mounted() {
-    ServiceStore.fetchServices()
-  }
+  // props
+  @Prop({ required: true }) readonly services!: Array<ServiceModel>
 }
 
 </script>

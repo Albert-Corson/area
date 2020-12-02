@@ -5,6 +5,7 @@
                :id="widget.id"
                :name="widget.name"
                :service="widget.service"
+               v-on:select="select"
                />
     </mosaic-list>
   </div>
@@ -24,7 +25,13 @@ import WidgetModel from '~/api/models/WidgetModel'
   }
 })
 export default class WidgetList extends Vue {
+  // props
   @Prop({ required: true }) readonly widgets!: Array<WidgetModel>
+
+  // methods
+  public select(id: number) {
+    this.$emit('select', id)
+  }
 }
 
 </script>

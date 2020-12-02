@@ -5,12 +5,10 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator'
+import { Component, Prop, Vue } from 'nuxt-property-decorator'
 
 @Component({
   name: 'Widget',
-  components: {
-  },
   validate({ params }) {
     const id = parseInt(params.widgetId)
     return !isNaN(id)
