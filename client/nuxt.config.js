@@ -48,11 +48,18 @@ export default {
   // Modules (https://go.nuxtjs.dev/config-modules)
   modules: [
     // https://go.nuxtjs.dev/axios
+    '@nuxtjs/proxy',
     '@nuxtjs/axios'
   ],
 
+  proxy: {
+  },
+
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
-  axios: {},
+  axios: {
+    baseUrl: `http://${ process.env.API_HOST }:${ process.env.API_PORT }`,
+    progress: true
+  },
 
   // Vuetify module configuration (https://go.nuxtjs.dev/config-vuetify)
   vuetify: {
