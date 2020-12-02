@@ -1,12 +1,13 @@
 <template>
   <div class="page index">
-    <service-list/>
+    <service-list :services="services"/>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import ServiceList from '~/components/services/ServiceList.vue'
+import ServiceStore from '~/store/modules/ServiceStore'
 
 @Component({
   components: {
@@ -14,15 +15,19 @@ import ServiceList from '~/components/services/ServiceList.vue'
   }
 })
 export default class IndexPage extends Vue {
-  //methods
+  // computed
+  public get services() {
+    return ServiceStore.services
+  }
+
+  // methods
   public reload() {
-    // TODO
-    this.$toasted.info('Reload services list...')
+    ServiceStore.fetchServices()
   }
 
   // hooks
   mounted() {
-
+    this.reload()
   }
 }
 </script>

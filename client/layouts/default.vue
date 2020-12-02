@@ -60,7 +60,6 @@ body {
 .default {
   background-color: var(--main-bg-color);
   height: 100vh;
-  width: 100vw;
   display: grid;
   grid-template-columns: 0.75fr 5fr;
   grid-template-rows: 1fr 10fr 0.75fr;
@@ -72,12 +71,12 @@ body {
 }
 
 .page {
-  padding: 1.5rem;
   grid-area: page;
   background-color: var(--secondary-bg-color);
   border: 3px solid #2EB398;
   border-bottom-width: 0px;
   border-right-width: 0px;
+  overflow-y: auto;
 }
 
 </style>

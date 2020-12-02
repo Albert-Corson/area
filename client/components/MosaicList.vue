@@ -16,6 +16,7 @@ export default class MosaicList extends Vue {
   .mosaic-list {
     display: flex;
     flex-wrap: wrap;
+    padding: 1.5rem;
 
     .list-item {
       margin: .30rem;

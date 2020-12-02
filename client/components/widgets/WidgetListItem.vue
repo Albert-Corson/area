@@ -1,10 +1,8 @@
 <template>
   <clickable><hoverable>
-    <div class="widget-list-item">
-      <nuxt-link :to="`/${ service.name }/${ service.id }/${ name }/${ id }`">
-        <icon :src="icon" width="70" height="70"/>
-        <div class="widget-name">{{ name }}</div>
-      </nuxt-link>
+    <div class="widget-list-item" @click="select">
+      <icon :src="icon" width="70" height="70"/>
+      <div class="widget-name">{{ name }}</div>
     </div>
   </hoverable></clickable>
 </template>
@@ -25,12 +23,19 @@ import ServiceModel from '~/api/models/ServiceModel'
   }
 })
 export default class WidgetListItem extends Vue {
+  // props
   @Prop({ required: true }) readonly id!: number
   @Prop({ required: true }) readonly name!: string
   @Prop({ required: true }) readonly service!: ServiceModel
 
+  // computed
   get icon() {
     return '/svg/widget.svg'
+  }
+
+  // methods
+  public select() {
+    this.$emit('select', this.id)
   }
 }
 </script>
