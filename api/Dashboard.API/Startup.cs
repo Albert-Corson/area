@@ -46,7 +46,9 @@ namespace Dashboard.API
                                           $"Username={_configuration[PostgresConstants.UserKeyName] ?? "postgres"};" +
                                           $"Password={_configuration[PostgresConstants.PasswdKeyName] ?? "postgres"};" +
                                           $"Database={_configuration[PostgresConstants.DbKeyName] ?? "dashboard"};";
-                options.UseNpgsql(connectionString);
+                options.UseNpgsql(connectionString, builder => {
+                    builder.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+                });
             });
 
             services.AddSingleton(_configuration);
