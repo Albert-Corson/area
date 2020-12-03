@@ -14,7 +14,7 @@ services:
     build: ./api
     restart: on-failure
     env_file:
-     - postgres.env
+     - ./database/postgres.env
      - ./api/secret.env
     environment:
       - POSTGRES_HOST=postgres
@@ -28,11 +28,14 @@ services:
     container_name: postgres
     image: postgres:13.1-alpine
     restart: on-failure
-    env_file: ./postgres.env
+    env_file:
+      - ./database/postgres.env
     networks:
       - db-tier
     volumes:
       - db-data:/var/lib/postgresql/data
+      - ./database/sql:/src
+      - ./database/initdb.sh:/docker-entrypoint-initdb.d/initdb.sh
     ports:
       - 5432:5432
 

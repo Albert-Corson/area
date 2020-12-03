@@ -39,7 +39,7 @@ namespace Dashboard.API.Controllers
 
             var user = _database.Users.FirstOrDefault(model => model.Username == body.Username && model.Password == encryptedPasswd);
             if (user?.Id == null)
-                throw new UnauthorizedAccessException();
+                throw new UnauthorizedHttpException();
 
             return new ResponseModel<UserTokenModel> {
                 Data = {

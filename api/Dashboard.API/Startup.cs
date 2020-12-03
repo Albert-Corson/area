@@ -1,8 +1,10 @@
 using System.Text;
+using Dashboard.API.Authentication;
 using Dashboard.API.Constants;
 using Dashboard.API.Middlewares;
 using Dashboard.API.Repositories;
 using Dashboard.API.Services;
+using Dashboard.API.Services.Widgets;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -38,7 +40,9 @@ namespace Dashboard.API
 
             services
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(config => { config.TokenValidationParameters = tokenValidationParameters; });
+                .AddScheme<JwtBearerOptions, JwtAuthentication>(JwtBearerDefaults.AuthenticationScheme, options => {
+                    options.TokenValidationParameters = tokenValidationParameters;
+                });
 
             services.AddDbContext<DatabaseRepository>(options => {
                 string connectionString = $"Host={_configuration[PostgresConstants.HostKeyName] ?? "localhost"};" +
@@ -46,12 +50,17 @@ namespace Dashboard.API
                                           $"Username={_configuration[PostgresConstants.UserKeyName] ?? "postgres"};" +
                                           $"Password={_configuration[PostgresConstants.PasswdKeyName] ?? "postgres"};" +
                                           $"Database={_configuration[PostgresConstants.DbKeyName] ?? "dashboard"};";
-                options.UseNpgsql(connectionString);
+                options.UseNpgsql(connectionString, builder => {
+                    builder.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+                });
             });
 
             services.AddSingleton(_configuration);
             services.AddSingleton(tokenValidationParameters);
             services.AddSingleton<AuthService>();
+
+            services.AddScoped<ImgurGalleryWidgetService>();
+            services.AddScoped<WidgetManagerService>();
 
             services
                 .AddControllers()
@@ -78,8 +87,6 @@ namespace Dashboard.API
             app.UseCors();
 
             app.UseMiddleware<HttpExceptionHandlingMiddleware>();
-
-            app.UseMiddleware<AuthorizationMiddleware>();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
