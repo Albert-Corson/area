@@ -4,6 +4,7 @@ using Dashboard.API.Constants;
 using Dashboard.API.Middlewares;
 using Dashboard.API.Repositories;
 using Dashboard.API.Services;
+using Dashboard.API.Services.Widgets;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -57,6 +58,9 @@ namespace Dashboard.API
             services.AddSingleton(_configuration);
             services.AddSingleton(tokenValidationParameters);
             services.AddSingleton<AuthService>();
+
+            services.AddScoped<ImgurGalleryWidgetService>();
+            services.AddScoped<WidgetManagerService>();
 
             services
                 .AddControllers()

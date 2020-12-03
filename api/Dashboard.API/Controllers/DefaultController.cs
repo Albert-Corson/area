@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using Dashboard.API.Constants;
-using Dashboard.API.Exceptions.Http;
 using Dashboard.API.Models.Response;
 using Dashboard.API.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
@@ -24,9 +23,10 @@ namespace Dashboard.API.Controllers
         [Route(RoutesConstants.Default.Error)]
         public JsonResult Error()
         {
-            if (Response.StatusCode == (int) HttpStatusCode.Unauthorized)
-                throw new UnauthorizedHttpException();
-            throw new NotFoundHttpException();
+            return new StatusModel {
+                Error = ReasonPhrases.GetReasonPhrase(Response.StatusCode),
+                Successful = false
+            };
         }
 
         [Route(RoutesConstants.Default.AboutDotJson)]

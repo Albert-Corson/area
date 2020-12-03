@@ -19,10 +19,12 @@ namespace Dashboard.API.Controllers
     public class WidgetsController : ControllerBase
     {
         private readonly DatabaseRepository _database;
+        private readonly WidgetManagerService _widgetManager;
 
-        public WidgetsController(DatabaseRepository database)
+        public WidgetsController(DatabaseRepository database, WidgetManagerService widgetManager)
         {
             _database = database;
+            _widgetManager = widgetManager;
         }
 
         [HttpGet]
@@ -99,9 +101,7 @@ namespace Dashboard.API.Controllers
             [FromRoute] [Required] [Range(1, 2147483647)] int? widgetId
         )
         {
-            // TODO: get widget by id and call its API!!!
-            // Return type is widget specific
-            return StatusModel.Failed("error message");
+            return _widgetManager.CallWidgetById(HttpContext, widgetId!.Value);
         }
 
         [HttpDelete]
