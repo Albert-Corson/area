@@ -70,8 +70,8 @@ namespace Dashboard.API.Controllers
                 throw new UnauthorizedHttpException();
 
             var userToWidgets = _database.Users
-                .Include(user => user.Widgets).ThenInclude(userWidget => userWidget.Widget).ThenInclude(widget => widget.Service)
-                .Include(user => user.Widgets).ThenInclude(userWidget => userWidget.Widget).ThenInclude(widget => widget.DefaultParams)
+                .Include(user => user.Widgets).ThenInclude(userWidget => userWidget.Widget).ThenInclude(widget => widget!.Service)
+                .Include(user => user.Widgets).ThenInclude(userWidget => userWidget.Widget).ThenInclude(widget => widget!.DefaultParams)
                 .FirstOrDefault(model => model.Id == userId)
                 ?.Widgets;
 

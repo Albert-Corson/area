@@ -1,4 +1,5 @@
 using System.Text;
+using Dashboard.API.Authentication;
 using Dashboard.API.Constants;
 using Dashboard.API.Middlewares;
 using Dashboard.API.Repositories;
@@ -38,7 +39,9 @@ namespace Dashboard.API
 
             services
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(config => { config.TokenValidationParameters = tokenValidationParameters; });
+                .AddScheme<JwtBearerOptions, JwtAuthentication>(JwtBearerDefaults.AuthenticationScheme, options => {
+                    options.TokenValidationParameters = tokenValidationParameters;
+                });
 
             services.AddDbContext<DatabaseRepository>(options => {
                 string connectionString = $"Host={_configuration[PostgresConstants.HostKeyName] ?? "localhost"};" +
@@ -80,8 +83,6 @@ namespace Dashboard.API
             app.UseCors();
 
             app.UseMiddleware<HttpExceptionHandlingMiddleware>();
-
-            app.UseMiddleware<AuthorizationMiddleware>();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
