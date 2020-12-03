@@ -1,0 +1,1 @@
+INSERT INTO public."Widgets" ("Id", "Name", "Description", "RequiresAuth", "ServiceId") VALUES (1, 'Imgur public gallery', 'See Imgur''s most recent posts', false, 1);

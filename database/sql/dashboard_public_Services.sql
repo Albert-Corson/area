@@ -1,0 +1,1 @@
+INSERT INTO public."Services" ("Id", "Name") VALUES (1, 'Imgur');

@@ -1,0 +1,1 @@
+INSERT INTO public."__EFMigrationsHistory" ("MigrationId", "ProductVersion") VALUES ('20201201000043_InitialCreate', '5.0.0');
