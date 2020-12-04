@@ -78,6 +78,8 @@ namespace Dashboard.API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            InitDbContext(app);
+
             app.UseStatusCodePagesWithReExecute(RoutesConstants.Default.Error);
 
             app.UseRouting();
@@ -89,6 +91,13 @@ namespace Dashboard.API
             app.UseMiddleware<HttpExceptionHandlingMiddleware>();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+        }
+
+        private static void InitDbContext(IApplicationBuilder app)
+        {
+            var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();
+            var dbContext = serviceScope.ServiceProvider.GetService<DatabaseRepository>();
+            dbContext.Database.Migrate();
         }
     }
 }

@@ -120,8 +120,6 @@ namespace Dashboard.API.Services
                     });
                 }
             }
-
-            _database.SaveChanges();
         }
 
         private static string GetParamValueByType(StringValues value, string paramType)

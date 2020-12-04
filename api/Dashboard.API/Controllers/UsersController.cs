@@ -51,8 +51,6 @@ namespace Dashboard.API.Controllers
                 Email = body.Email
             });
 
-            _database.SaveChanges();
-
             return StatusModel.Success();
         }
 
@@ -115,7 +113,6 @@ namespace Dashboard.API.Controllers
                 throw new NotFoundHttpException();
 
             _database.Users.Remove(user);
-            _database.SaveChanges();
 
             return StatusModel.Success();
         }

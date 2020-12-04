@@ -134,8 +134,6 @@ namespace Dashboard.API.Controllers
                 }
             }
 
-            _database.SaveChanges();
-
             return StatusModel.Success();
         }
 
@@ -165,7 +163,6 @@ namespace Dashboard.API.Controllers
                 UserId = userId,
                 WidgetId = widgetId
             });
-            _database.SaveChanges();
 
             return StatusModel.Success();
         }

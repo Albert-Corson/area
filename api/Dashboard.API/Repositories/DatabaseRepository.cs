@@ -8,8 +8,13 @@ namespace Dashboard.API.Repositories
     {
         public DatabaseRepository(DbContextOptions<DatabaseRepository> options)
             : base(options)
+        {}
+
+        public override void Dispose()
         {
-            Database.Migrate();
+            ChangeTracker.DetectChanges();
+            SaveChanges();
+            base.Dispose();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
