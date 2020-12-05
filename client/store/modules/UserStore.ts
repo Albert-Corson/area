@@ -1,3 +1,4 @@
+import Vue from 'vue'
 import { Mutation, Action, VuexModule, getModule, Module } from 'vuex-module-decorators'
 import { store } from '~/store'
 import UserModel from '~/api/models/UserModel'
@@ -28,25 +29,40 @@ class UserModule extends VuexModule {
   // actions
   @Action
   public async fetchUser() {
-    const response = await $api.user.getUser()
-    if (response.successful) {
-      this.context.commit('setUser', response.data!)
+    try {
+      const response = await $api.user.getUser()
+      if (response.successful) {
+        this.setUser(response.data!)
+        return response.data!
+      }
+    } catch (e) {
+      Vue.toasted.error('Error while fetching user information')
     }
   }
 
   @Action
   public async createUser(username: string, password: string, email: string) {
-    const response = await $api.user.createUser(username, password, email)
-    if (response.successful) {
-      // TODO
+    try {
+      const response = await $api.user.createUser(username, password, email)
+      if (response.successful) {
+        Vue.toasted.success(`Successfully created new user '${ username }'`)
+        // TODO
+      }
+    } catch(e) {
+      Vue.toasted.error('Error while creating new user')
     }
   }
 
   @Action
   public async deleteUser(userId: number) {
-    const response = await $api.user.deleteUser(userId)
-    if (response.successful) {
-      // TODO
+    try {
+      const response = await $api.user.deleteUser(userId)
+      if (response.successful) {
+        Vue.toasted.success('User successfully deleted')
+        // TODO
+      }
+    } catch (e) {
+      Vue.toasted.error('Error while deleting user')
     }
   }
 }

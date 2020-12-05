@@ -3,6 +3,7 @@ import Vue from 'vue'
 import { store } from '~/store'
 import AuthTokenModel from '~/api/models/AuthTokenModel'
 import { $api } from '~/globals/api'
+import { $axios } from '~/globals/axios'
 
 @Module({
   dynamic: true,
@@ -13,7 +14,7 @@ import { $api } from '~/globals/api'
 })
 class AuthModule extends VuexModule {
   // state
-  private _token?: AuthTokenModel
+  private _token: AuthTokenModel | null = null
 
   // getters
   public get token() {
@@ -26,18 +27,22 @@ class AuthModule extends VuexModule {
 
   // mutations
   @Mutation
-  private setToken(token: AuthTokenModel) {
+  private setToken(token: AuthTokenModel | null) {
     this._token = token
+    $axios.setToken(token?.access_token ?? false, 'Bearer')
   }
 
   // actions
   @Action
-  public async getToken({ username, password }: { username: string, password: string }) {
-    const response = await $api.auth.getToken(username, password)
-    if (response.successful) {
-      Vue.toasted.success('Successfully logged in')
-      this.context.commit('setToken', response.data!)
-    }
+  public async login({ username, password }: { username: string, password: string }) {
+    return $api.auth.getToken(username, password)
+      .then(response => {
+        if (response?.successful) {
+          Vue.toasted.success('Successfully logged in')
+          this.setToken(response.data!)
+        }
+      })
+      .catch(_ => Vue.toasted.error('Error while logging in'))
   }
 
   @Action
@@ -45,18 +50,35 @@ class AuthModule extends VuexModule {
     if (!this.authenticated) {
       return
     }
-    const response = await $api.auth.refreshToken(this._token?.refresh_token!)
-    if (response.successful) {
-      this.context.commit('setToken', response.data!)
+    try {
+      const response = await $api.auth.refreshToken(this._token?.refresh_token!)
+      if (response.successful) {
+        this.setToken(response.data!)
+      }
+    } catch (e) {
+      Vue.toasted.error('Error while refreshing authorization token')
     }
   }
 
   @Action
   public async revokeToken() {
-    const response = await $api.auth.revokeToken()
-    if (response.successful) {
-      // TODO
+    try {
+      const response = await $api.auth.revokeToken()
+      if (response.successful) {
+        Vue.toasted.success('Successfully revoked authorization tokens')
+        // TODO
+      }
+    } catch (e) {
+      Vue.toasted.error('Error while revoking token')
     }
+  }
+
+  @Action
+  public logout() {
+    return new Promise((resolve) => {
+      this.setToken(null)
+      resolve()
+    })
   }
 
 }

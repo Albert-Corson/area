@@ -1,16 +1,14 @@
 import { initializeAxios } from '~/globals/axios'
 import { Plugin } from '@nuxt/types'
+import AuthStore from '~/store/modules/AuthStore'
 
 const axiosPlugin: Plugin = ({ $axios }) => {
   initializeAxios($axios)
 
-  $axios.onRequest(config => {
-    console.log(`Making request to ${ config.url }`)
-  })
-
-  $axios.onError(_ => {
-    console.error(`HTTP error`)
-  })
+  const token = AuthStore.token?.access_token
+  if (token) {
+    $axios.setToken(token, 'Bearer')
+  }
 }
 
 export default axiosPlugin

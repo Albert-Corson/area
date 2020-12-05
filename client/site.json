@@ -1,10 +1,13 @@
 {
   "pages": {
-    "/home": {
-      "authenticated": "yes"
-    },
     "/login": {
       "authenticated": "no"
+    },
+    "/logout": {
+      "authenticated": "yes"
+    },
+    "/.*": {
+      "authenticated": "yes"
     }
   }
 }

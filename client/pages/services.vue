@@ -12,41 +12,40 @@ import ServiceList from '~/components/services/ServiceList.vue'
 import ExtendedServiceModel from '~/components/services/ExtendedServiceModel'
 import ServiceModel from '~/api/models/ServiceModel'
 
-
 @Component({
   components: {
     ServiceList
   }
 })
 export default class ServicesPage extends Vue {
+  // methods
   public reload() {
-    // TODO
-    this.$toasted.info('Reload services list...')
+    ServiceStore.fetchServices()
+    ServiceStore.fetchRegisteredServices()
   }
 
   public create(id : number) {
-    console.log("WANT CREATION OF SERVICE", id);
+    ServiceStore.registerService(id)
   }
 
-  public createExtendedServices(registred : Array<ServiceModel>, all : Array<ServiceModel>) {
-    return all.map((service) => {
+  // computed
+  public get services(): Array<ExtendedServiceModel> {
+    const allServices = ServiceStore.services
+    const registeredServices = ServiceStore.registeredServices
+
+    return allServices.map((service) => {
       let extended : ExtendedServiceModel = service
-      extended.empty = false;
-      extended.registered = registred.some((knownService) => {
-        return knownService.id === service.id;
-      });
-      return extended;
+      extended.empty = false
+      extended.registered = registeredServices.some((knownService) => {
+        return knownService.id === service.id
+      })
+      return extended
     })
-  }
-
-  public get services() : Array<ExtendedServiceModel> {
-    return this.createExtendedServices(ServiceStore.registeredServices, ServiceStore.services);
   }
 
   // hooks
   mounted() {
-    ServiceStore.fetchServices()
-    ServiceStore.fetchRegisteredServices()
+    this.reload()
   }
 }
 </script>

@@ -51,6 +51,16 @@ export default class NavBar extends Vue {
       icon: "/svg/profil.svg",
       title: "Profil",
       to: "/"
+    },
+    {
+      icon: "/svg/profil.svg",
+      title: "Sign in",
+      to: "/login"
+    },
+    {
+      icon: "/svg/profil.svg",
+      title: "Sign out",
+      to: "/logout"
     }
   ]
 

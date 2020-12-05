@@ -2,9 +2,6 @@ import { NuxtAxiosInstance } from '@nuxtjs/axios'
 import WidgetModel from './models/WidgetModel'
 import ResponseModel from './models/ResponseModel'
 
-// TODO: remove this include
-import dbConnector from '~/tmp/dbConnector'
-
 export interface IWidgetRepository {
 
   /**
@@ -49,85 +46,34 @@ export interface IWidgetRepository {
 const makeWidgetRepository = ($axios: NuxtAxiosInstance): IWidgetRepository => ({
 
   listWidgets(serviceId?: number): Promise<ResponseModel<Array<WidgetModel>>> {
-    return new Promise((resolve, reject) => {
-      try {
-        const widgets = dbConnector.listWidgets(serviceId)
-        resolve({
-          successful: true,
-          data: widgets
-        })
-      } catch (e) {
-        reject({
-          successful: false,
-          error: e.message
-        })
-      }
-    })
-    /*
-       if (serviceId) {
-       return $axios.$get(`/widgets?serviceId=${serviceId}`)
-       } else {
-       return $axios.$get(`/widgets`)
-       }
-       */
+    if (serviceId) {
+      return $axios.$get(`/widgets?serviceId=${serviceId}`)
+    } else {
+      return $axios.$get(`/widgets`)
+    }
   },
 
   listRegisteredWidgets(serviceId?: number): Promise<ResponseModel<Array<WidgetModel>>>
   {
-    return new Promise((resolve, reject) => {
-      try {
-        const widgets = dbConnector.listRegisteredWidgets(serviceId)
-        resolve({
-          successful: true,
-          data: widgets
-        })
-      } catch (e) {
-        reject({
-          successful: false,
-          error: e.message
-        })
-      }
-    })
-    /*
-       if (serviceId) {
-       return $axios.$get(`/widgets/me?serviceId=${serviceId}`)
-       } else {
-       return $axios.$get(`/widgets/me`)
-       }
-       */
+    if (serviceId) {
+      return $axios.$get(`/widgets/me?serviceId=${serviceId}`)
+    } else {
+      return $axios.$get(`/widgets/me`)
+    }
   },
 
   fetchWidgetData(widgetId: number, params?: object): Promise<ResponseModel<WidgetModel>> {
-    return new Promise((resolve, reject) => {
-      try {
-        const data = dbConnector.getWidget(widgetId)
-        return resolve({
-          successful: true,
-          data
-        })
-      } catch (e) {
-        return reject({
-          successful: false,
-          error: e.message
-        })
-      }
-    })
+    return Promise.reject(new Error('Not implemented'))
     // TODO: pass params object to query parameters
     // return $axios.$get(`/widgets/${widgetId}`)
   },
 
   registerWidget(widgetId: number, params?: object): Promise<ResponseModel> {
-    return new Promise((resolve) => resolve({
-      successful: true
-    }))
-    // return $axios.$post(`/widgets/${widgetId}`, params)
+    return $axios.$post(`/widgets/${widgetId}`, params)
   },
 
   unregisterWidget(widgetId: number): Promise<ResponseModel> {
-    return new Promise((resolve) => resolve({
-      successful: true
-    }))
-    // return $axios.$delete(`/widgets/${widgetId}`)
+    return $axios.$delete(`/widgets/${widgetId}`)
   }
 
 })

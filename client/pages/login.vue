@@ -2,7 +2,7 @@
   <div class="page login">
     <form @submit.prevent="login">
       <h1>Sign in</h1>
-      <input type="text" name="username" placeholder="Username" v-model="username"/>
+      <input autofocus type="text" name="username" placeholder="Username" v-model="username"/>
       <input type="password" name="password" placeholder="Password" v-model="password"/>
       <input type="submit" value="Sign in"/>
     </form>
@@ -25,7 +25,8 @@ export default class Login extends Vue {
 
   // methods
   public login() {
-    AuthStore.getToken({ username: this.username, password: this.password })
+    AuthStore.login({ username: this.username, password: this.password })
+      .then(_ => this.$router.push('/'))
   }
 }
 </script>

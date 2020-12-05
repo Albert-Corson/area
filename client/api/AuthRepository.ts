@@ -32,22 +32,11 @@ const makeAuthRepository = ($axios: NuxtAxiosInstance): IAuthRepository => ({
   },
 
   refreshToken(refresh_token: string): Promise<ResponseModel<AuthTokenModel>>{
-    return new Promise((resolve) => resolve({
-      successful: true,
-      data: {
-        access_token: 'fake_access_token',
-        refresh_token: 'fake_refresh_token',
-        expires_in: 0
-      }
-    }))
-    // return $axios.$post('/auth/refresh', { refresh_token })
+    return $axios.$post('/auth/refresh', { refresh_token })
   },
 
   revokeToken(): Promise<ResponseModel>{
-    return new Promise((resolve) => resolve({
-      successful: true
-    }))
-    // return $axios.$delete('/auth/revoke')
+    return $axios.$delete('/auth/revoke')
   }
 
 })

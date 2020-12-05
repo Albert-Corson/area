@@ -47,59 +47,69 @@ class ServiceModule extends VuexModule {
   // actions
   @Action
   public async fetchServices() {
-    const response = await $api.service.listServices()
-    if (response.successful) {
-      this.context.commit('setServices', response.data!)
-    } else {
+    try {
+      const response = await $api.service.listServices()
+      if (response.successful) {
+        this.setServices(response.data!)
+        return response.data
+      }
+    } catch (e) {
       Vue.toasted.error('Error while fetching services')
     }
-    return response.data
   }
 
   @Action
   public async fetchRegisteredServices() {
-    const response = await $api.service.listRegisteredServices()
-    if (response.successful) {
-      this.context.commit('setRegisteredServices', response.data!)
-    } else {
+    try {
+      const response = await $api.service.listRegisteredServices()
+      if (response.successful) {
+        this.setRegisteredServices(response.data!)
+        return response.data
+      }
+    } catch (e) {
       Vue.toasted.error('Error while fetching services')
     }
-    return response.data
   }
 
   @Action
   public async fetchService(serviceId: number) {
-    const response = await $api.service.getService(serviceId)
-    if (response.successful) {
-      // TODO ?
-    } else {
+    try {
+      const response = await $api.service.getService(serviceId)
+      if (response.successful) {
+        // TODO ?
+        return response.data
+      }
+    } catch (e) {
       Vue.toasted.error('Error while fetching service data')
     }
-    return response.data
   }
 
   @Action
-  public async registerService(serviceId: number, username: string, password: string) {
-    const response = await $api.service.registerService(serviceId, username, password)
-    if (response.successful) {
-      // TODO
-      return true
-    } else {
+  public async registerService(serviceId: number, username?: string, password?: string) {
+    try {
+      const response = await $api.service.registerService(serviceId, username, password)
+      if (response.successful) {
+        // TODO
+        return true
+      }
+    } catch (e) {
       Vue.toasted.error('Error while subscribing to a service')
-      return false
     }
+    return false
   }
 
   @Action
   public async unregisterService(serviceId: number) {
-    const response = await $api.service.unregisterService(serviceId)
-    if (response.successful) {
-      // TODO
-      return true
-    } else {
+    try {
+      const response = await $api.service.unregisterService(serviceId)
+      if (response.successful) {
+        // TODO
+        return true
+      }
+    } catch (e) {
       Vue.toasted.error('Error while unsubscribing from a service')
-      return false
     }
+    return false
   }
 }
 

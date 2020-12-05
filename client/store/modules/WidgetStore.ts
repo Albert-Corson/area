@@ -49,7 +49,7 @@ class WidgetModule extends VuexModule {
   public async fetchWidgets(serviceId?: number) {
     const response = await $api.widget.listWidgets(serviceId)
     if (response.successful) {
-      this.context.commit('setWidgets', response.data!)
+      this.setWidgets(response.data!)
     } else {
       Vue.toasted.error('Error while fetching widgets')
     }
@@ -58,48 +58,56 @@ class WidgetModule extends VuexModule {
 
   @Action
   public async fetchRegisteredWidgets(serviceId?: number) {
-    const response = await $api.widget.listRegisteredWidgets(serviceId)
-    if (response.successful) {
-      this.context.commit('setRegisteredWidgets', response.data!)
-    } else {
+    try {
+      const response = await $api.widget.listRegisteredWidgets(serviceId)
+      if (response.successful) {
+        this.setRegisteredWidgets(response.data!)
+        return response.data
+      }
+    } catch (e) {
       Vue.toasted.error('Error while fetching widgets')
     }
-    return response.data
   }
 
   @Action
   public async fetchWidgetData(widgetId: number, params?: object) {
-    const response = await $api.widget.fetchWidgetData(widgetId, params)
-    if (response.successful) {
-      // TODO ?
-    } else {
+    try {
+      const response = await $api.widget.fetchWidgetData(widgetId, params)
+      if (response.successful) {
+        // TODO ?
+        return response.data
+      }
+    } catch (e) {
       Vue.toasted.error('Error while fetching widget data')
     }
-    return response.data
   }
 
   @Action
   public async registerWidget(widgetId: number, params?: object) {
-    const response = await $api.widget.registerWidget(widgetId, params)
-    if (response.successful) {
-      // TODO
-      return true
-    } else {
+    try {
+      const response = await $api.widget.registerWidget(widgetId, params)
+      if (response.successful) {
+        // TODO
+        return true
+      }
+    } catch (e) {
       Vue.toasted.error('Error while subscribing to a widget')
-      return false
     }
+    return false
   }
 
   @Action
   public async unregisterWidget(widgetId: number) {
-    const response = await $api.widget.unregisterWidget(widgetId)
-    if (response.successful) {
-      // TODO
-      return true
-    } else {
+    try {
+      const response = await $api.widget.unregisterWidget(widgetId)
+      if (response.successful) {
+        // TODO
+        return true
+      }
+    } catch (e) {
       Vue.toasted.error('Error while unsubscribing from a widget')
-      return false
     }
+    return false
   }
 }
 

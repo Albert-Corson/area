@@ -1,7 +1,6 @@
 import ResponseModel from './models/ResponseModel'
 import { NuxtAxiosInstance } from '@nuxtjs/axios'
 import ServiceModel from './models/ServiceModel'
-import dbConnector from '~/tmp/dbConnector'
 
 export interface IServiceRepository {
   
@@ -36,77 +35,29 @@ export interface IServiceRepository {
    * @param username user name on the given service
    * @param password user password on the given service
    */
-  registerService(serviceId: number, username: string, password: string): Promise<ResponseModel>
+  registerService(serviceId: number, username?: string, password?: string): Promise<ResponseModel>
 }
 
 const makeServiceRepository = ($axios: NuxtAxiosInstance): IServiceRepository => ({
 
   listServices(): Promise<ResponseModel<Array<ServiceModel>>> {
-    return new Promise((resolve, reject) => {
-      try {
-        const services = dbConnector.listServices()
-        return resolve({
-          successful: true,
-          data: services
-        })
-      } catch (e) {
-        return reject({
-          successful: false,
-          error: e.message
-        })
-      }
-    })
-    // return $axios.$get('/services')
+    return $axios.$get('/services')
   },
 
   listRegisteredServices(): Promise<ResponseModel<Array<ServiceModel>>> {
-    return new Promise((resolve, reject) => {
-      try {
-        const services = dbConnector.listRegisteredServices()
-        return resolve({
-          successful: true,
-          data: services
-        })
-      } catch (e) {
-        return reject({
-          successful: false,
-          error: e.message
-        })
-      }
-    })
-    // return $axios.$get('/services/me')
+    return $axios.$get('/services/me')
   },
 
   getService(serviceId: number): Promise<ResponseModel<ServiceModel>> {
-    return new Promise((resolve, reject) => {
-      try {
-        const service = dbConnector.getService(serviceId)
-        return resolve({
-          successful: true,
-          data: service
-        })
-      } catch (e) {
-        return reject({
-          successful: false,
-          error: e.message
-        })
-      }
-    })
-    // return $axios.$get(`/services/${serviceId}`)
+    return $axios.$get(`/services/${serviceId}`)
   },
 
   unregisterService(serviceId: number): Promise<ResponseModel> {
-    return new Promise((resolve) => resolve({
-      successful: true
-    }))
-    // return $axios.$delete(`/services/${serviceId}`)
+    return $axios.$delete(`/services/${serviceId}`)
   },
 
-  registerService(serviceId: number, username: string, password: string): Promise<ResponseModel> {
-    return new Promise((resolve) => resolve({
-      successful: true
-    }))
-    // return $axios.$put(`/services/${serviceId}`, { username, password })
+  registerService(serviceId: number, username?: string, password?: string): Promise<ResponseModel> {
+    return $axios.$post(`/services/${serviceId}`, { username, password })
   }
 
 })

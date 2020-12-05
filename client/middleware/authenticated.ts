@@ -1,5 +1,13 @@
-import site from '~/site.json'
+import site  from '~/site.json'
 import { Middleware } from '@nuxt/types'
+
+interface Route {
+  path: string
+}
+
+interface RouteConfig {
+  authenticated: string
+}
 
 enum AuthState {
   Any,
@@ -10,35 +18,49 @@ enum AuthState {
 const loginPath = '/login'
 const homePath = '/'
 
-const getAuthRequirement = (route: object): AuthState => {
-  // @ts-ignore
-  const config = site.pages[route.path]
-  if (!config || config.authenticated === 'any') {
-    return AuthState.Any
+const getPageConfig = (route: Route): RouteConfig | null => {
+  let config: RouteConfig | null = null
+
+  const key: string | undefined = Object.keys(site.pages).find(page => {
+    return route.path.match(`^${ page }$`)
+  })
+
+  if (key) {
+    // @ts-ignore
+    config = site.pages[key]
   }
-  return config.authenticated === 'yes'
-    ? AuthState.Yes
-    : AuthState.No
+  return config
+}
+
+const getAuthRequirement = (route: Route): AuthState => {
+  const config = getPageConfig(route)
+
+  switch (config?.authenticated) {
+    case 'yes':
+      return AuthState.Yes
+    case 'no':
+      return AuthState.No
+    default:
+      return AuthState.Any
+  }
 }
 
 const authenticated: Middleware = ({ route, store, redirect }) => {
     const authRequirement = getAuthRequirement(route)
-    const isAuthenticated = store.getters['auth/authenticated'] || false
+    const isAuthenticated = store.getters['auth/authenticated'] ?? false
 
-    // @ts-ignore
-/*    switch (authRequirement) {
+    switch (authRequirement) {
       case AuthState.Yes:
         if (!isAuthenticated) {
           return redirect(loginPath)
         }
-        break;
+      break
       case AuthState.No:
         if (isAuthenticated) {
           return redirect(homePath)
         }
-        break
+      break
     }
-    */
 }
 
 export default authenticated

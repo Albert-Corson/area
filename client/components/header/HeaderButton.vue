@@ -1,20 +1,20 @@
 <template>
-    <div class="header-button">
-        <div 
-            v-for="button in navButtons"
-            :key="button.icon"
-            @click="button.action"
-            class="enable clickable hoverable"
-        >
-            <icon :src="button.icon" width="30" height="30"/>
+  <div class="header-button">
+      <hoverable 
+          v-for="button in navButtons"
+          :key="button.icon"
+      >
+        <div class="enabled" @click="button.action">
+          <icon :src="button.icon" width="30" height="30"/>
         </div>
-    </div>
+      </hoverable>
+  </div>
 </template>
-
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'nuxt-property-decorator'
 import Icon from "~/components/Icon.vue"
+import Hoverable from '~/components/Hoverable.vue'
 
 interface IHeaderButton {
   icon: any,
@@ -24,7 +24,8 @@ interface IHeaderButton {
 @Component({
   name: 'HeaderButton',
   components: {
-    Icon 
+    Icon,
+    Hoverable
   }
 })
 export default class HeaderButton extends Vue {
@@ -44,6 +45,7 @@ export default class HeaderButton extends Vue {
       }
   ]
 
+  // methods
   public goNext() {
     this.$router.forward()
   }
@@ -57,17 +59,17 @@ export default class HeaderButton extends Vue {
   }
 
 }
-
 </script>
 
 <style scoped lang="scss">
-
-.enable > * {
-  filter: var(--active-filter-color);
+.header-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  grid-area: header-button;
 }
 
-
-.header-button div {
+.header-button > div {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -76,11 +78,7 @@ export default class HeaderButton extends Vue {
   border-radius: 5px;
 }
 
-.header-button
-{
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  grid-area: header-button;
+.enabled > * {
+  filter: var(--active-filter-color);
 }
-</style> >
+</style>

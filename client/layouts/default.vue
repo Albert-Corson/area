@@ -40,8 +40,6 @@ export default class DefaultLayout extends Vue {
   --active-filter-color : invert(100%) sepia(0%) saturate(7495%) hue-rotate(273deg) brightness(87%) contrast(106%); 
 }
 
-/* todo create image that follow cursor */
-
 * {
   box-sizing: border-box;
 }
