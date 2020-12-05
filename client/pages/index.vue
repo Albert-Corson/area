@@ -17,12 +17,12 @@ import ServiceStore from '~/store/modules/ServiceStore'
 export default class IndexPage extends Vue {
   // computed
   public get services() {
-    return ServiceStore.services
+    return ServiceStore.registeredServices
   }
 
   // methods
   public reload() {
-    ServiceStore.fetchServices()
+    ServiceStore.fetchRegisteredServices()
   }
 
   // hooks

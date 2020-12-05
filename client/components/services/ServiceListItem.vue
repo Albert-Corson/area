@@ -1,10 +1,10 @@
 <template>
   <clickable><hoverable>
     <div class="service-list-item">
-      <nuxt-link :to="`/${ name }/${ id }`">
-        <icon :src="icon" width="70" height="70"/>
-        <div class="service-name">{{ name }}</div>
-      </nuxt-link>
+      <nuxt-link class="cover" v-if="registered" :to="`/${ name }/${ id }`"/>
+      <div class="cover" v-else v-on:click="create"/>
+      <icon :src="icon" width="70" height="70"/>
+      <div class="service-name">{{ name }}</div>
     </div>
   </hoverable></clickable>
 </template>
@@ -26,15 +26,32 @@ import Hoverable from '~/components/Hoverable.vue'
 export default class ServiceListItem extends Vue {
   @Prop({ required: true }) readonly name!: string
   @Prop({ required: true }) readonly id!: number
-  @Prop({ default: false }) readonly empty!: boolean
+  @Prop({ required: false, default: true }) readonly registered!: boolean
+  @Prop({ required: false, default: false }) readonly empty!: boolean
+
+  public create() {
+    this.$emit("create", this.id)
+  }
 
   get icon() {
-    return (this.empty ? '/svg/empty-service.svg' : '/svg/service.svg')
+    if (!this.registered) {
+      return "/svg/unuse-service.svg"
+    }
+    if (this.empty) {
+      return "/svg/empty-service.svg"
+    } 
+    return "/svg/service.svg"
   }
 }
 </script>
 
 <style lang="scss" scoped>
+.cover {
+  width : 100%;
+  height : 100%;
+  position : absolute;
+}
+
 .service-list-item {
   position: relative;
   display: inline-block;
