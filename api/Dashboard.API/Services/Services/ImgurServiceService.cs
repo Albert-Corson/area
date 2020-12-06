@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Dashboard.API.Exceptions.Http;
 using Dashboard.API.Models.Services.Imgur;
@@ -5,6 +6,7 @@ using Dashboard.API.Models.Table.Owned;
 using Dashboard.API.Repositories;
 using Imgur.API.Authentication.Impl;
 using Imgur.API.Enums;
+using Imgur.API.Models;
 using Imgur.API.Models.Impl;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -40,7 +42,7 @@ namespace Dashboard.API.Services.Services
                 return null;
             if (Client == null)
                 throw new InternalServerErrorHttpException();
-            return new Imgur.API.Endpoints.Impl.OAuth2Endpoint(Client).GetAuthorizationUrl(OAuth2ResponseType.Token, userId.ToString());
+            return new Imgur.API.Endpoints.Impl.OAuth2Endpoint(Client).GetAuthorizationUrl(OAuth2ResponseType.Code, userId.ToString());
         }
 
         public void HandleSignInCallback(HttpContext context, int serviceId)
@@ -95,6 +97,31 @@ namespace Dashboard.API.Services.Services
             } catch {
                 return null;
             }
+        }
+
+        public static List<ImgurGalleryItemModel> CoverImageListFromGallery(IEnumerable<IGalleryItem> gallery)
+        {
+            List<ImgurGalleryItemModel> imageList = new List<ImgurGalleryItemModel>();
+
+            foreach (var galleryItem in gallery) {
+                ImgurGalleryItemModel responseItem;
+                switch (galleryItem) {
+                    case GalleryAlbum album:
+                        responseItem = new ImgurGalleryItemModel(album);
+                        break;
+                    case GalleryImage image:
+                        responseItem = new ImgurGalleryItemModel(image);
+                        break;
+                    default:
+                        continue;
+                }
+
+                if (responseItem.Cover == null)
+                    continue;
+                imageList.Add(responseItem);
+            }
+
+            return imageList;
         }
     }
 }

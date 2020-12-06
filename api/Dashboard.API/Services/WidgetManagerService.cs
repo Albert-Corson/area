@@ -22,11 +22,15 @@ namespace Dashboard.API.Services
         private readonly DatabaseRepository _database;
         private readonly IDictionary<string, IWidgetService> _widgets;
 
-        public WidgetManagerService(DatabaseRepository database, ImgurGalleryWidgetService imgurGallery)
+        public WidgetManagerService(
+            DatabaseRepository database,
+            ImgurGalleryWidgetService imgurGallery,
+            ImgurFavoritesWidgetService imgurFavorites)
         {
             _database = database;
             _widgets = new Dictionary<string, IWidgetService> {
-                {imgurGallery.Name, imgurGallery}
+                {imgurGallery.Name, imgurGallery},
+                {imgurFavorites.Name, imgurFavorites}
             };
         }
 
@@ -129,6 +133,7 @@ namespace Dashboard.API.Services
         private void ValidateSignInState(IWidgetService widgetService, int serviceId)
         {
             var serviceTokens = _database.Users
+                .AsNoTracking()
                 .Include(model => model.ServiceTokens!
                     .Where(tokensModel => tokensModel.ServiceId == serviceId))
                 .SelectMany(model => model.ServiceTokens)

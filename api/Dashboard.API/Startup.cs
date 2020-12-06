@@ -98,9 +98,10 @@ namespace Dashboard.API
         private static void AddWidgetServices(IServiceCollection services)
         {
             services.AddScoped<ImgurGalleryWidgetService>();
+            services.AddScoped<ImgurFavoritesWidgetService>();
             services.AddScoped<WidgetManagerService>();
         }
-        
+
         private static void AddServiceServices(IServiceCollection services)
         {
             services.AddScoped<ImgurServiceService>();
