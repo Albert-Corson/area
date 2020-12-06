@@ -20,16 +20,14 @@ namespace Dashboard.API.Services
     public class WidgetManagerService
     {
         private readonly DatabaseRepository _database;
-        private static IDictionary<string, IWidgetService> _widgetServices = new Dictionary<string, IWidgetService>();
+        private readonly IDictionary<string, IWidgetService> _widgets;
 
         public WidgetManagerService(DatabaseRepository database, ImgurGalleryWidgetService imgurGallery)
         {
             _database = database;
-            if (_widgetServices.Count == 0) {
-                _widgetServices = new Dictionary<string, IWidgetService> {
-                    {imgurGallery.GetWidgetName(), imgurGallery}
-                };
-            }
+            _widgets = new Dictionary<string, IWidgetService> {
+                {imgurGallery.Name, imgurGallery}
+            };
         }
 
         public JsonResult CallWidgetById(HttpContext context, int widgetId)
@@ -64,10 +62,10 @@ namespace Dashboard.API.Services
                 user.WidgetParams ?? new List<UserWidgetParamModel>(),
                 context.Request.Query);
 
-            return _widgetServices[widget.Name!].CallWidgetApi(context, user, widget, widgetCallParams, serviceTokens);
+            return _widgets[widget.Name!].CallWidgetApi(context, user, widget, widgetCallParams, serviceTokens);
         }
 
-        private WidgetCallParameters BuildWidgetCallParams(int widgetId, ICollection<WidgetParamModel> defaultParams, ICollection<UserWidgetParamModel> userParams, IQueryCollection queryParams)
+        private static WidgetCallParameters BuildWidgetCallParams(int widgetId, ICollection<WidgetParamModel> defaultParams, ICollection<UserWidgetParamModel> userParams, IQueryCollection queryParams)
         {
             UpdateUserParamsWithQueryParams(widgetId, defaultParams, userParams, queryParams);
 
@@ -102,7 +100,7 @@ namespace Dashboard.API.Services
             return callParams;
         }
 
-        private void UpdateUserParamsWithQueryParams(int widgetId, ICollection<WidgetParamModel> defaultParams, ICollection<UserWidgetParamModel> userParams, IQueryCollection queryParams)
+        private static void UpdateUserParamsWithQueryParams(int widgetId, ICollection<WidgetParamModel> defaultParams, ICollection<UserWidgetParamModel> userParams, IQueryCollection queryParams)
         {
             foreach (var (key, value) in queryParams) {
                 var userParam = userParams.FirstOrDefault(model => model.Name == key);

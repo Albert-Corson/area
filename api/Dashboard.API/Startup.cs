@@ -1,9 +1,11 @@
+using System;
 using System.Text;
 using Dashboard.API.Authentication;
 using Dashboard.API.Constants;
 using Dashboard.API.Middlewares;
 using Dashboard.API.Repositories;
 using Dashboard.API.Services;
+using Dashboard.API.Services.Services;
 using Dashboard.API.Services.Widgets;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -59,8 +61,8 @@ namespace Dashboard.API
             services.AddSingleton(tokenValidationParameters);
             services.AddSingleton<AuthService>();
 
-            services.AddScoped<ImgurGalleryWidgetService>();
-            services.AddScoped<WidgetManagerService>();
+            AddWidgetServices(services);
+            AddServiceServices(services);
 
             services
                 .AddControllers()
@@ -93,10 +95,24 @@ namespace Dashboard.API
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
 
+        private static void AddWidgetServices(IServiceCollection services)
+        {
+            services.AddScoped<ImgurGalleryWidgetService>();
+            services.AddScoped<WidgetManagerService>();
+        }
+        
+        private static void AddServiceServices(IServiceCollection services)
+        {
+            services.AddScoped<ImgurServiceService>();
+            services.AddScoped<ServiceManagerService>();
+        }
+
         private static void InitDbContext(IApplicationBuilder app)
         {
             var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();
             var dbContext = serviceScope.ServiceProvider.GetService<DatabaseRepository>();
+            if (dbContext == null)
+                throw new NullReferenceException("Can't obtain the DbContext");
             dbContext.Database.Migrate();
         }
     }

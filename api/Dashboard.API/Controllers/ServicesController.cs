@@ -18,10 +18,12 @@ namespace Dashboard.API.Controllers
     public class ServicesController : ControllerBase
     {
         private readonly DatabaseRepository _database;
+        private readonly ServiceManagerService _serviceManager;
 
-        public ServicesController(DatabaseRepository database)
+        public ServicesController(DatabaseRepository database, ServiceManagerService serviceManager)
         {
             _database = database;
+            _serviceManager = serviceManager;
         }
 
         [HttpGet]
@@ -106,6 +108,16 @@ namespace Dashboard.API.Controllers
 
             return StatusModel.Failed("error message");
             return StatusModel.Success();
+        }
+
+        [HttpGet]
+        [Route(RoutesConstants.Services.SignInServiceCallback)]
+        [ValidateModelState]
+        public void SignInServiceCallback(
+            [FromRoute] [Required] [Range(1, 2147483647)] int? serviceId
+        )
+        {
+            _serviceManager.HandleServiceLoginCallbackById(HttpContext, serviceId!.Value);
         }
     }
 }

@@ -5,20 +5,17 @@ using Dashboard.API.Models.Response;
 using Dashboard.API.Models.Services.Imgur;
 using Dashboard.API.Models.Table;
 using Dashboard.API.Models.Table.Owned;
-using Imgur.API.Authentication.Impl;
+using Dashboard.API.Services.Services;
 using Imgur.API.Enums;
 using Imgur.API.Models.Impl;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 
 namespace Dashboard.API.Services.Widgets
 {
     public class ImgurGalleryWidgetService : IWidgetService
     {
-        private const string Name = "Imgur public gallery";
-
-        private readonly ImgurClient? _imgurClient;
+        private ImgurServiceService Imgur { get; }
 
         private readonly IDictionary<string, GallerySection> _gallerySections = new Dictionary<string, GallerySection> {
             {"hot", GallerySection.Hot},
@@ -26,26 +23,18 @@ namespace Dashboard.API.Services.Widgets
             {"user", GallerySection.User},
         };
 
-        public ImgurGalleryWidgetService(IConfiguration configuration)
+        public ImgurGalleryWidgetService(ImgurServiceService imgur)
         {
-            var imgurConf = configuration.GetSection("WidgetApiKeys").GetSection("Imgur");
-            if (imgurConf == null)
-                return;
-            var clientId = imgurConf["ClientId"];
-            var clientSecret = imgurConf["ClientSecret"];
-            _imgurClient = new ImgurClient(clientId, clientSecret);
+            Imgur = imgur;
         }
 
-        public string GetWidgetName()
-        {
-            return Name;
-        }
+        public string Name { get; } = "Imgur public gallery";
 
         public JsonResult CallWidgetApi(HttpContext context, UserModel user, WidgetModel widget, WidgetCallParameters widgetCallCallParams, UserServiceTokensModel? serviceTokens = null)
         {
-            if (_imgurClient == null)
+            if (Imgur.Client == null)
                 throw new InternalServerErrorHttpException();
-            var galleryEndpoint = new Imgur.API.Endpoints.Impl.GalleryEndpoint(_imgurClient);
+            var galleryEndpoint = new Imgur.API.Endpoints.Impl.GalleryEndpoint(Imgur.Client);
 
             var sectionStr = widgetCallCallParams.Strings["section"].ToLower();
 
