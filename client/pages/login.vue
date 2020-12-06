@@ -12,7 +12,7 @@
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
 
-import AuthStore from '~/store/modules/AuthStore'
+import { AuthStore } from '~/store'
 
 @Component({
   name: 'Login',

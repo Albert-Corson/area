@@ -2,13 +2,16 @@
   <div class="nav-bar">
      <div class="title">Places</div>
      <div class="buttons">
-      <nav-button
-        v-for="button in navButtons"
-        :key="button.title"
-        :icon="button.icon" 
-        :title="button.title" 
-        :to="button.to"
-      ></nav-button>
+       <div v-if="authenticated">
+         <nav-button title="Home" icon="/svg/home.svg" to="/"></nav-button>
+         <nav-button title="Services" icon="/svg/services.svg" to="/services"></nav-button>
+         <nav-button title="Widgets" icon="/svg/widgets.svg" to="/widgets"></nav-button>
+         <nav-button title="Profil" icon="/svg/profil.svg" to="/"></nav-button>
+         <nav-button title="Sign out" icon="/svg/logout.svg" to="/logout"></nav-button>
+       </div>
+       <div v-else>
+         <nav-button title="Sign in" icon="/svg/profil.svg" to="/login"></nav-button>
+       </div>
      </div>
   </div>
 </template>
@@ -16,12 +19,7 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'nuxt-property-decorator'
 import NavButton from "~/components/navbar/NavButton.vue"
-
-interface INavButton {
-  icon: any,
-  title : string,
-  to: string
-}
+import { AuthStore } from '~/store'
 
 @Component({
   name: 'NavBar',
@@ -30,40 +28,10 @@ interface INavButton {
   }
 })
 export default class NavBar extends Vue {
-  // data
-  public navButtons : Array<INavButton> = [
-    {
-      icon: "/svg/home.svg",
-      title: "Home",
-      to: "/"
-    },
-    {
-      icon: "/svg/services.svg",
-      title: "Services",
-      to: "/services"
-    },
-    {
-      icon: "/svg/widgets.svg",
-      title: "Widgets",
-      to: "/widgets"
-    },
-    {
-      icon: "/svg/profil.svg",
-      title: "Profil",
-      to: "/"
-    },
-    {
-      icon: "/svg/profil.svg",
-      title: "Sign in",
-      to: "/login"
-    },
-    {
-      icon: "/svg/profil.svg",
-      title: "Sign out",
-      to: "/logout"
-    }
-  ]
-
+  // computed
+  get authenticated() {
+    return AuthStore.authenticated
+  }
 }
 </script>
 

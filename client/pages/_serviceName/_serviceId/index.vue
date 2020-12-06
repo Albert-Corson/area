@@ -12,7 +12,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import ServiceModel from '~/api/models/ServiceModel'
-import WidgetStore from '~/store/modules/WidgetStore'
+import { WidgetStore } from '~/store'
 import WidgetModel from '~/api/models/WidgetModel'
 import WidgetList from '~/components/widgets/WidgetList.vue'
 import WidgetPreview from '~/components/preview/WidgetPreview.vue'

@@ -1,14 +1,11 @@
-import { Mutation, Action, VuexModule, getModule, Module } from 'vuex-module-decorators'
+import { Mutation, Action, VuexModule, Module } from 'vuex-module-decorators'
 import Vue from 'vue'
-import { store } from '~/store'
 import AuthTokenModel from '~/api/models/AuthTokenModel'
 import { $api } from '~/globals/api'
 import { $axios } from '~/globals/axios'
 
 @Module({
-  dynamic: true,
-  store,
-  name: 'auth',
+  name: 'modules/AuthModule',
   stateFactory: true,
   namespaced: true
 })
@@ -83,4 +80,4 @@ class AuthModule extends VuexModule {
 
 }
 
-export default getModule(AuthModule)
+export default AuthModule

@@ -1,5 +1,6 @@
 import site  from '~/site.json'
 import { Middleware } from '@nuxt/types'
+import { AuthStore } from '~/store'
 
 interface Route {
   path: string
@@ -47,7 +48,7 @@ const getAuthRequirement = (route: Route): AuthState => {
 
 const authenticated: Middleware = ({ route, store, redirect }) => {
     const authRequirement = getAuthRequirement(route)
-    const isAuthenticated = store.getters['auth/authenticated'] ?? false
+    const isAuthenticated = AuthStore.authenticated
 
     switch (authRequirement) {
       case AuthState.Yes:

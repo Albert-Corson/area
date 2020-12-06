@@ -1,13 +1,10 @@
 import Vue from 'vue'
 import { Mutation, Action, VuexModule, getModule, Module } from 'vuex-module-decorators'
-import { store } from '~/store'
 import { $api } from '~/globals/api'
 import ServiceModel from '~/api/models/ServiceModel'
 
 @Module({
-  dynamic: true,
-  store,
-  name: 'service',
+  name: 'modules/ServiceModule',
   stateFactory: true,
   namespaced: true
 })
@@ -113,4 +110,4 @@ class ServiceModule extends VuexModule {
   }
 }
 
-export default getModule(ServiceModule)
+export default ServiceModule

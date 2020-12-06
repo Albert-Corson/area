@@ -1,6 +1,6 @@
 import { initializeAxios } from '~/globals/axios'
 import { Plugin } from '@nuxt/types'
-import AuthStore from '~/store/modules/AuthStore'
+import { AuthStore } from '~/store'
 
 const axiosPlugin: Plugin = ({ $axios }) => {
   initializeAxios($axios)

@@ -7,7 +7,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
-import ServiceStore from '~/store/modules/ServiceStore'
+import { ServiceStore } from '~/store'
 import ServiceList from '~/components/services/ServiceList.vue'
 import ExtendedServiceModel from '~/components/services/ExtendedServiceModel'
 import ServiceModel from '~/api/models/ServiceModel'

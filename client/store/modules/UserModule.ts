@@ -1,13 +1,10 @@
 import Vue from 'vue'
 import { Mutation, Action, VuexModule, getModule, Module } from 'vuex-module-decorators'
-import { store } from '~/store'
 import UserModel from '~/api/models/UserModel'
 import { $api } from '~/globals/api'
 
 @Module({
-  dynamic: true,
-  store,
-  name: 'user',
+  name: 'modules/UserModule',
   stateFactory: true,
   namespaced: true
 })
@@ -67,4 +64,4 @@ class UserModule extends VuexModule {
   }
 }
 
-export default getModule(UserModule)
+export default UserModule

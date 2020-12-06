@@ -1,13 +1,10 @@
 import Vue from 'vue'
 import { Mutation, Action, VuexModule, getModule, Module } from 'vuex-module-decorators'
-import { store } from '~/store'
 import WidgetModel from '~/api/models/WidgetModel'
 import { $api } from '~/globals/api'
 
 @Module({
-  dynamic: true,
-  store,
-  name: 'widget',
+  name: 'modules/WidgetModule',
   stateFactory: true,
   namespaced: true
 })
@@ -111,4 +108,4 @@ class WidgetModule extends VuexModule {
   }
 }
 
-export default getModule(WidgetModule)
+export default WidgetModule
