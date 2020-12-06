@@ -8,9 +8,7 @@ namespace Dashboard.API.Repositories
     {
         public DatabaseRepository(DbContextOptions<DatabaseRepository> options)
             : base(options)
-        {
-            Database.Migrate();
-        }
+        {}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

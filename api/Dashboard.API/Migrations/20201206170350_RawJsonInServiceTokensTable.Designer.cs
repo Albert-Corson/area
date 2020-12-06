@@ -3,15 +3,17 @@ using System;
 using Dashboard.API.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Dashboard.API.Migrations
 {
     [DbContext(typeof(DatabaseRepository))]
-    partial class DatabaseRepositoryModelSnapshot : ModelSnapshot
+    [Migration("20201206170350_RawJsonInServiceTokensTable")]
+    partial class RawJsonInServiceTokensTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

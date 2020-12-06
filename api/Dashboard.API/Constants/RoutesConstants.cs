@@ -36,6 +36,7 @@ namespace Dashboard.API.Constants
             public const string GetService = Base + "/{serviceId}";
             public const string SignInService = Base + "/{serviceId}";
             public const string SignOutService = Base + "/{serviceId}";
+            public const string SignInServiceCallback = Base + "/{serviceId}/callback";
         }
 
         public static class Widgets

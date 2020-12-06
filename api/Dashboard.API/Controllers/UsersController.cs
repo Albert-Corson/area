@@ -44,15 +44,12 @@ namespace Dashboard.API.Controllers
             if (encryptedPasswd == null)
                 throw new InternalServerErrorHttpException();
 
-            // TODO: (optional) Check for weak or invalid email address
             _database.Users.Add(new UserModel {
                 Username = body.Username,
                 Password = encryptedPasswd,
                 Email = body.Email
             });
-
             _database.SaveChanges();
-
             return StatusModel.Success();
         }
 
@@ -70,7 +67,7 @@ namespace Dashboard.API.Controllers
                 throw new NotFoundHttpException();
 
             return new ResponseModel<UserModel> {
-                Data = {
+                Data = new UserModel {
                     Id = user.Id,
                     Username = user.Username
                 }
@@ -83,13 +80,7 @@ namespace Dashboard.API.Controllers
         public JsonResult GetMyUser()
         {
             var userId = AuthService.GetUserIdFromPrincipal(User);
-
-            if (userId == null)
-                throw new UnauthorizedHttpException();
-
-            var user = _database.Users.FirstOrDefault(model => model.Id == userId);
-            if (user == null)
-                throw new NotFoundHttpException("This access token may belong to a deleted user");
+            var user = _database.Users.First(model => model.Id == userId);
 
             return new ResponseModel<UserModel> {
                 Data = user
@@ -106,13 +97,10 @@ namespace Dashboard.API.Controllers
         {
             var currentUserId = AuthService.GetUserIdFromPrincipal(User);
 
-            if (currentUserId == null || currentUserId != userId)
+            if (currentUserId != userId)
                 throw new UnauthorizedHttpException("You can only delete your own account");
 
-            var user = _database.Users.FirstOrDefault(model => model.Id == userId);
-
-            if (user == null)
-                throw new NotFoundHttpException();
+            var user = _database.Users.First(model => model.Id == userId);
 
             _database.Users.Remove(user);
             _database.SaveChanges();

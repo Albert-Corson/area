@@ -1,10 +1,11 @@
 using System.Collections.Generic;
-using System.Linq;
 using Dashboard.API.Exceptions.Http;
 using Dashboard.API.Models.Response;
 using Dashboard.API.Models.Services.Imgur;
 using Dashboard.API.Models.Table;
+using Dashboard.API.Models.Table.Owned;
 using Dashboard.API.Services.Services;
+using Imgur.API.Endpoints.Impl;
 using Imgur.API.Enums;
 using Imgur.API.Models.Impl;
 using Microsoft.AspNetCore.Http;
@@ -12,36 +13,37 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Dashboard.API.Services.Widgets
 {
-    public class ImgurGalleryWidgetService : IWidgetService
+    public class ImgurFavoritesWidgetService : IWidgetService
     {
-        private ImgurServiceService Imgur { get; }
-
-        private readonly IDictionary<string, GallerySection> _gallerySections = new Dictionary<string, GallerySection> {
-            {"hot", GallerySection.Hot},
-            {"top", GallerySection.Top},
-            {"user", GallerySection.User},
-        };
-
-        public ImgurGalleryWidgetService(ImgurServiceService imgur)
+        public ImgurFavoritesWidgetService(ImgurServiceService imgur)
         {
             Imgur = imgur;
         }
 
-        public string Name { get; } = "Imgur public gallery";
+        private ImgurServiceService Imgur { get; }
+
+        private OAuth2Token? _oAuth2Token;
+
+        public bool ValidateServiceAuth(UserServiceTokensModel serviceTokens)
+        {
+            _oAuth2Token = ImgurServiceService.ImgurOAuth2TokenFromJson(serviceTokens.Json!);
+            return _oAuth2Token != null;
+        }
+
+        public string Name { get; } = "Imgur favorites";
 
         public JsonResult CallWidgetApi(HttpContext context, UserModel user, WidgetModel widget, WidgetCallParameters widgetCallParams)
         {
-            if (Imgur.Client == null)
+            if (Imgur.Client == null || _oAuth2Token == null)
                 throw new InternalServerErrorHttpException();
-            var galleryEndpoint = new Imgur.API.Endpoints.Impl.GalleryEndpoint(Imgur.Client);
 
-            var sectionStr = widgetCallParams.Strings["section"].ToLower();
+            Imgur.Client.SetOAuth2Token(_oAuth2Token);
 
-            if (!_gallerySections.TryGetValue(sectionStr, out var section))
-                section = _gallerySections.First().Value;
+            var sort = widgetCallParams.Strings["favoriteSort"] == "newest" ? AccountGallerySortOrder.Newest : AccountGallerySortOrder.Oldest;
 
-            var task = galleryEndpoint.GetGalleryAsync(section);
+            var task = new AccountEndpoint(Imgur.Client).GetAccountGalleryFavoritesAsync(sort: sort);
             task.Wait();
+
             if (!task.IsCompletedSuccessfully)
                 throw new InternalServerErrorHttpException("Couldn't not reach Imgur's API");
 

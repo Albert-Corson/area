@@ -20,16 +20,18 @@ namespace Dashboard.API.Services
     public class WidgetManagerService
     {
         private readonly DatabaseRepository _database;
-        private static IDictionary<string, IWidgetService> _widgetServices = new Dictionary<string, IWidgetService>();
+        private readonly IDictionary<string, IWidgetService> _widgets;
 
-        public WidgetManagerService(DatabaseRepository database, ImgurGalleryWidgetService imgurGallery)
+        public WidgetManagerService(
+            DatabaseRepository database,
+            ImgurGalleryWidgetService imgurGallery,
+            ImgurFavoritesWidgetService imgurFavorites)
         {
             _database = database;
-            if (_widgetServices.Count == 0) {
-                _widgetServices = new Dictionary<string, IWidgetService> {
-                    {imgurGallery.GetWidgetName(), imgurGallery}
-                };
-            }
+            _widgets = new Dictionary<string, IWidgetService> {
+                {imgurGallery.Name, imgurGallery},
+                {imgurFavorites.Name, imgurFavorites}
+            };
         }
 
         public JsonResult CallWidgetById(HttpContext context, int widgetId)
@@ -48,15 +50,11 @@ namespace Dashboard.API.Services
             var widget = _database.Widgets
                 .Include(model => model.DefaultParams)
                 .FirstOrDefault(model => model.Id == widgetId);
-            if (widget == null)
+            if (widget == null || !_widgets.TryGetValue(widget.Name!, out var widgetService))
                 throw new NotFoundHttpException("Widget not found");
 
-            UserServiceTokensModel? serviceTokens = null;
-            if (widget.RequiresAuth == true) {
-                serviceTokens = user.ServiceTokens?.FirstOrDefault(model => model.ServiceId == widget.ServiceId);
-                if (serviceTokens == null)
-                    throw new UnauthorizedHttpException("You need to be signed-in to the service");
-            }
+            if (widget.RequiresAuth == true)
+                ValidateSignInState(widgetService, widget.ServiceId!.Value);
 
             var widgetCallParams = BuildWidgetCallParams(
                 widgetId,
@@ -64,7 +62,7 @@ namespace Dashboard.API.Services
                 user.WidgetParams ?? new List<UserWidgetParamModel>(),
                 context.Request.Query);
 
-            return _widgetServices[widget.Name!].CallWidgetApi(context, user, widget, widgetCallParams, serviceTokens);
+            return widgetService.CallWidgetApi(context, user, widget, widgetCallParams);
         }
 
         private WidgetCallParameters BuildWidgetCallParams(int widgetId, ICollection<WidgetParamModel> defaultParams, ICollection<UserWidgetParamModel> userParams, IQueryCollection queryParams)
@@ -130,6 +128,22 @@ namespace Dashboard.API.Services
                 return value;
             int.TryParse(value, out var integerValue);
             return integerValue.ToString();
+        }
+
+        private void ValidateSignInState(IWidgetService widgetService, int serviceId)
+        {
+            var serviceTokens = _database.Users
+                .AsNoTracking()
+                .Include(model => model.ServiceTokens!
+                    .Where(tokensModel => tokensModel.ServiceId == serviceId))
+                .SelectMany(model => model.ServiceTokens)
+                .FirstOrDefault();
+            if (serviceTokens == null)
+                throw new UnauthorizedHttpException("You need to be signed-in to the service");
+            if (widgetService.ValidateServiceAuth(serviceTokens))
+                return;
+            _database.Remove(serviceTokens);
+            throw new UnauthorizedHttpException("You need to be sign-in again to the service");
         }
     }
 }

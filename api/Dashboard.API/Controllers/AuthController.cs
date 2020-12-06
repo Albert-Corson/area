@@ -32,7 +32,7 @@ namespace Dashboard.API.Controllers
         [Route(RoutesConstants.Auth.SignIn)]
         [ValidateModelState]
         public JsonResult SignIn(
-            [FromBody] LoginModel body
+            [FromBody] SignInModel body
         )
         {
             var encryptedPasswd = Encryptor.Encrypt(_configuration[JwtConstants.SecretKeyName], body.Password!);
@@ -42,7 +42,7 @@ namespace Dashboard.API.Controllers
                 throw new UnauthorizedHttpException();
 
             return new ResponseModel<UserTokenModel> {
-                Data = {
+                Data = new UserTokenModel {
                     RefreshToken = _service.GenerateRefreshToken(user.Id.Value),
                     AccessToken = _service.GenerateAccessToken(user.Id.Value)
                 }
@@ -62,7 +62,7 @@ namespace Dashboard.API.Controllers
                 throw new UnauthorizedHttpException();
 
             return new ResponseModel<UserTokenModel> {
-                Data = {
+                Data = new UserTokenModel {
                     RefreshToken = _service.GenerateRefreshToken(userId.Value),
                     AccessToken = _service.GenerateAccessToken(userId.Value)
                 }

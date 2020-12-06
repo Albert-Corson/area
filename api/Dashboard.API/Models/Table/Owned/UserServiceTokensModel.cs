@@ -7,11 +7,7 @@ namespace Dashboard.API.Models.Table.Owned
     [Table("UserHasServiceTokens")]
     public class UserServiceTokensModel
     {
-        public string? Scheme { get; set; }
-
-        public string? AccessToken { get; set; }
-
-        public string? RefreshToken { get; set; }
+        public string? Json { get; set; }
 
         public int? ServiceId { get; set; }
 
