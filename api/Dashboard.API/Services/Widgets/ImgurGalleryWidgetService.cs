@@ -40,9 +40,7 @@ namespace Dashboard.API.Services.Widgets
             if (!_gallerySections.TryGetValue(sectionStr, out var section))
                 section = _gallerySections.First().Value;
 
-            var task = galleryEndpoint.GetGalleryAsync(
-                section: section,
-                page: widgetCallCallParams.Integers["page"]);
+            var task = galleryEndpoint.GetGalleryAsync(section);
             task.Wait();
             if (!task.IsCompletedSuccessfully)
                 throw new InternalServerErrorHttpException("Couldn't not reach Imgur's API");
