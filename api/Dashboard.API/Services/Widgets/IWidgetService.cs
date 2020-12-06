@@ -9,6 +9,8 @@ namespace Dashboard.API.Services.Widgets
     {
         public string Name { get; }
 
-        JsonResult CallWidgetApi(HttpContext context, UserModel user, WidgetModel widget, WidgetCallParameters widgetCallCallParams, UserServiceTokensModel? serviceTokens = null);
+        public virtual bool ValidateServiceAuth(UserServiceTokensModel serviceTokens) => true;
+
+        public JsonResult CallWidgetApi(HttpContext context, UserModel user, WidgetModel widget, WidgetCallParameters widgetCallCallParams);
     }
 }

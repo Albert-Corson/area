@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 
 namespace Dashboard.API.Models.Request
 {
-    public class LoginModel
+    public class SignInModel
     {
         [JsonRequired]
         [JsonProperty("username")]

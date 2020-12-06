@@ -23,24 +23,28 @@ namespace Dashboard.API.Services
             };
         }
 
-        public string? LogInServiceById(HttpContext context, int serviceId)
+        public string? SignInServiceById(HttpContext context, int serviceId)
         {
             var serviceName = _database.Services.FirstOrDefault(model => model.Id == serviceId)?.Name;
-            
+
             if (serviceName == null || !_service.TryGetValue(serviceName, out var service))
                 throw new NotFoundHttpException();
-            return service.LogIn(context);
+            var res = service.SignIn(context);
+            _database.SaveChanges();
+            return res;
         }
 
-        public void HandleServiceLoginCallbackById(HttpContext context, int serviceId)
+        public void HandleServiceSignInCallbackById(HttpContext context, int serviceId)
         {
             var serviceName = _database.Services.FirstOrDefault(model => model.Id == serviceId)?.Name;
 
             if (serviceName == null || !_service.TryGetValue(serviceName, out var service)) {
-                _logger.LogError($"Received login callback with an invalid {{serviceId}} ({serviceId})");
+                _logger.LogError($"Received signin callback with an invalid {{serviceId}} ({serviceId})");
                 return;
             }
-            service.HandleLogInCallback(context);
+
+            service.HandleSignInCallback(context, serviceId);
+            _database.SaveChanges();
         }
     }
 }

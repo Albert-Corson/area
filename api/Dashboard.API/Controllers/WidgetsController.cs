@@ -68,9 +68,6 @@ namespace Dashboard.API.Controllers
         {
             var userId = AuthService.GetUserIdFromPrincipal(User);
 
-            if (userId == null)
-                throw new UnauthorizedHttpException();
-
             var userToWidgets = _database.Users
                 .Include(user => user.Widgets).ThenInclude(userWidget => userWidget.Widget).ThenInclude(widget => widget!.Service)
                 .Include(user => user.Widgets).ThenInclude(userWidget => userWidget.Widget).ThenInclude(widget => widget!.DefaultParams)
@@ -113,14 +110,9 @@ namespace Dashboard.API.Controllers
         )
         {
             var userId = AuthService.GetUserIdFromPrincipal(User);
-            if (userId == null)
-                throw new UnauthorizedHttpException();
-
             var user = _database.Users
                 .Include(model => model.WidgetParams)
-                .FirstOrDefault(model => model.Id == userId);
-            if (user == null)
-                throw new NotFoundHttpException("This access token may belong to a deleted user");
+                .First(model => model.Id == userId);
 
             _database.Remove(new UserWidgetModel {
                 UserId = userId,
@@ -134,6 +126,8 @@ namespace Dashboard.API.Controllers
                 }
             }
 
+            _database.SaveChanges();
+
             return StatusModel.Success();
         }
 
@@ -146,16 +140,12 @@ namespace Dashboard.API.Controllers
         )
         {
             var userId = AuthService.GetUserIdFromPrincipal(User);
-            if (userId == null)
-                throw new UnauthorizedHttpException();
 
             var widget = _database.Widgets.FirstOrDefault(model => model.Id == widgetId);
             if (widget == null)
                 throw new NotFoundHttpException();
 
             var user = _database.Users.First(model => model.Id == userId);
-            if (user == null)
-                throw new NotFoundHttpException("This access token may belong to a deleted user");
 
             user.Widgets ??= new List<UserWidgetModel>();
 
@@ -163,6 +153,8 @@ namespace Dashboard.API.Controllers
                 UserId = userId,
                 WidgetId = widgetId
             });
+
+            _database.SaveChanges();
 
             return StatusModel.Success();
         }

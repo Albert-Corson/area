@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Dashboard.API.Services.Services
 {
@@ -7,8 +6,8 @@ namespace Dashboard.API.Services.Services
     {
         public string Name { get; }
 
-        string? LogIn(HttpContext context);
+        public string? SignIn(HttpContext context);
 
-        void HandleLogInCallback(HttpContext context);
+        public void HandleSignInCallback(HttpContext context, int serviceId);
     }
 }

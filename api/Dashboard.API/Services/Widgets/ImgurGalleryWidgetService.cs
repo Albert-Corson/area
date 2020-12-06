@@ -4,7 +4,6 @@ using Dashboard.API.Exceptions.Http;
 using Dashboard.API.Models.Response;
 using Dashboard.API.Models.Services.Imgur;
 using Dashboard.API.Models.Table;
-using Dashboard.API.Models.Table.Owned;
 using Dashboard.API.Services.Services;
 using Imgur.API.Enums;
 using Imgur.API.Models.Impl;
@@ -30,7 +29,7 @@ namespace Dashboard.API.Services.Widgets
 
         public string Name { get; } = "Imgur public gallery";
 
-        public JsonResult CallWidgetApi(HttpContext context, UserModel user, WidgetModel widget, WidgetCallParameters widgetCallCallParams, UserServiceTokensModel? serviceTokens = null)
+        public JsonResult CallWidgetApi(HttpContext context, UserModel user, WidgetModel widget, WidgetCallParameters widgetCallCallParams)
         {
             if (Imgur.Client == null)
                 throw new InternalServerErrorHttpException();

@@ -46,15 +46,11 @@ namespace Dashboard.API.Services
             var widget = _database.Widgets
                 .Include(model => model.DefaultParams)
                 .FirstOrDefault(model => model.Id == widgetId);
-            if (widget == null)
+            if (widget == null || !_widgets.TryGetValue(widget.Name!, out var widgetService))
                 throw new NotFoundHttpException("Widget not found");
 
-            UserServiceTokensModel? serviceTokens = null;
-            if (widget.RequiresAuth == true) {
-                serviceTokens = user.ServiceTokens?.FirstOrDefault(model => model.ServiceId == widget.ServiceId);
-                if (serviceTokens == null)
-                    throw new UnauthorizedHttpException("You need to be signed-in to the service");
-            }
+            if (widget.RequiresAuth == true)
+                ValidateSignInState(widgetService, widget.ServiceId!.Value);
 
             var widgetCallParams = BuildWidgetCallParams(
                 widgetId,
@@ -62,10 +58,10 @@ namespace Dashboard.API.Services
                 user.WidgetParams ?? new List<UserWidgetParamModel>(),
                 context.Request.Query);
 
-            return _widgets[widget.Name!].CallWidgetApi(context, user, widget, widgetCallParams, serviceTokens);
+            return widgetService.CallWidgetApi(context, user, widget, widgetCallParams);
         }
 
-        private static WidgetCallParameters BuildWidgetCallParams(int widgetId, ICollection<WidgetParamModel> defaultParams, ICollection<UserWidgetParamModel> userParams, IQueryCollection queryParams)
+        private WidgetCallParameters BuildWidgetCallParams(int widgetId, ICollection<WidgetParamModel> defaultParams, ICollection<UserWidgetParamModel> userParams, IQueryCollection queryParams)
         {
             UpdateUserParamsWithQueryParams(widgetId, defaultParams, userParams, queryParams);
 
@@ -100,7 +96,7 @@ namespace Dashboard.API.Services
             return callParams;
         }
 
-        private static void UpdateUserParamsWithQueryParams(int widgetId, ICollection<WidgetParamModel> defaultParams, ICollection<UserWidgetParamModel> userParams, IQueryCollection queryParams)
+        private void UpdateUserParamsWithQueryParams(int widgetId, ICollection<WidgetParamModel> defaultParams, ICollection<UserWidgetParamModel> userParams, IQueryCollection queryParams)
         {
             foreach (var (key, value) in queryParams) {
                 var userParam = userParams.FirstOrDefault(model => model.Name == key);
@@ -118,6 +114,8 @@ namespace Dashboard.API.Services
                     });
                 }
             }
+
+            _database.SaveChanges();
         }
 
         private static string GetParamValueByType(StringValues value, string paramType)
@@ -126,6 +124,21 @@ namespace Dashboard.API.Services
                 return value;
             int.TryParse(value, out var integerValue);
             return integerValue.ToString();
+        }
+
+        private void ValidateSignInState(IWidgetService widgetService, int serviceId)
+        {
+            var serviceTokens = _database.Users
+                .Include(model => model.ServiceTokens!
+                    .Where(tokensModel => tokensModel.ServiceId == serviceId))
+                .SelectMany(model => model.ServiceTokens)
+                .FirstOrDefault();
+            if (serviceTokens == null)
+                throw new UnauthorizedHttpException("You need to be signed-in to the service");
+            if (widgetService.ValidateServiceAuth(serviceTokens))
+                return;
+            _database.Remove(serviceTokens);
+            throw new UnauthorizedHttpException("You need to be sign-in again to the service");
         }
     }
 }

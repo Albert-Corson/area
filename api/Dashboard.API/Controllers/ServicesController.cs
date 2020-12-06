@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Net;
 using Dashboard.API.Attributes;
 using Dashboard.API.Constants;
 using Dashboard.API.Exceptions.Http;
@@ -42,21 +43,16 @@ namespace Dashboard.API.Controllers
         public JsonResult GetMyService()
         {
             var userId = AuthService.GetUserIdFromPrincipal(User);
-
-            if (userId == null)
-                throw new UnauthorizedHttpException();
-
             var user = _database.Users
-                    .Include(model => model.ServiceTokens)
-                    .ThenInclude(model => model.Service)
-                    .FirstOrDefault(model => model.Id == userId);
-
-            if (user == null)
-                throw new NotFoundHttpException();
+                .Include(model => model.Widgets).ThenInclude(model => model.Widget).ThenInclude(model => model!.Service)
+                .First(model => model.Id == userId);
 
             List<ServiceModel> services = new List<ServiceModel>();
-            if (user.ServiceTokens != null)
-                services.AddRange(user.ServiceTokens.Select(tokensModel => tokensModel.Service!));
+            foreach (var widget in user.Widgets!) {
+                if (services.Find(model => model.Id == widget.Widget!.ServiceId) != null)
+                    continue;
+                services.Add(widget.Widget!.Service!);
+            }
 
             return new ResponseModel<List<ServiceModel>> {
                 Data = services
@@ -86,14 +82,19 @@ namespace Dashboard.API.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateModelState]
         public JsonResult SignInService(
-            // TODO: somehow get service specific credentials
             [FromRoute] [Required] [Range(1, 2147483647)] int? serviceId
         )
         {
-            // TODO: login to service
+            var redirect = _serviceManager.SignInServiceById(HttpContext, serviceId!.Value);
 
-            return StatusModel.Success();
-            return StatusModel.Failed("error message");
+            if (redirect == null)
+                return StatusModel.Success();
+
+            Response.StatusCode = (int) HttpStatusCode.Accepted;
+
+            return new ResponseModel<string> {
+                Data = redirect
+            };
         }
 
         [HttpDelete]
@@ -104,9 +105,18 @@ namespace Dashboard.API.Controllers
             [FromRoute] [Required] [Range(1, 2147483647)] int? serviceId
         )
         {
-            // TODO: logout of a user from a service
+            var userId = AuthService.GetUserIdFromPrincipal(User);
+            var serviceTokens = _database.Users
+                .Where(model => model.Id == userId)
+                .Include(model => model.ServiceTokens!
+                    .Where(tokensModel => tokensModel.ServiceId == serviceId))
+                .SelectMany(model => model.ServiceTokens)
+                .FirstOrDefault();
 
-            return StatusModel.Failed("error message");
+            if (serviceTokens != null) {
+                _database.Remove(serviceTokens);
+                _database.SaveChanges();
+            }
             return StatusModel.Success();
         }
 
@@ -117,7 +127,7 @@ namespace Dashboard.API.Controllers
             [FromRoute] [Required] [Range(1, 2147483647)] int? serviceId
         )
         {
-            _serviceManager.HandleServiceLoginCallbackById(HttpContext, serviceId!.Value);
+            _serviceManager.HandleServiceSignInCallbackById(HttpContext, serviceId!.Value);
         }
     }
 }

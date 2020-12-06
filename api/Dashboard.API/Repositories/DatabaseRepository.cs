@@ -10,13 +10,6 @@ namespace Dashboard.API.Repositories
             : base(options)
         {}
 
-        public override void Dispose()
-        {
-            ChangeTracker.DetectChanges();
-            SaveChanges();
-            base.Dispose();
-        }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
