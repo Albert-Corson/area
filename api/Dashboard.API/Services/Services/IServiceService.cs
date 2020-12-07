@@ -1,3 +1,5 @@
+using System;
+using Dashboard.API.Models.Table;
 using Microsoft.AspNetCore.Http;
 
 namespace Dashboard.API.Services.Services
@@ -6,8 +8,10 @@ namespace Dashboard.API.Services.Services
     {
         public string Name { get; }
 
-        public string? SignIn(HttpContext context);
+        public Uri? SignIn(HttpContext context, int userId);
 
-        public void HandleSignInCallback(HttpContext context, int serviceId);
+        public int? GetUserIdFromCallbackContext(HttpContext context);
+
+        public void HandleSignInCallback(HttpContext context, int serviceId, UserModel user);
     }
 }

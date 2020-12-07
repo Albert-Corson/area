@@ -109,6 +109,7 @@ namespace Dashboard.API
         private static void AddServiceServices(IServiceCollection services)
         {
             services.AddScoped<ImgurServiceService>();
+            services.AddScoped<SpotifyServiceService>();
             services.AddScoped<ServiceManagerService>();
         }
 

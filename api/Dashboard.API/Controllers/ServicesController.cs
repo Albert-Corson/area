@@ -93,7 +93,7 @@ namespace Dashboard.API.Controllers
             Response.StatusCode = (int) HttpStatusCode.Accepted;
 
             return new ResponseModel<string> {
-                Data = redirect
+                Data = redirect.ToString()
             };
         }
 
