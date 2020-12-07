@@ -4,7 +4,7 @@ using System.Linq;
 using Dashboard.API.Attributes;
 using Dashboard.API.Constants;
 using Dashboard.API.Exceptions.Http;
-using Dashboard.API.Models.Response;
+using Dashboard.API.Models;
 using Dashboard.API.Models.Table;
 using Dashboard.API.Models.Table.ManyToMany;
 using Dashboard.API.Repositories;

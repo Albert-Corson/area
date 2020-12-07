@@ -1,9 +1,8 @@
 using System.Collections.Generic;
-using Dashboard.API.Models.Table;
 using Dashboard.API.Models.Table.Owned;
 using Newtonsoft.Json;
 
-namespace Dashboard.API.Models.Response
+namespace Dashboard.API.Models
 {
     public class AboutDotJsonModel
     {

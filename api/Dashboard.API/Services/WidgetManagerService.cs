@@ -6,6 +6,7 @@ using Dashboard.API.Repositories;
 using Dashboard.API.Services.Widgets;
 using Dashboard.API.Services.Widgets.Imgur;
 using Dashboard.API.Services.Widgets.LoremPicsum;
+using Dashboard.API.Services.Widgets.Spotify;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -41,7 +42,9 @@ namespace Dashboard.API.Services
             ImgurFavoritesWidgetService imgurFavorites,
             ImgurUploadsWidgetService imgurUploads,
             ImgurGallerySearchWidgetService imgurGallerySearch,
-            LoremPicsumRandomImageService loremPicsumRandomImage)
+            LoremPicsumRandomImageService loremPicsumRandomImage,
+            SpotifyFavoriteArtistsWidgetService spotifyFavoriteArtists,
+            SpotifyFavoriteTracksWidgetService spotifyFavoriteTracks)
         {
             _database = database;
             _widgets = new Dictionary<string, IWidgetService> {
@@ -49,7 +52,9 @@ namespace Dashboard.API.Services
                 {imgurFavorites.Name, imgurFavorites},
                 {imgurUploads.Name, imgurUploads},
                 {loremPicsumRandomImage.Name, loremPicsumRandomImage},
-                {imgurGallerySearch.Name, imgurGallerySearch}
+                {imgurGallerySearch.Name, imgurGallerySearch},
+                {spotifyFavoriteArtists.Name, spotifyFavoriteArtists},
+                {spotifyFavoriteTracks.Name, spotifyFavoriteTracks}
             };
         }
 
@@ -108,6 +113,7 @@ namespace Dashboard.API.Services
                         type = defaultParam.Type!;
                     }
                 }
+
                 callParams.TryAddAny(key, value, type);
             }
 
@@ -158,10 +164,8 @@ namespace Dashboard.API.Services
         {
             var serviceTokens = _database.Users
                 .AsNoTracking()
-                .Include(model => model.ServiceTokens!
-                    .Where(tokensModel => tokensModel.ServiceId == serviceId))
                 .SelectMany(model => model.ServiceTokens)
-                .FirstOrDefault();
+                .FirstOrDefault(tokensModel => tokensModel.ServiceId == serviceId);
             if (serviceTokens == null)
                 throw new UnauthorizedHttpException("You need to be signed-in to the service");
             if (widgetService.ValidateServiceAuth(serviceTokens))

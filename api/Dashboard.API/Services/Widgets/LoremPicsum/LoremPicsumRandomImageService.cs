@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using Dashboard.API.Exceptions.Http;
-using Dashboard.API.Models.Response;
+using Dashboard.API.Models;
 using Dashboard.API.Models.Table;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

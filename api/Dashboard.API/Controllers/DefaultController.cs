@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Dashboard.API.Constants;
-using Dashboard.API.Models.Response;
+using Dashboard.API.Models;
 using Dashboard.API.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;

@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Dashboard.API.Exceptions.Http;
-using Dashboard.API.Models.Response;
-using Dashboard.API.Models.Services.Imgur;
+using Dashboard.API.Models;
 using Dashboard.API.Models.Table;
 using Dashboard.API.Models.Table.Owned;
+using Dashboard.API.Models.Widgets;
 using Dashboard.API.Services.Services;
 using Imgur.API.Endpoints.Impl;
 using Imgur.API.Models.Impl;

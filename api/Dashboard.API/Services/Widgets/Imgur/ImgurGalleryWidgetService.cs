@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Dashboard.API.Exceptions.Http;
-using Dashboard.API.Models.Response;
-using Dashboard.API.Models.Services.Imgur;
+using Dashboard.API.Models;
 using Dashboard.API.Models.Table;
+using Dashboard.API.Models.Widgets;
 using Dashboard.API.Services.Services;
 using Imgur.API.Endpoints.Impl;
 using Imgur.API.Enums;
@@ -31,10 +31,10 @@ namespace Dashboard.API.Services.Widgets.Imgur
             var galleryEndpoint = new GalleryEndpoint(Imgur.Client);
 
             var sectionStr = widgetCallParams.Strings["section"];
-            if (!Enum.TryParse(typeof(GallerySection), sectionStr, true, out var section))
-                throw new BadRequestHttpException($"Query parameter `sort` has an invalid value `{sectionStr}` but expected hot|top|user");
+            if (!Enum.TryParse<GallerySection>(sectionStr, true, out var section))
+                throw new BadRequestHttpException($"Query parameter `sort` has an invalid value `{sectionStr}`. Expected hot|top|user");
 
-            var task = galleryEndpoint.GetGalleryAsync(section as GallerySection? ?? GallerySection.Hot);
+            var task = galleryEndpoint.GetGalleryAsync(section);
             task.Wait();
             if (!task.IsCompletedSuccessfully)
                 throw new InternalServerErrorHttpException("Couldn't not reach Imgur's API");

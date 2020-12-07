@@ -1,5 +1,5 @@
 using System;
-using Dashboard.API.Models.Services.Spotify;
+using Dashboard.API.Models.Services;
 using Dashboard.API.Models.Table;
 using Dashboard.API.Models.Table.Owned;
 using Dashboard.API.Repositories;
@@ -73,7 +73,7 @@ namespace Dashboard.API.Services.Services
             if (!task.IsCompletedSuccessfully)
                 return;
 
-            var tokensHolder = new OAuth2TokensModel {
+            var tokensHolder = new SpotifyAuthModel {
                 Scope = task.Result.Scope,
                 AccessToken = task.Result.AccessToken,
                 RefreshToken = task.Result.RefreshToken,
@@ -88,13 +88,13 @@ namespace Dashboard.API.Services.Services
             });
         }
 
-        private SpotifyClient? CreateClientFromJsonTokens(string json)
+        public SpotifyClient? CreateClientFromJsonTokens(string json)
         {
             if (_clientId == null || _clientSecret == null)
                 return null;
 
             try {
-                var holder = JsonConvert.DeserializeObject<OAuth2TokensModel>(json);
+                var holder = JsonConvert.DeserializeObject<SpotifyAuthModel>(json);
                 var tokens = new AuthorizationCodeTokenResponse {
                     Scope = holder.Scope!,
                     AccessToken = holder.AccessToken!,

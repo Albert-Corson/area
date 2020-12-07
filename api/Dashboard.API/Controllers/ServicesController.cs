@@ -5,7 +5,7 @@ using System.Net;
 using Dashboard.API.Attributes;
 using Dashboard.API.Constants;
 using Dashboard.API.Exceptions.Http;
-using Dashboard.API.Models.Response;
+using Dashboard.API.Models;
 using Dashboard.API.Models.Table;
 using Dashboard.API.Repositories;
 using Dashboard.API.Services;

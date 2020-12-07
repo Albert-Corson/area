@@ -2,7 +2,7 @@ using System.Linq;
 using Imgur.API.Models;
 using Newtonsoft.Json;
 
-namespace Dashboard.API.Models.Services.Imgur
+namespace Dashboard.API.Models.Widgets
 {
     public class ImgurGalleryItemModel
     {

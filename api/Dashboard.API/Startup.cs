@@ -8,6 +8,7 @@ using Dashboard.API.Services;
 using Dashboard.API.Services.Services;
 using Dashboard.API.Services.Widgets.Imgur;
 using Dashboard.API.Services.Widgets.LoremPicsum;
+using Dashboard.API.Services.Widgets.Spotify;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -103,6 +104,8 @@ namespace Dashboard.API
             services.AddScoped<ImgurUploadsWidgetService>();
             services.AddScoped<ImgurGallerySearchWidgetService>();
             services.AddScoped<LoremPicsumRandomImageService>();
+            services.AddScoped<SpotifyFavoriteArtistsWidgetService>();
+            services.AddScoped<SpotifyFavoriteTracksWidgetService>();
             services.AddScoped<WidgetManagerService>();
         }
 

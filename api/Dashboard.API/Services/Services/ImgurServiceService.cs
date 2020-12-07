@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using Dashboard.API.Exceptions.Http;
-using Dashboard.API.Models.Services.Imgur;
+using Dashboard.API.Models.Services;
 using Dashboard.API.Models.Table;
 using Dashboard.API.Models.Table.Owned;
+using Dashboard.API.Models.Widgets;
 using Imgur.API.Authentication.Impl;
 using Imgur.API.Enums;
 using Imgur.API.Models;
@@ -55,7 +56,7 @@ namespace Dashboard.API.Services.Services
                 task.Wait();
                 if (!task.IsCompletedSuccessfully || task.Result == null)
                     return;
-                var tokensHolder = new OAuth2TokensModel {
+                var tokensHolder = new ImgurAuthModel {
                     AccessToken = task.Result.AccessToken,
                     TokenType = task.Result.TokenType,
                     RefreshToken = task.Result.RefreshToken,
@@ -75,7 +76,7 @@ namespace Dashboard.API.Services.Services
         public static OAuth2Token? ImgurOAuth2TokenFromJson(string json)
         {
             try {
-                var holder = JsonConvert.DeserializeObject<OAuth2TokensModel>(json);
+                var holder = JsonConvert.DeserializeObject<ImgurAuthModel>(json);
                 return new OAuth2Token(
                     holder.AccessToken,
                     holder.RefreshToken,
