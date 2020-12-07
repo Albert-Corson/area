@@ -27,8 +27,10 @@ namespace Dashboard.API.Services
         {
             var serviceName = _database.Services.FirstOrDefault(model => model.Id == serviceId)?.Name;
 
-            if (serviceName == null || !_service.TryGetValue(serviceName, out var service))
+            if (serviceName == null)
                 throw new NotFoundHttpException();
+            if (!_service.TryGetValue(serviceName, out var service))
+                return null;
             var res = service.SignIn(context);
             _database.SaveChanges();
             return res;
