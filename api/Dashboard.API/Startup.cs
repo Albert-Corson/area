@@ -6,7 +6,8 @@ using Dashboard.API.Middlewares;
 using Dashboard.API.Repositories;
 using Dashboard.API.Services;
 using Dashboard.API.Services.Services;
-using Dashboard.API.Services.Widgets;
+using Dashboard.API.Services.Widgets.Imgur;
+using Dashboard.API.Services.Widgets.LoremPicsum;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -99,6 +100,9 @@ namespace Dashboard.API
         {
             services.AddScoped<ImgurGalleryWidgetService>();
             services.AddScoped<ImgurFavoritesWidgetService>();
+            services.AddScoped<ImgurUploadsWidgetService>();
+            services.AddScoped<ImgurGallerySearchWidgetService>();
+            services.AddScoped<LoremPicsumRandomImageService>();
             services.AddScoped<WidgetManagerService>();
         }
 

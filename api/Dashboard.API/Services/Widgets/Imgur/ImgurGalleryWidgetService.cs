@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Dashboard.API.Exceptions.Http;
@@ -5,27 +6,21 @@ using Dashboard.API.Models.Response;
 using Dashboard.API.Models.Services.Imgur;
 using Dashboard.API.Models.Table;
 using Dashboard.API.Services.Services;
+using Imgur.API.Endpoints.Impl;
 using Imgur.API.Enums;
-using Imgur.API.Models.Impl;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Dashboard.API.Services.Widgets
+namespace Dashboard.API.Services.Widgets.Imgur
 {
     public class ImgurGalleryWidgetService : IWidgetService
     {
-        private ImgurServiceService Imgur { get; }
-
-        private readonly IDictionary<string, GallerySection> _gallerySections = new Dictionary<string, GallerySection> {
-            {"hot", GallerySection.Hot},
-            {"top", GallerySection.Top},
-            {"user", GallerySection.User},
-        };
-
         public ImgurGalleryWidgetService(ImgurServiceService imgur)
         {
             Imgur = imgur;
         }
+
+        private ImgurServiceService Imgur { get; }
 
         public string Name { get; } = "Imgur public gallery";
 
@@ -33,14 +28,13 @@ namespace Dashboard.API.Services.Widgets
         {
             if (Imgur.Client == null)
                 throw new InternalServerErrorHttpException();
-            var galleryEndpoint = new Imgur.API.Endpoints.Impl.GalleryEndpoint(Imgur.Client);
+            var galleryEndpoint = new GalleryEndpoint(Imgur.Client);
 
-            var sectionStr = widgetCallParams.Strings["section"].ToLower();
+            var sectionStr = widgetCallParams.Strings["section"];
+            if (!Enum.TryParse(typeof(GallerySection), sectionStr, true, out var section))
+                throw new BadRequestHttpException($"Query parameter `sort` has an invalid value `{sectionStr}` but expected hot|top|user");
 
-            if (!_gallerySections.TryGetValue(sectionStr, out var section))
-                section = _gallerySections.First().Value;
-
-            var task = galleryEndpoint.GetGalleryAsync(section);
+            var task = galleryEndpoint.GetGalleryAsync(section as GallerySection? ?? GallerySection.Hot);
             task.Wait();
             if (!task.IsCompletedSuccessfully)
                 throw new InternalServerErrorHttpException("Couldn't not reach Imgur's API");

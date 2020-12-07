@@ -27,6 +27,16 @@ namespace Dashboard.API.Models.Services.Imgur
             Link = galleryImage.Link;
         }
 
+        public ImgurGalleryItemModel(IAlbum item)
+        {
+            var coverImage = item.Images.FirstOrDefault();
+
+            Cover = coverImage?.Link;
+            Title = item.Title;
+            Description = item.Description;
+            Link = item.Link;
+        }
+
         [JsonProperty("title")]
         public string? Title { get; set; }
 

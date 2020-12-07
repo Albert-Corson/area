@@ -1,49 +1,43 @@
+using System;
 using System.Collections.Generic;
 using Dashboard.API.Exceptions.Http;
 using Dashboard.API.Models.Response;
 using Dashboard.API.Models.Services.Imgur;
 using Dashboard.API.Models.Table;
-using Dashboard.API.Models.Table.Owned;
 using Dashboard.API.Services.Services;
 using Imgur.API.Endpoints.Impl;
 using Imgur.API.Enums;
-using Imgur.API.Models.Impl;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Dashboard.API.Services.Widgets
+namespace Dashboard.API.Services.Widgets.Imgur
 {
-    public class ImgurFavoritesWidgetService : IWidgetService
+    public class ImgurGallerySearchWidgetService : IWidgetService
     {
-        public ImgurFavoritesWidgetService(ImgurServiceService imgur)
+        public ImgurGallerySearchWidgetService(ImgurServiceService imgur)
         {
             Imgur = imgur;
         }
 
         private ImgurServiceService Imgur { get; }
 
-        private OAuth2Token? _oAuth2Token;
-
-        public bool ValidateServiceAuth(UserServiceTokensModel serviceTokens)
-        {
-            _oAuth2Token = ImgurServiceService.ImgurOAuth2TokenFromJson(serviceTokens.Json!);
-            return _oAuth2Token != null;
-        }
-
-        public string Name { get; } = "Imgur favorites";
+        public string Name { get; } = "Imgur gallery search";
 
         public JsonResult CallWidgetApi(HttpContext context, UserModel user, WidgetModel widget, WidgetCallParameters widgetCallParams)
         {
-            if (Imgur.Client == null || _oAuth2Token == null)
+            if (Imgur.Client == null)
                 throw new InternalServerErrorHttpException();
+            var galleryEndpoint = new GalleryEndpoint(Imgur.Client);
 
-            Imgur.Client.SetOAuth2Token(_oAuth2Token);
+            var sortStr = widgetCallParams.Strings["sort"];
+            if (!Enum.TryParse(typeof(GallerySortOrder), sortStr, true, out var sort))
+                throw new BadRequestHttpException($"Query parameter `sort` has an invalid value `{sortStr}` but expected time|viral|top");
 
-            var sort = widgetCallParams.Strings["favoriteSort"] == "newest" ? AccountGallerySortOrder.Newest : AccountGallerySortOrder.Oldest;
+            if (!widgetCallParams.Undefined.TryGetValue("query", out var query))
+                throw new BadRequestHttpException("Query parameter `query` is missing");
 
-            var task = new AccountEndpoint(Imgur.Client).GetAccountGalleryFavoritesAsync(sort: sort);
+            var task = galleryEndpoint.SearchGalleryAsync(query, sort as GallerySortOrder? ?? GallerySortOrder.Time);
             task.Wait();
-
             if (!task.IsCompletedSuccessfully)
                 throw new InternalServerErrorHttpException("Couldn't not reach Imgur's API");
 

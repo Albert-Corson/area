@@ -4,6 +4,8 @@ using Dashboard.API.Exceptions.Http;
 using Dashboard.API.Models.Table.Owned;
 using Dashboard.API.Repositories;
 using Dashboard.API.Services.Widgets;
+using Dashboard.API.Services.Widgets.Imgur;
+using Dashboard.API.Services.Widgets.LoremPicsum;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +17,17 @@ namespace Dashboard.API.Services
     {
         public IDictionary<string, int> Integers { get; set; } = new Dictionary<string, int>();
         public IDictionary<string, string> Strings { get; set; } = new Dictionary<string, string>();
+
+        public IDictionary<string, string> Undefined { get; set; } = new Dictionary<string, string>();
+
+        public bool TryAddAny(string name, string value, string type = "")
+        {
+            return type.ToLower() switch {
+                "string" => Strings.TryAdd(name, value),
+                "integer" => int.TryParse(value, out var integerValue) && Integers.TryAdd(name, integerValue),
+                _ => Undefined.TryAdd(name, value)
+            };
+        }
     }
 
     public class WidgetManagerService
@@ -25,12 +38,18 @@ namespace Dashboard.API.Services
         public WidgetManagerService(
             DatabaseRepository database,
             ImgurGalleryWidgetService imgurGallery,
-            ImgurFavoritesWidgetService imgurFavorites)
+            ImgurFavoritesWidgetService imgurFavorites,
+            ImgurUploadsWidgetService imgurUploads,
+            ImgurGallerySearchWidgetService imgurGallerySearch,
+            LoremPicsumRandomImageService loremPicsumRandomImage)
         {
             _database = database;
             _widgets = new Dictionary<string, IWidgetService> {
                 {imgurGallery.Name, imgurGallery},
-                {imgurFavorites.Name, imgurFavorites}
+                {imgurFavorites.Name, imgurFavorites},
+                {imgurUploads.Name, imgurUploads},
+                {loremPicsumRandomImage.Name, loremPicsumRandomImage},
+                {imgurGallerySearch.Name, imgurGallerySearch}
             };
         }
 
@@ -71,30 +90,35 @@ namespace Dashboard.API.Services
 
             var callParams = new WidgetCallParameters();
 
-            foreach (var defaultParam in defaultParams) {
-                if (defaultParam.Type == "string") {
-                    if (!callParams.Strings.TryAdd(defaultParam.Name!, defaultParam.Value!)) {
-                        callParams.Strings[defaultParam.Name!] = defaultParam.Value!;
-                    }
+            foreach (var (key, value) in queryParams) {
+                var type = "";
+                var userParam = userParams.FirstOrDefault(model => model.Name == key);
+                if (userParam != null) {
+                    userParam.Value = GetParamValueByType(value, userParam.Type!);
+                    type = userParam.Type!;
                 } else {
-                    int.TryParse(defaultParam.Value, out var integerValue);
-                    if (!callParams.Integers.TryAdd(defaultParam.Name!, integerValue)) {
-                        callParams.Integers[defaultParam.Name!] = integerValue;
+                    var defaultParam = defaultParams.FirstOrDefault(model => model.Name == key);
+                    if (defaultParam != null) {
+                        userParams.Add(new UserWidgetParamModel {
+                            Name = defaultParam.Name,
+                            Type = defaultParam.Type,
+                            WidgetId = widgetId,
+                            Value = GetParamValueByType(value, defaultParam.Type!)
+                        });
+                        type = defaultParam.Type!;
                     }
                 }
+                callParams.TryAddAny(key, value, type);
             }
 
+            _database.SaveChanges();
+
             foreach (var userParam in userParams) {
-                if (userParam.Type == "string") {
-                    if (!callParams.Strings.TryAdd(userParam.Name!, userParam.Value!)) {
-                        callParams.Strings[userParam.Name!] = userParam.Value!;
-                    }
-                } else {
-                    int.TryParse(userParam.Value, out var integerValue);
-                    if (!callParams.Integers.TryAdd(userParam.Name!, integerValue)) {
-                        callParams.Integers[userParam.Name!] = integerValue;
-                    }
-                }
+                callParams.TryAddAny(userParam.Name!, userParam.Value!, userParam.Type!);
+            }
+
+            foreach (var defaultParam in defaultParams) {
+                callParams.TryAddAny(defaultParam.Name!, defaultParam.Value!, defaultParam.Type!);
             }
 
             return callParams;
