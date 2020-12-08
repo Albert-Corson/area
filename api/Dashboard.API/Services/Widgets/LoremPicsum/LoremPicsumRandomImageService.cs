@@ -2,9 +2,7 @@ using System;
 using System.Linq;
 using Dashboard.API.Exceptions.Http;
 using Dashboard.API.Models;
-using Dashboard.API.Models.Table;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using RestSharp;
 
 namespace Dashboard.API.Services.Widgets.LoremPicsum
@@ -13,7 +11,7 @@ namespace Dashboard.API.Services.Widgets.LoremPicsum
     {
         public string Name { get; } = "Lorem Picsum random Image";
 
-        public JsonResult CallWidgetApi(HttpContext context, UserModel user, WidgetModel widget, WidgetCallParameters widgetCallParams)
+        public void CallWidgetApi(HttpContext context, WidgetCallParameters widgetCallParams, ref WidgetCallResponseModel response)
         {
             var width = widgetCallParams.Integers["width"];
             var height = widgetCallParams.Integers["height"];
@@ -29,21 +27,21 @@ namespace Dashboard.API.Services.Widgets.LoremPicsum
                 ThrowOnAnyError = false
             };
             var request = new RestRequest(Method.GET);
-            IRestResponse response = client.Execute(request);
-            if (response.ResponseStatus != ResponseStatus.Completed)
+            IRestResponse restResponse = client.Execute(request);
+            if (restResponse.ResponseStatus != ResponseStatus.Completed)
                 throw new InternalServerErrorHttpException();
 
-            var locationHeaderParameter = response.Headers
+            var locationHeaderParameter = restResponse.Headers
                 .FirstOrDefault(parameter => string.Compare(parameter.Name, "Location", StringComparison.OrdinalIgnoreCase) == 0
                                              && parameter.Type == ParameterType.HttpHeader);
 
-            if (locationHeaderParameter != null && locationHeaderParameter.Value is string location) {
-                return new ResponseModel<string> {
-                    Data = location
-                };
-            }
+            if (locationHeaderParameter == null || !(locationHeaderParameter.Value is string location))
+                throw new InternalServerErrorHttpException();
 
-            throw new InternalServerErrorHttpException();
+            response.Item = new WidgetCallResponseItemModel {
+                Image = location,
+                Link = location
+            };
         }
     }
 }

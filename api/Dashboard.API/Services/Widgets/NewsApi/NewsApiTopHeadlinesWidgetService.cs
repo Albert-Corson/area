@@ -1,10 +1,9 @@
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using Dashboard.API.Exceptions.Http;
 using Dashboard.API.Models;
-using Dashboard.API.Models.Table;
+using Dashboard.API.Models.Widgets;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using NewsAPI;
 using NewsAPI.Constants;
@@ -27,7 +26,7 @@ namespace Dashboard.API.Services.Widgets.NewsApi
 
         public string Name { get; } = "Top headlines";
 
-        public JsonResult CallWidgetApi(HttpContext context, UserModel user, WidgetModel widget, WidgetCallParameters widgetCallParams)
+        public void CallWidgetApi(HttpContext context, WidgetCallParameters widgetCallParams, ref WidgetCallResponseModel response)
         {
             var countryStr = widgetCallParams.Strings["country"];
             var categoryStr = widgetCallParams.Strings["category"];
@@ -53,9 +52,7 @@ namespace Dashboard.API.Services.Widgets.NewsApi
             if (news.Status != Statuses.Ok)
                 throw new BadRequestHttpException(news.Error.Message);
 
-            return new ResponseModel<List<Article>> {
-                Data = news.Articles
-            };
+            response.Items = news.Articles.Select(article => new NewsApiArticleModel(article));
         }
     }
 }

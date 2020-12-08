@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Dashboard.API.Exceptions.Http;
+using Dashboard.API.Models;
 using Dashboard.API.Models.Services;
 using Dashboard.API.Models.Table;
 using Dashboard.API.Models.Table.Owned;
@@ -89,24 +91,30 @@ namespace Dashboard.API.Services.Services
             }
         }
 
-        public static List<ImgurGalleryItemModel> CoverImageListFromGallery(IEnumerable<IGalleryItem> gallery)
+        public static List<WidgetCallResponseItemModel> WidgetResponseItemsFromGallery(IEnumerable<IGalleryItem> gallery)
         {
-            List<ImgurGalleryItemModel> imageList = new List<ImgurGalleryItemModel>();
+            List<WidgetCallResponseItemModel> imageList = new List<WidgetCallResponseItemModel>();
 
             foreach (var galleryItem in gallery) {
-                ImgurGalleryItemModel responseItem;
+                WidgetCallResponseItemModel responseItem = new WidgetCallResponseItemModel();
                 switch (galleryItem) {
                     case GalleryAlbum album:
-                        responseItem = new ImgurGalleryItemModel(album);
+                        responseItem.Image = album.Images.FirstOrDefault()?.Link;
+                        responseItem.Image = album.Title;
+                        responseItem.Content = album.Description;
+                        responseItem.Link = album.Link;
                         break;
                     case GalleryImage image:
-                        responseItem = new ImgurGalleryItemModel(image);
+                        responseItem.Image = image.Link;
+                        responseItem.Image = image.Title;
+                        responseItem.Content = image.Description;
+                        responseItem.Link = image.Link;
                         break;
                     default:
                         continue;
                 }
 
-                if (responseItem.Cover == null)
+                if (responseItem.Image == null)
                     continue;
                 imageList.Add(responseItem);
             }

@@ -105,7 +105,9 @@ namespace Dashboard.API.Controllers
             [FromRoute] [Required] [Range(1, 2147483647)] int? widgetId
         )
         {
-            return _widgetManager.CallWidgetById(HttpContext, widgetId!.Value);
+             return new ResponseModel<WidgetCallResponseModel> {
+                 Data = _widgetManager.CallWidgetById(HttpContext, widgetId!.Value)
+             };
         }
 
         [HttpDelete]

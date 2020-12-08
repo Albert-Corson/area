@@ -1,8 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Dashboard.API.Exceptions.Http;
-using Dashboard.API.Models.Table;
+using Dashboard.API.Models;
 using Dashboard.API.Models.Table.Owned;
 using Dashboard.API.Repositories;
 using Dashboard.API.Services.Widgets;
@@ -11,7 +10,6 @@ using Dashboard.API.Services.Widgets.LoremPicsum;
 using Dashboard.API.Services.Widgets.NewsApi;
 using Dashboard.API.Services.Widgets.Spotify;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Primitives;
 
@@ -39,6 +37,23 @@ namespace Dashboard.API.Services
                 "integer" => Integers.ContainsKey(key),
                 _ => false
             };
+        }
+
+        public List<WidgetParamModel> MergeAll()
+        {
+            var list = new List<WidgetParamModel>();
+
+            list.AddRange(Strings.Select(pair => new WidgetParamModel {
+                Name = pair.Key,
+                Type = "string",
+                Value = pair.Value
+            }));
+            list.AddRange(Integers.Select(pair => new WidgetParamModel {
+                Name = pair.Key,
+                Type = "integer",
+                Value = pair.Value.ToString()
+            }));
+            return list;
         }
     }
 
@@ -75,7 +90,7 @@ namespace Dashboard.API.Services
             };
         }
 
-        public JsonResult CallWidgetById(HttpContext context, int widgetId)
+        public WidgetCallResponseModel CallWidgetById(HttpContext context, int widgetId)
         {
             var userId = AuthService.GetUserIdFromPrincipal(context.User);
             if (userId == null)
@@ -103,7 +118,10 @@ namespace Dashboard.API.Services
                 user.WidgetParams ?? new List<UserWidgetParamModel>(),
                 context.Request.Query);
 
-            return widgetService.CallWidgetApi(context, user, widget, widgetCallParams);
+            var response = new WidgetCallResponseModel(widgetCallParams.MergeAll());
+
+            widgetService.CallWidgetApi(context, widgetCallParams, ref response);
+            return response;
         }
 
         public static List<WidgetParamModel> BuildUserWidgetCallParams(IEnumerable<UserWidgetParamModel> userParams, IEnumerable<WidgetParamModel> widgetParams)
@@ -126,7 +144,7 @@ namespace Dashboard.API.Services
 
             foreach (var (key, value) in queryParams) {
                 string? type = null;
-                var userParam = userParams.FirstOrDefault(model => model.Name == key);
+                var userParam = userParams.FirstOrDefault(model => model.WidgetId == widgetId && model.Name == key);
                 if (userParam != null) {
                     userParam.Value = GetParamValueByType(value, userParam.Type!);
                     type = userParam.Type!;
@@ -150,6 +168,8 @@ namespace Dashboard.API.Services
             _database.SaveChanges();
 
             foreach (var userParam in userParams) {
+                if (userParam.WidgetId != widgetId)
+                    continue;
                 callParams.TryAddAny(userParam.Name!, userParam.Value!, userParam.Type!);
             }
 

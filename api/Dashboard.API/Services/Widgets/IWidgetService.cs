@@ -1,3 +1,4 @@
+using Dashboard.API.Models;
 using Dashboard.API.Models.Table;
 using Dashboard.API.Models.Table.Owned;
 using Microsoft.AspNetCore.Http;
@@ -11,6 +12,6 @@ namespace Dashboard.API.Services.Widgets
 
         public virtual bool ValidateServiceAuth(UserServiceTokensModel serviceTokens) => true;
 
-        public JsonResult CallWidgetApi(HttpContext context, UserModel user, WidgetModel widget, WidgetCallParameters widgetCallParams);
+        public void CallWidgetApi(HttpContext context, WidgetCallParameters widgetCallParams, ref WidgetCallResponseModel response);
     }
 }

@@ -1,14 +1,10 @@
 using System;
-using System.Collections.Generic;
 using Dashboard.API.Exceptions.Http;
 using Dashboard.API.Models;
-using Dashboard.API.Models.Table;
-using Dashboard.API.Models.Widgets;
 using Dashboard.API.Services.Services;
 using Imgur.API.Endpoints.Impl;
 using Imgur.API.Enums;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Dashboard.API.Services.Widgets.Imgur
 {
@@ -23,7 +19,7 @@ namespace Dashboard.API.Services.Widgets.Imgur
 
         public string Name { get; } = "Imgur gallery search";
 
-        public JsonResult CallWidgetApi(HttpContext context, UserModel user, WidgetModel widget, WidgetCallParameters widgetCallParams)
+        public void CallWidgetApi(HttpContext context, WidgetCallParameters widgetCallParams, ref WidgetCallResponseModel response)
         {
             if (Imgur.Client == null)
                 throw new InternalServerErrorHttpException();
@@ -39,9 +35,7 @@ namespace Dashboard.API.Services.Widgets.Imgur
             if (!task.IsCompletedSuccessfully)
                 throw new InternalServerErrorHttpException("Couldn't not reach Imgur's API");
 
-            return new ResponseModel<List<ImgurGalleryItemModel>> {
-                Data = ImgurServiceService.CoverImageListFromGallery(task.Result)
-            };
+            response.Items = ImgurServiceService.WidgetResponseItemsFromGallery(task.Result);
         }
     }
 }
