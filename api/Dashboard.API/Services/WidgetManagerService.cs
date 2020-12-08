@@ -6,6 +6,7 @@ using Dashboard.API.Repositories;
 using Dashboard.API.Services.Widgets;
 using Dashboard.API.Services.Widgets.Imgur;
 using Dashboard.API.Services.Widgets.LoremPicsum;
+using Dashboard.API.Services.Widgets.NewsApi;
 using Dashboard.API.Services.Widgets.Spotify;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,15 +17,17 @@ namespace Dashboard.API.Services
 {
     public class WidgetCallParameters
     {
-        public IDictionary<string, int> Integers { get; set; } = new Dictionary<string, int>();
-        public IDictionary<string, string> Strings { get; set; } = new Dictionary<string, string>();
+        public IDictionary<string, int?> Integers { get; } = new Dictionary<string, int?>();
 
-        public IDictionary<string, string> Undefined { get; set; } = new Dictionary<string, string>();
+        public IDictionary<string, string?> Strings { get; } = new Dictionary<string, string?>();
 
-        public bool TryAddAny(string name, string value, string type = "")
+        public IDictionary<string, string?> Undefined { get; } = new Dictionary<string, string?>();
+
+        public bool TryAddAny(string name, string? value, string type = "")
         {
             return type.ToLower() switch {
                 "string" => Strings.TryAdd(name, value),
+                "integer" when value == null => Integers.TryAdd(name, null),
                 "integer" => int.TryParse(value, out var integerValue) && Integers.TryAdd(name, integerValue),
                 _ => Undefined.TryAdd(name, value)
             };
@@ -45,7 +48,9 @@ namespace Dashboard.API.Services
             LoremPicsumRandomImageService loremPicsumRandomImage,
             SpotifyFavoriteArtistsWidgetService spotifyFavoriteArtists,
             SpotifyFavoriteTracksWidgetService spotifyFavoriteTracks,
-            SpotifyHistoryWidgetService spotifyHistory)
+            SpotifyHistoryWidgetService spotifyHistory,
+            NewsApiTopHeadlinesWidgetService newsApiTopHeadlines,
+            NewsApiSearchWidgetService newsApiSearch)
         {
             _database = database;
             _widgets = new Dictionary<string, IWidgetService> {
@@ -56,7 +61,9 @@ namespace Dashboard.API.Services
                 {imgurGallerySearch.Name, imgurGallerySearch},
                 {spotifyFavoriteArtists.Name, spotifyFavoriteArtists},
                 {spotifyFavoriteTracks.Name, spotifyFavoriteTracks},
-                {spotifyHistory.Name, spotifyHistory}
+                {spotifyHistory.Name, spotifyHistory},
+                {newsApiTopHeadlines.Name, newsApiTopHeadlines},
+                {newsApiSearch.Name, newsApiSearch}
             };
         }
 

@@ -15,7 +15,13 @@ namespace Dashboard.API.Services.Widgets.LoremPicsum
 
         public JsonResult CallWidgetApi(HttpContext context, UserModel user, WidgetModel widget, WidgetCallParameters widgetCallParams)
         {
-            var url = $"https://picsum.photos/{widgetCallParams.Integers["width"]}/{widgetCallParams.Integers["height"]}";
+            var width = widgetCallParams.Integers["width"];
+            var height = widgetCallParams.Integers["height"];
+
+            if (height == null || width == null)
+                throw new BadRequestHttpException();
+
+            var url = $"https://picsum.photos/{width}/{height}";
 
             var client = new RestClient(url) {
                 Timeout = 5000,
@@ -28,10 +34,8 @@ namespace Dashboard.API.Services.Widgets.LoremPicsum
                 throw new InternalServerErrorHttpException();
 
             var locationHeaderParameter = response.Headers
-                .FirstOrDefault(parameter => {
-                    return string.Compare(parameter.Name, "Location", StringComparison.OrdinalIgnoreCase) == 0
-                           && parameter.Type == ParameterType.HttpHeader;
-                });
+                .FirstOrDefault(parameter => string.Compare(parameter.Name, "Location", StringComparison.OrdinalIgnoreCase) == 0
+                                             && parameter.Type == ParameterType.HttpHeader);
 
             if (locationHeaderParameter != null && locationHeaderParameter.Value is string location) {
                 return new ResponseModel<string> {
