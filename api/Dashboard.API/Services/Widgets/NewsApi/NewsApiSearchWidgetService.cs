@@ -28,19 +28,14 @@ namespace Dashboard.API.Services.Widgets.NewsApi
         public string Name { get; } = "News search";
         public JsonResult CallWidgetApi(HttpContext context, UserModel user, WidgetModel widget, WidgetCallParameters widgetCallParams)
         {
-            var languageStr = widgetCallParams.Strings["language"];
-
             var everythingRequest = new EverythingRequest {
-                From = DateTime.Now.Subtract(TimeSpan.FromDays(31))
+                From = DateTime.Now.Subtract(TimeSpan.FromDays(31)),
+                Q = widgetCallParams.Strings["query"]
             };
 
+            var languageStr = widgetCallParams.Strings["language"];
             if (!string.IsNullOrWhiteSpace(languageStr) && Enum.TryParse<Languages>(languageStr, true, out var language))
                 everythingRequest.Language = language;
-
-            if (!widgetCallParams.Undefined.TryGetValue("query", out var query))
-                throw new BadRequestHttpException("Missing query parameter `query`");
-
-            everythingRequest.Q = query;
 
             var news = _client?.GetEverything(everythingRequest);
 

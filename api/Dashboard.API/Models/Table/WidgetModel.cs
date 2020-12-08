@@ -33,6 +33,6 @@ namespace Dashboard.API.Models.Table
         public ICollection<UserWidgetModel>? Users { get; set; }
 
         [JsonProperty("params")]
-        public ICollection<WidgetParamModel>? DefaultParams;
+        public ICollection<WidgetParamModel>? Params;
     }
 }

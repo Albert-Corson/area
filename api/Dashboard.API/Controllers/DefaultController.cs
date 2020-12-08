@@ -35,7 +35,7 @@ namespace Dashboard.API.Controllers
             var clientIp = HttpContext.Connection.RemoteIpAddress.MapToIPv4() + ":" + HttpContext.Connection.RemotePort;
 
             var serviceModels = _database.Services
-                .Include(model => model.Widgets).ThenInclude(model => model.DefaultParams)
+                .Include(model => model.Widgets).ThenInclude(model => model.Params)
                 .AsNoTracking()
                 .ToList();
 
@@ -50,7 +50,10 @@ namespace Dashboard.API.Controllers
                 Widgets = service.Widgets?.Select(widget =>  new AboutDotJsonModel.WidgetModel {
                     Name = widget.Name,
                     Description = widget.Description,
-                    DefaultParams = widget.DefaultParams
+                    Params = widget.Params?.Select(model => new AboutDotJsonModel.WidgetParamModel {
+                        Name = model.Name,
+                        Type = model.Type
+                    }) ?? new List<AboutDotJsonModel.WidgetParamModel>()
                 }) ?? new List<AboutDotJsonModel.WidgetModel>()
             }).ToList();
 

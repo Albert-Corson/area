@@ -6,3 +6,5 @@ INSERT INTO public."Widgets" ("Id", "Name", "Description", "RequiresAuth", "Serv
 INSERT INTO public."Widgets" ("Id", "Name", "Description", "RequiresAuth", "ServiceId") VALUES (6, 'Spotify favorite artists', 'Get a list of your favorite artists on Spotify', true, 3);
 INSERT INTO public."Widgets" ("Id", "Name", "Description", "RequiresAuth", "ServiceId") VALUES (7, 'Spotify favorite tracks', 'Get a list of your favorite tracks', true, 3);
 INSERT INTO public."Widgets" ("Id", "Name", "Description", "RequiresAuth", "ServiceId") VALUES (8, 'Spotify history', 'Get a list of your recently played tracks', true, 3);
+INSERT INTO public."Widgets" ("Id", "Name", "Description", "RequiresAuth", "ServiceId") VALUES (9, 'Top headlines', 'See the most recent top headlines', false, 4);
+INSERT INTO public."Widgets" ("Id", "Name", "Description", "RequiresAuth", "ServiceId") VALUES (10, 'News search', 'Search for headlines from the past month', false, 4);

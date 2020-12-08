@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Dashboard.API.Exceptions.Http;
+using Dashboard.API.Models.Table;
 using Dashboard.API.Models.Table.Owned;
 using Dashboard.API.Repositories;
 using Dashboard.API.Services.Widgets;
@@ -21,15 +23,21 @@ namespace Dashboard.API.Services
 
         public IDictionary<string, string?> Strings { get; } = new Dictionary<string, string?>();
 
-        public IDictionary<string, string?> Undefined { get; } = new Dictionary<string, string?>();
-
-        public bool TryAddAny(string name, string? value, string type = "")
+        public bool TryAddAny(string name, string? value, string type)
         {
-            return type.ToLower() switch {
+            return type switch {
                 "string" => Strings.TryAdd(name, value),
                 "integer" when value == null => Integers.TryAdd(name, null),
-                "integer" => int.TryParse(value, out var integerValue) && Integers.TryAdd(name, integerValue),
-                _ => Undefined.TryAdd(name, value)
+                _ => int.TryParse(value, out var integerValue) && Integers.TryAdd(name, integerValue)
+            };
+        }
+
+        public bool Contains(string key, string type)
+        {
+            return type switch {
+                "string" => Strings.ContainsKey(key),
+                "integer" => Integers.ContainsKey(key),
+                _ => false
             };
         }
     }
@@ -81,7 +89,7 @@ namespace Dashboard.API.Services
                 throw new UnauthorizedHttpException();
 
             var widget = _database.Widgets
-                .Include(model => model.DefaultParams)
+                .Include(model => model.Params)
                 .FirstOrDefault(model => model.Id == widgetId);
             if (widget == null || !_widgets.TryGetValue(widget.Name!, out var widgetService))
                 throw new NotFoundHttpException("Widget not found");
@@ -91,28 +99,40 @@ namespace Dashboard.API.Services
 
             var widgetCallParams = BuildWidgetCallParams(
                 widgetId,
-                widget.DefaultParams ?? new List<WidgetParamModel>(),
+                widget.Params ?? new List<WidgetParamModel>(),
                 user.WidgetParams ?? new List<UserWidgetParamModel>(),
                 context.Request.Query);
 
             return widgetService.CallWidgetApi(context, user, widget, widgetCallParams);
         }
 
+        public static List<WidgetParamModel> BuildUserWidgetCallParams(IEnumerable<UserWidgetParamModel> userParams, IEnumerable<WidgetParamModel> widgetParams)
+        {
+            List<WidgetParamModel> parameters = new List<WidgetParamModel>();
+            parameters.AddRange(userParams.Select(model => new WidgetParamModel {
+                Name = model.Name,
+                Required = model.Required,
+                Type = model.Type,
+                Value = model.Value
+            }));
+            parameters.AddRange(widgetParams
+                .Where(model => parameters.Exists(param => param.Name != model.Name)));
+            return parameters;
+        }
+
         private WidgetCallParameters BuildWidgetCallParams(int widgetId, ICollection<WidgetParamModel> defaultParams, ICollection<UserWidgetParamModel> userParams, IQueryCollection queryParams)
         {
-            UpdateUserParamsWithQueryParams(widgetId, defaultParams, userParams, queryParams);
-
             var callParams = new WidgetCallParameters();
 
             foreach (var (key, value) in queryParams) {
-                var type = "";
+                string? type = null;
                 var userParam = userParams.FirstOrDefault(model => model.Name == key);
                 if (userParam != null) {
                     userParam.Value = GetParamValueByType(value, userParam.Type!);
                     type = userParam.Type!;
                 } else {
                     var defaultParam = defaultParams.FirstOrDefault(model => model.Name == key);
-                    if (defaultParam != null) {
+                    if (defaultParam != null && defaultParam.Required == true) {
                         userParams.Add(new UserWidgetParamModel {
                             Name = defaultParam.Name,
                             Type = defaultParam.Type,
@@ -123,7 +143,8 @@ namespace Dashboard.API.Services
                     }
                 }
 
-                callParams.TryAddAny(key, value, type);
+                if (type != null)
+                    callParams.TryAddAny(key, value, type);
             }
 
             _database.SaveChanges();
@@ -133,32 +154,13 @@ namespace Dashboard.API.Services
             }
 
             foreach (var defaultParam in defaultParams) {
-                callParams.TryAddAny(defaultParam.Name!, defaultParam.Value!, defaultParam.Type!);
+                if (defaultParam.Required != true)
+                    callParams.TryAddAny(defaultParam.Name!, defaultParam.Value!, defaultParam.Type!);
+                else if (callParams.Contains(defaultParam.Name!, defaultParam.Type!) == false)
+                    throw new BadRequestHttpException($"Missing parameter `{defaultParam.Name}` of type `{defaultParam.Type}`");
             }
 
             return callParams;
-        }
-
-        private void UpdateUserParamsWithQueryParams(int widgetId, ICollection<WidgetParamModel> defaultParams, ICollection<UserWidgetParamModel> userParams, IQueryCollection queryParams)
-        {
-            foreach (var (key, value) in queryParams) {
-                var userParam = userParams.FirstOrDefault(model => model.Name == key);
-                if (userParam != null) {
-                    userParam.Value = GetParamValueByType(value, userParam.Type!);
-                } else {
-                    var defaultParam = defaultParams.FirstOrDefault(model => model.Name == key);
-                    if (defaultParam == null)
-                        continue;
-                    userParams.Add(new UserWidgetParamModel {
-                        Name = defaultParam.Name,
-                        Type = defaultParam.Type,
-                        WidgetId = widgetId,
-                        Value = GetParamValueByType(value, defaultParam.Type!)
-                    });
-                }
-            }
-
-            _database.SaveChanges();
         }
 
         private static string GetParamValueByType(StringValues value, string paramType)

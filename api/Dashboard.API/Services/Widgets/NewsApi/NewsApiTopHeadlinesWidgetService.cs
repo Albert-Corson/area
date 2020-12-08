@@ -26,6 +26,7 @@ namespace Dashboard.API.Services.Widgets.NewsApi
         }
 
         public string Name { get; } = "Top headlines";
+
         public JsonResult CallWidgetApi(HttpContext context, UserModel user, WidgetModel widget, WidgetCallParameters widgetCallParams)
         {
             var countryStr = widgetCallParams.Strings["country"];

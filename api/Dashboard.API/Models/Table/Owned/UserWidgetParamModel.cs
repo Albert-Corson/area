@@ -11,5 +11,9 @@ namespace Dashboard.API.Models.Table.Owned
         public int? WidgetId { get; set; }
 
         public WidgetModel? Widget { get; set; }
+
+        [NotMapped]
+        [JsonIgnore]
+        public override bool? Required => true;
     }
 }

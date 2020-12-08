@@ -33,11 +33,9 @@ namespace Dashboard.API.Services.Widgets.Imgur
             if (!Enum.TryParse<GallerySortOrder>(sortStr, true, out var sort))
                 throw new BadRequestHttpException($"Query parameter `sort` has an invalid value `{sortStr}`. Expected time|viral|top");
 
-            if (!widgetCallParams.Undefined.TryGetValue("query", out var query) || query == null)
-                throw new BadRequestHttpException("Query parameter `query` is missing");
-
-            var task = galleryEndpoint.SearchGalleryAsync(query, sort);
+            var task = galleryEndpoint.SearchGalleryAsync(widgetCallParams.Strings["query"], sort);
             task.Wait();
+
             if (!task.IsCompletedSuccessfully)
                 throw new InternalServerErrorHttpException("Couldn't not reach Imgur's API");
 

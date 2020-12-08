@@ -7,6 +7,7 @@ using Dashboard.API.Exceptions.Http;
 using Dashboard.API.Models;
 using Dashboard.API.Models.Table;
 using Dashboard.API.Models.Table.ManyToMany;
+using Dashboard.API.Models.Table.Owned;
 using Dashboard.API.Repositories;
 using Dashboard.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -40,7 +41,7 @@ namespace Dashboard.API.Controllers
             if (serviceId != null) {
                 var service = _database.Services
                     .Include(model => model.Widgets).ThenInclude(model => model.Service)
-                    .Include(model => model.Widgets).ThenInclude(model => model.DefaultParams)
+                    .Include(model => model.Widgets).ThenInclude(model => model.Params)
                     .FirstOrDefault(model => model.Id == serviceId);
 
                 if (service?.Id == null)
@@ -50,7 +51,7 @@ namespace Dashboard.API.Controllers
             } else {
                 widgets = _database.Widgets
                     .Include(model => model.Service)
-                    .Include(model => model.DefaultParams)
+                    .Include(model => model.Params)
                     .AsQueryable().ToList();
             }
 
@@ -68,24 +69,30 @@ namespace Dashboard.API.Controllers
         {
             var userId = AuthService.GetUserIdFromPrincipal(User);
 
-            var userToWidgets = _database.Users
-                .Include(user => user.Widgets).ThenInclude(userWidget => userWidget.Widget).ThenInclude(widget => widget!.Service)
-                .Include(user => user.Widgets).ThenInclude(userWidget => userWidget.Widget).ThenInclude(widget => widget!.DefaultParams)
-                .FirstOrDefault(model => model.Id == userId)
-                ?.Widgets;
+            var user = _database.Users
+                .Include(model => model.Widgets).ThenInclude(userWidget => userWidget.Widget).ThenInclude(widget => widget!.Service)
+                .Include(model => model.Widgets).ThenInclude(userWidget => userWidget.Widget).ThenInclude(widget => widget!.Params)
+                .Include(model => model.WidgetParams)
+                .FirstOrDefault(model => model.Id == userId)!;
 
-            List<WidgetModel?> widgets;
+            var userToWidgets = user.Widgets;
+
+            List<WidgetModel> widgets;
             if (serviceId != null && userToWidgets != null) {
                 widgets = userToWidgets
                     .Where(model => model.Widget!.ServiceId == serviceId)
-                    .Select(model => model.Widget).ToList();
+                    .Select(model => model.Widget).ToList()!;
             } else if (userToWidgets != null) {
-                widgets = userToWidgets.Select(model => model.Widget).ToList();
+                widgets = userToWidgets.Select(model => model.Widget).ToList()!;
             } else {
-                widgets = new List<WidgetModel?>();
+                widgets = new List<WidgetModel>();
             }
 
-            return new ResponseModel<List<WidgetModel?>> {
+            foreach (var widget in widgets) {
+                widget.Params = WidgetManagerService.BuildUserWidgetCallParams(user.WidgetParams!.Where(model => model.WidgetId == widget.Id)!, widget.Params!);
+            }
+
+            return new ResponseModel<List<WidgetModel>> {
                 Data = widgets
             };
         }
