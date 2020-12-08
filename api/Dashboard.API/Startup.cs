@@ -106,6 +106,7 @@ namespace Dashboard.API
             services.AddScoped<LoremPicsumRandomImageService>();
             services.AddScoped<SpotifyFavoriteArtistsWidgetService>();
             services.AddScoped<SpotifyFavoriteTracksWidgetService>();
+            services.AddScoped<SpotifyHistoryWidgetService>();
             services.AddScoped<WidgetManagerService>();
         }
 

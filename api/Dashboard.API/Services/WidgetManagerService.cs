@@ -44,7 +44,8 @@ namespace Dashboard.API.Services
             ImgurGallerySearchWidgetService imgurGallerySearch,
             LoremPicsumRandomImageService loremPicsumRandomImage,
             SpotifyFavoriteArtistsWidgetService spotifyFavoriteArtists,
-            SpotifyFavoriteTracksWidgetService spotifyFavoriteTracks)
+            SpotifyFavoriteTracksWidgetService spotifyFavoriteTracks,
+            SpotifyHistoryWidgetService spotifyHistory)
         {
             _database = database;
             _widgets = new Dictionary<string, IWidgetService> {
@@ -54,7 +55,8 @@ namespace Dashboard.API.Services
                 {loremPicsumRandomImage.Name, loremPicsumRandomImage},
                 {imgurGallerySearch.Name, imgurGallerySearch},
                 {spotifyFavoriteArtists.Name, spotifyFavoriteArtists},
-                {spotifyFavoriteTracks.Name, spotifyFavoriteTracks}
+                {spotifyFavoriteTracks.Name, spotifyFavoriteTracks},
+                {spotifyHistory.Name, spotifyHistory}
             };
         }
 
