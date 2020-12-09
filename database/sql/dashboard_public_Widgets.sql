@@ -8,3 +8,5 @@ INSERT INTO public."Widgets" ("Id", "Name", "Description", "RequiresAuth", "Serv
 INSERT INTO public."Widgets" ("Id", "Name", "Description", "RequiresAuth", "ServiceId") VALUES (8, 'Spotify history', 'Get a list of your recently played tracks', true, 3);
 INSERT INTO public."Widgets" ("Id", "Name", "Description", "RequiresAuth", "ServiceId") VALUES (9, 'Top headlines', 'See the most recent top headlines', false, 4);
 INSERT INTO public."Widgets" ("Id", "Name", "Description", "RequiresAuth", "ServiceId") VALUES (10, 'News search', 'Search for headlines from the past month', false, 4);
+INSERT INTO public."Widgets" ("Id", "Name", "Description", "RequiresAuth", "ServiceId") VALUES (11, 'Reddit trophies', 'See your Reddit trophies', true, 5);
+INSERT INTO public."Widgets" ("Id", "Name", "Description", "RequiresAuth", "ServiceId") VALUES (12, 'Random cat images', 'See a bunch of cat images', false, 6);
