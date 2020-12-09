@@ -9,3 +9,4 @@ INSERT INTO public."Widgets" ("Id", "Name", "Description", "RequiresAuth", "Serv
 INSERT INTO public."Widgets" ("Id", "Name", "Description", "RequiresAuth", "ServiceId") VALUES (9, 'Top headlines', 'See the most recent top headlines', false, 4);
 INSERT INTO public."Widgets" ("Id", "Name", "Description", "RequiresAuth", "ServiceId") VALUES (10, 'News search', 'Search for headlines from the past month', false, 4);
 INSERT INTO public."Widgets" ("Id", "Name", "Description", "RequiresAuth", "ServiceId") VALUES (11, 'Random cat images', 'See a bunch of cat images', false, 5);
+INSERT INTO public."Widgets" ("Id", "Name", "Description", "RequiresAuth", "ServiceId") VALUES (12, 'Random dad joke', 'Get a random dad joke', false, 6);

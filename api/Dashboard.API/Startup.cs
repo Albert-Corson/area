@@ -7,6 +7,7 @@ using Dashboard.API.Repositories;
 using Dashboard.API.Services;
 using Dashboard.API.Services.Services;
 using Dashboard.API.Services.Widgets.CatApi;
+using Dashboard.API.Services.Widgets.Icanhazdadjoke;
 using Dashboard.API.Services.Widgets.Imgur;
 using Dashboard.API.Services.Widgets.LoremPicsum;
 using Dashboard.API.Services.Widgets.NewsApi;
@@ -112,6 +113,7 @@ namespace Dashboard.API
             services.AddScoped<NewsApiTopHeadlinesWidgetService>();
             services.AddScoped<NewsApiSearchWidgetService>();
             services.AddScoped<CatApiRandomImagesWidgetService>();
+            services.AddScoped<IcanhazdadjokeRandomJokeWidgetService>();
             services.AddScoped<WidgetManagerService>();
         }
 
