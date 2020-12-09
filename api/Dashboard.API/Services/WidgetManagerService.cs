@@ -6,6 +6,7 @@ using Dashboard.API.Models.Table;
 using Dashboard.API.Models.Table.Owned;
 using Dashboard.API.Repositories;
 using Dashboard.API.Services.Widgets;
+using Dashboard.API.Services.Widgets.CatApi;
 using Dashboard.API.Services.Widgets.Imgur;
 using Dashboard.API.Services.Widgets.LoremPicsum;
 using Dashboard.API.Services.Widgets.NewsApi;
@@ -76,7 +77,8 @@ namespace Dashboard.API.Services
             SpotifyHistoryWidgetService spotifyHistory,
             NewsApiTopHeadlinesWidgetService newsApiTopHeadlines,
             NewsApiSearchWidgetService newsApiSearch,
-            RedditTrophiesWidgetService redditTrophies)
+            RedditTrophiesWidgetService redditTrophies,
+            CatApiRandomImagesWidgetService catApiRandomImages)
         {
             _database = database;
             _widgets = new Dictionary<string, IWidgetService> {
@@ -90,7 +92,8 @@ namespace Dashboard.API.Services
                 {spotifyHistory.Name, spotifyHistory},
                 {newsApiTopHeadlines.Name, newsApiTopHeadlines},
                 {newsApiSearch.Name, newsApiSearch},
-                {redditTrophies.Name, redditTrophies}
+                {redditTrophies.Name, redditTrophies},
+                {catApiRandomImages.Name, catApiRandomImages}
             };
         }
 
