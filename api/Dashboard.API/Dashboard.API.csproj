@@ -17,6 +17,7 @@
     <PackageReference Include="NewsAPI" Version="0.6.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.Design" Version="1.1.1" />
+    <PackageReference Include="Reddit" Version="1.4.0" />
     <PackageReference Include="RedditSharp" Version="1.1.14" />
     <PackageReference Include="RestSharp" Version="106.11.7" />
     <PackageReference Include="SpotifyAPI.Web" Version="6.0.0" />

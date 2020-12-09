@@ -27,7 +27,7 @@ namespace Dashboard.API.Services.Widgets.LoremPicsum
                 ThrowOnAnyError = false
             };
             var request = new RestRequest(Method.GET);
-            IRestResponse restResponse = client.Execute(request);
+            var restResponse = client.Execute(request);
             if (restResponse.ResponseStatus != ResponseStatus.Completed)
                 throw new InternalServerErrorHttpException();
 

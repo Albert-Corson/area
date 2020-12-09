@@ -88,7 +88,7 @@ namespace Dashboard.API.Services.Services
             });
         }
 
-        public SpotifyClient? ClientFromJsonTokens(string json)
+        public SpotifyClient? ClientFromJson(string json)
         {
             if (_clientId == null || _clientSecret == null)
                 return null;

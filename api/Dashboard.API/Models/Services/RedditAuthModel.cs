@@ -1,11 +1,17 @@
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 
 namespace Dashboard.API.Models.Services
 {
     public class RedditAuthModel
     {
-        [Swan.Formatters.JsonProperty("access_token")]
+        [Required]
+        [JsonProperty("access_token")]
         public string? AccessToken { get; set; }
+
+        [Required]
+        [JsonProperty("refresh_token")]
+        public string? RefreshToken { get; set; }
 
         public override string ToString()
         {

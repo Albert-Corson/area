@@ -2,12 +2,14 @@ using System.Collections.Generic;
 using System.Linq;
 using Dashboard.API.Exceptions.Http;
 using Dashboard.API.Models;
+using Dashboard.API.Models.Table;
 using Dashboard.API.Models.Table.Owned;
 using Dashboard.API.Repositories;
 using Dashboard.API.Services.Widgets;
 using Dashboard.API.Services.Widgets.Imgur;
 using Dashboard.API.Services.Widgets.LoremPicsum;
 using Dashboard.API.Services.Widgets.NewsApi;
+using Dashboard.API.Services.Widgets.Reddit;
 using Dashboard.API.Services.Widgets.Spotify;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -73,7 +75,8 @@ namespace Dashboard.API.Services
             SpotifyFavoriteTracksWidgetService spotifyFavoriteTracks,
             SpotifyHistoryWidgetService spotifyHistory,
             NewsApiTopHeadlinesWidgetService newsApiTopHeadlines,
-            NewsApiSearchWidgetService newsApiSearch)
+            NewsApiSearchWidgetService newsApiSearch,
+            RedditTrophiesWidgetService redditTrophies)
         {
             _database = database;
             _widgets = new Dictionary<string, IWidgetService> {
@@ -86,7 +89,8 @@ namespace Dashboard.API.Services
                 {spotifyFavoriteTracks.Name, spotifyFavoriteTracks},
                 {spotifyHistory.Name, spotifyHistory},
                 {newsApiTopHeadlines.Name, newsApiTopHeadlines},
-                {newsApiSearch.Name, newsApiSearch}
+                {newsApiSearch.Name, newsApiSearch},
+                {redditTrophies.Name, redditTrophies}
             };
         }
 
@@ -110,7 +114,7 @@ namespace Dashboard.API.Services
                 throw new NotFoundHttpException("Widget not found");
 
             if (widget.RequiresAuth == true)
-                ValidateSignInState(widgetService, widget.ServiceId!.Value);
+                ValidateSignInState(widgetService, user, widget.ServiceId!.Value);
 
             var widgetCallParams = BuildWidgetCallParams(
                 widgetId,
@@ -191,18 +195,16 @@ namespace Dashboard.API.Services
             return integerValue.ToString();
         }
 
-        private void ValidateSignInState(IWidgetService widgetService, int serviceId)
+        private void ValidateSignInState(IWidgetService widgetService, UserModel user, int serviceId)
         {
-            var serviceTokens = _database.Users
-                .AsNoTracking()
-                .SelectMany(model => model.ServiceTokens)
-                .FirstOrDefault(tokensModel => tokensModel.ServiceId == serviceId);
-            if (serviceTokens == null)
+            var serviceToken = user.ServiceTokens!.FirstOrDefault(model => model.ServiceId == serviceId);
+
+            if (serviceToken == null)
                 throw new UnauthorizedHttpException("You need to be signed-in to the service");
-            if (widgetService.ValidateServiceAuth(serviceTokens))
+            if (widgetService.ValidateServiceAuth(serviceToken))
                 return;
-            _database.Remove(serviceTokens);
-            throw new UnauthorizedHttpException("You need to be sign-in again to the service");
+            _database.Remove(serviceToken);
+            throw new UnauthorizedHttpException("You need sign-in to the service again");
         }
     }
 }

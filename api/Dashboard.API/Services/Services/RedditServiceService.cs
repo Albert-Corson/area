@@ -1,11 +1,14 @@
 using System;
+using System.Text;
 using Dashboard.API.Models.Services;
 using Dashboard.API.Models.Table;
 using Dashboard.API.Models.Table.Owned;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using Reddit;
 using RedditSharp;
+using RestSharp;
 
 namespace Dashboard.API.Services.Services
 {
@@ -51,24 +54,37 @@ namespace Dashboard.API.Services.Services
             if (!context.Request.Query.TryGetValue("code", out var code))
                 return;
 
-            var authProvide = new AuthProvider(_clientId, _clientSecret, _redirectUri);
-
-            var tokenHolder = new RedditAuthModel {
-                AccessToken = authProvide.GetOAuthToken(code)
+            var client = new RestClient("https://www.reddit.com/api/v1/access_token") {
+                Timeout = 5000,
+                FollowRedirects = false,
+                ThrowOnAnyError = false
             };
 
+            var request = new RestRequest(Method.POST);
+            request.AddHeader("Authorization", "Basic " + Convert.ToBase64String(Encoding.Default.GetBytes(_clientId + ":" + _clientSecret)));
+            request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
+            request.AddParameter("grant_type", "authorization_code");
+            request.AddParameter("code", code);
+            request.AddParameter("redirect_uri", _redirectUri!);
+
+            var response = client.Execute(request);
+
+            if (response.ResponseStatus != ResponseStatus.Completed)
+                return;
+
             user.ServiceTokens?.Add(new UserServiceTokensModel {
-                Json = tokenHolder.ToString(),
+                Json = JsonConvert.DeserializeObject<RedditAuthModel>(response.Content).ToString(),
                 ServiceId = serviceId
             });
         }
 
-        public Reddit? ClientFromJsonTokens(string json)
+        public RedditClient? ClientFromJson(string json)
         {
             try {
                 var holder = JsonConvert.DeserializeObject<RedditAuthModel>(json);
 
-                return new Reddit(holder.AccessToken);
+                var client = new RedditClient(_clientId, holder.RefreshToken, _clientSecret, holder.AccessToken);
+                return client;
             } catch {
                 return null;
             }
