@@ -1,15 +1,17 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Dashboard.API.Exceptions.Http;
-using Dashboard.API.Models.Services.Imgur;
+using Dashboard.API.Models;
+using Dashboard.API.Models.Services;
+using Dashboard.API.Models.Table;
 using Dashboard.API.Models.Table.Owned;
-using Dashboard.API.Repositories;
+using Dashboard.API.Models.Widgets;
 using Imgur.API.Authentication.Impl;
 using Imgur.API.Enums;
 using Imgur.API.Models;
 using Imgur.API.Models.Impl;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
@@ -17,12 +19,9 @@ namespace Dashboard.API.Services.Services
 {
     public class ImgurServiceService : IServiceService
     {
-        private readonly DatabaseRepository _database;
-
-        public ImgurServiceService(IConfiguration configuration, DatabaseRepository database)
+        public ImgurServiceService(IConfiguration configuration)
         {
-            _database = database;
-            var imgurConf = configuration.GetSection("WidgetApiKeys").GetSection("Imgur");
+            var imgurConf = configuration.GetSection("WidgetApiKeys").GetSection(Name);
             if (imgurConf == null)
                 return;
             var clientId = imgurConf["ClientId"];
@@ -34,27 +33,24 @@ namespace Dashboard.API.Services.Services
 
         public string Name { get; } = "Imgur";
 
-        public string? SignIn(HttpContext context)
+        public Uri? SignIn(HttpContext context, int userId)
         {
-            var userId = AuthService.GetUserIdFromPrincipal(context.User);
-
-            if (userId == null)
-                return null;
             if (Client == null)
                 throw new InternalServerErrorHttpException();
-            return new Imgur.API.Endpoints.Impl.OAuth2Endpoint(Client).GetAuthorizationUrl(OAuth2ResponseType.Code, userId.ToString());
+            var oAuth2Endpoint = new Imgur.API.Endpoints.Impl.OAuth2Endpoint(Client);
+            return new Uri(oAuth2Endpoint.GetAuthorizationUrl(OAuth2ResponseType.Code, userId.ToString()));
         }
 
-        public void HandleSignInCallback(HttpContext context, int serviceId)
+        public int? GetUserIdFromCallbackContext(HttpContext context)
+        {
+            if (!context.Request.Query.TryGetValue("state", out var state) || !int.TryParse(state, out var userId))
+                return null;
+            return userId;
+        }
+
+        public void HandleSignInCallback(HttpContext context, int serviceId, UserModel user)
         {
             if (!context.Request.Query.TryGetValue("code", out var code))
-                return;
-            if (!context.Request.Query.TryGetValue("state", out var state) || !int.TryParse(state, out var userId))
-                return;
-            var user = _database.Users
-                .Include(model => model.ServiceTokens)
-                .FirstOrDefault(model => model.Id == userId);
-            if (user == null)
                 return;
 
             try {
@@ -62,7 +58,7 @@ namespace Dashboard.API.Services.Services
                 task.Wait();
                 if (!task.IsCompletedSuccessfully || task.Result == null)
                     return;
-                var tokens = new OAuth2TokensModel {
+                var tokensHolder = new ImgurAuthModel {
                     AccessToken = task.Result.AccessToken,
                     TokenType = task.Result.TokenType,
                     RefreshToken = task.Result.RefreshToken,
@@ -70,13 +66,9 @@ namespace Dashboard.API.Services.Services
                     AccountId = task.Result.AccountId,
                     ExpiresIn = task.Result.ExpiresIn
                 };
-                var oldToken = user.ServiceTokens?.FirstOrDefault(model => model.ServiceId == serviceId);
-                if (oldToken != null) {
-                    user.ServiceTokens!.Remove(oldToken);
-                }
                 user.ServiceTokens?.Add(new UserServiceTokensModel {
                     ServiceId = serviceId,
-                    Json = tokens.ToString()
+                    Json = tokensHolder.ToString()
                 });
             } catch {
                 // ignored
@@ -86,7 +78,7 @@ namespace Dashboard.API.Services.Services
         public static OAuth2Token? ImgurOAuth2TokenFromJson(string json)
         {
             try {
-                var holder = JsonConvert.DeserializeObject<OAuth2TokensModel>(json);
+                var holder = JsonConvert.DeserializeObject<ImgurAuthModel>(json);
                 return new OAuth2Token(
                     holder.AccessToken,
                     holder.RefreshToken,
@@ -99,24 +91,30 @@ namespace Dashboard.API.Services.Services
             }
         }
 
-        public static List<ImgurGalleryItemModel> CoverImageListFromGallery(IEnumerable<IGalleryItem> gallery)
+        public static List<WidgetCallResponseItemModel> WidgetResponseItemsFromGallery(IEnumerable<IGalleryItem> gallery)
         {
-            List<ImgurGalleryItemModel> imageList = new List<ImgurGalleryItemModel>();
+            List<WidgetCallResponseItemModel> imageList = new List<WidgetCallResponseItemModel>();
 
             foreach (var galleryItem in gallery) {
-                ImgurGalleryItemModel responseItem;
+                WidgetCallResponseItemModel responseItem = new WidgetCallResponseItemModel();
                 switch (galleryItem) {
                     case GalleryAlbum album:
-                        responseItem = new ImgurGalleryItemModel(album);
+                        responseItem.Image = album.Images.FirstOrDefault()?.Link;
+                        responseItem.Image = album.Title;
+                        responseItem.Content = album.Description;
+                        responseItem.Link = album.Link;
                         break;
                     case GalleryImage image:
-                        responseItem = new ImgurGalleryItemModel(image);
+                        responseItem.Image = image.Link;
+                        responseItem.Image = image.Title;
+                        responseItem.Content = image.Description;
+                        responseItem.Link = image.Link;
                         break;
                     default:
                         continue;
                 }
 
-                if (responseItem.Cover == null)
+                if (responseItem.Image == null)
                     continue;
                 imageList.Add(responseItem);
             }

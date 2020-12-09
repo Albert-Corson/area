@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 
-namespace Dashboard.API.Models.Services.Imgur
+namespace Dashboard.API.Models.Services
 {
-    public class OAuth2TokensModel
+    public class ImgurAuthModel
     {
         [Required]
         [JsonProperty("access_token")]

@@ -3,15 +3,17 @@ using System;
 using Dashboard.API.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Dashboard.API.Migrations
 {
     [DbContext(typeof(DatabaseRepository))]
-    partial class DatabaseRepositoryModelSnapshot : ModelSnapshot
+    [Migration("20201208205904_AddRequiredToWidgetParam")]
+    partial class AddRequiredToWidgetParam
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -161,6 +163,9 @@ namespace Dashboard.API.Migrations
 
                             b1.Property<string>("Name")
                                 .HasColumnType("text");
+
+                            b1.Property<bool?>("Required")
+                                .HasColumnType("boolean");
 
                             b1.Property<string>("Type")
                                 .HasColumnType("text");

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
-namespace Dashboard.API.Models.Response
+namespace Dashboard.API.Models
 {
     public class StatusModel
     {

@@ -6,7 +6,12 @@ using Dashboard.API.Middlewares;
 using Dashboard.API.Repositories;
 using Dashboard.API.Services;
 using Dashboard.API.Services.Services;
-using Dashboard.API.Services.Widgets;
+using Dashboard.API.Services.Widgets.CatApi;
+using Dashboard.API.Services.Widgets.Icanhazdadjoke;
+using Dashboard.API.Services.Widgets.Imgur;
+using Dashboard.API.Services.Widgets.LoremPicsum;
+using Dashboard.API.Services.Widgets.NewsApi;
+using Dashboard.API.Services.Widgets.Spotify;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -99,12 +104,23 @@ namespace Dashboard.API
         {
             services.AddScoped<ImgurGalleryWidgetService>();
             services.AddScoped<ImgurFavoritesWidgetService>();
+            services.AddScoped<ImgurUploadsWidgetService>();
+            services.AddScoped<ImgurGallerySearchWidgetService>();
+            services.AddScoped<LoremPicsumRandomImageService>();
+            services.AddScoped<SpotifyFavoriteArtistsWidgetService>();
+            services.AddScoped<SpotifyFavoriteTracksWidgetService>();
+            services.AddScoped<SpotifyHistoryWidgetService>();
+            services.AddScoped<NewsApiTopHeadlinesWidgetService>();
+            services.AddScoped<NewsApiSearchWidgetService>();
+            services.AddScoped<CatApiRandomImagesWidgetService>();
+            services.AddScoped<IcanhazdadjokeRandomJokeWidgetService>();
             services.AddScoped<WidgetManagerService>();
         }
 
         private static void AddServiceServices(IServiceCollection services)
         {
             services.AddScoped<ImgurServiceService>();
+            services.AddScoped<SpotifyServiceService>();
             services.AddScoped<ServiceManagerService>();
         }
 

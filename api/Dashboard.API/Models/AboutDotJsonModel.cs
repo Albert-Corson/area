@@ -1,9 +1,7 @@
 using System.Collections.Generic;
-using Dashboard.API.Models.Table;
-using Dashboard.API.Models.Table.Owned;
 using Newtonsoft.Json;
 
-namespace Dashboard.API.Models.Response
+namespace Dashboard.API.Models
 {
     public class AboutDotJsonModel
     {
@@ -11,6 +9,15 @@ namespace Dashboard.API.Models.Response
         {
             [JsonProperty("host")]
             public string? Host { get; set; }
+        }
+
+        public class WidgetParamModel
+        {
+            [JsonProperty("name")]
+            public string? Name { get; set; }
+
+            [JsonProperty("type")]
+            public string? Type { get; set; }
         }
 
         public class WidgetModel
@@ -22,7 +29,7 @@ namespace Dashboard.API.Models.Response
             public string? Description { get; set; }
 
             [JsonProperty("params")]
-            public IEnumerable<WidgetParamModel>? DefaultParams;
+            public IEnumerable<WidgetParamModel>? Params;
         }
 
         public class ServiceModel

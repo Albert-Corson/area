@@ -3,6 +3,13 @@
 .vscode
 .vs
 
+# User specific database backups
+database/sql/dashboard_public_UserHasServiceTokens.sql
+database/sql/dashboard_public_UserHasWidgetParams.sql
+database/sql/dashboard_public_Users.sql
+database/sql/dashboard_public_UsersToWidgets.sql
+
+
 # User-specific files
 *.suo
 *.user

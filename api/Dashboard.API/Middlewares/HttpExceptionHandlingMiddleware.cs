@@ -2,7 +2,7 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 using Dashboard.API.Exceptions;
-using Dashboard.API.Models.Response;
+using Dashboard.API.Models;
 using Microsoft.AspNetCore.Http;
 
 namespace Dashboard.API.Middlewares

@@ -194,9 +194,13 @@ components:
           type: string
     WidgetParamList:
       additionalProperties: false
-      description: Indicates the list of parameters to configure this Widget
+      description: Indicates the list of parameters used by this Widget
       items:
         type: object
+        required:
+          - name
+          - type
+          - required
         properties:
           name:
             type: string
@@ -204,6 +208,29 @@ components:
           type:
             type: string
             description: "Indicates the type of this parameter. Supported types are: integer, string"
+          required:
+            type: boolean
+            description: "Indicates wether or not this parameter requires a query defined value when calling its widget"
+          value:
+            type: string
+            description: The current value of this parameter
+    WidgetCallResponseItem:
+      additionalProperties: false
+      description: The most basic item that you can receive when invoking a widget. More fields may be present depending on the widget.
+      type: object
+      properties:
+        header:
+          type: string
+          description: A title/header
+        content:
+          type: string
+          description: The content/description
+        image:
+          type: string
+          description: A link to an image
+        link:
+          type: string
+          description: A clickable link
     Widget:
       additionalProperties: false
       type: object
@@ -275,7 +302,17 @@ components:
                           type: string
                           description: Indicates the identifier of this Widget
                         params:
-                          $ref: '#/components/schemas/WidgetParamList'
+                          additionalProperties: false
+                          description: Indicates the list of parameters to configure this Widget
+                          items:
+                            type: object
+                            properties:
+                              name:
+                                type: string
+                                description: Indicates the identifier of this parameter
+                              type:
+                                type: string
+                                description: "Indicates the type of this parameter. Supported types are: integer, string"
 
 paths:
   /about.json:
@@ -392,7 +429,7 @@ paths:
   /widgets:
     get:
       operationId: GetWidgets
-      summary: Get a list of widgets
+      summary: Get a list of widgets. The param values are the default ones used by this API.
       tags:
         - widget
       parameters:
@@ -403,7 +440,7 @@ paths:
   /widgets/me:
     get:
       operationId: GetMyWidgets
-      summary: Get the widgets that the current user is subscribed to
+      summary: Get the widgets that the current user is subscribed to. The param values are the ones defined by the user (if any), otherwise the defaults
       tags:
         - widget
       parameters:
@@ -436,7 +473,18 @@ paths:
                 properties:
                   data:
                     type: object
-                    description: An object of key/value depending on the widget fetched
+                    required:
+                      - params
+                    properties:
+                      params:
+                        description: An array of the parameters that were used to call the widget's API
+                        items:
+                          $ref: "#/components/schemas/Widget"
+                      item:
+                        $ref:  "#/components/schemas/WidgetCallResponseItem"
+                      items:
+                        items:
+                          $ref:  "#/components/schemas/WidgetCallResponseItem"
                 allOf:
                   - $ref: "#/components/schemas/Status"
     post:

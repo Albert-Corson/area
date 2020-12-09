@@ -46,7 +46,7 @@ namespace Dashboard.API.Repositories
             // A widget owns many default parameters
             {
                 modelBuilder.Entity<WidgetModel>()
-                    .OwnsMany(model => model.DefaultParams);
+                    .OwnsMany(model => model.Params);
             }
         }
 
