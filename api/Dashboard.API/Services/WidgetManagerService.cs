@@ -10,7 +10,6 @@ using Dashboard.API.Services.Widgets.CatApi;
 using Dashboard.API.Services.Widgets.Imgur;
 using Dashboard.API.Services.Widgets.LoremPicsum;
 using Dashboard.API.Services.Widgets.NewsApi;
-using Dashboard.API.Services.Widgets.Reddit;
 using Dashboard.API.Services.Widgets.Spotify;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -77,7 +76,6 @@ namespace Dashboard.API.Services
             SpotifyHistoryWidgetService spotifyHistory,
             NewsApiTopHeadlinesWidgetService newsApiTopHeadlines,
             NewsApiSearchWidgetService newsApiSearch,
-            RedditTrophiesWidgetService redditTrophies,
             CatApiRandomImagesWidgetService catApiRandomImages)
         {
             _database = database;
@@ -92,7 +90,6 @@ namespace Dashboard.API.Services
                 {spotifyHistory.Name, spotifyHistory},
                 {newsApiTopHeadlines.Name, newsApiTopHeadlines},
                 {newsApiSearch.Name, newsApiSearch},
-                {redditTrophies.Name, redditTrophies},
                 {catApiRandomImages.Name, catApiRandomImages}
             };
         }

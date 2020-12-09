@@ -18,15 +18,13 @@ namespace Dashboard.API.Services
 
         public ServiceManagerService(DatabaseRepository database, ILoggerFactory loggerFactory,
             ImgurServiceService imgur,
-            SpotifyServiceService spotify,
-            RedditServiceService reddit)
+            SpotifyServiceService spotify)
         {
             _logger = loggerFactory.CreateLogger("Service manager");
             _database = database;
             _service = new Dictionary<string, IServiceService> {
                 {imgur.Name, imgur},
                 {spotify.Name, spotify},
-                {reddit.Name, reddit}
             };
         }
 

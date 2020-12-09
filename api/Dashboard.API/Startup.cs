@@ -10,7 +10,6 @@ using Dashboard.API.Services.Widgets.CatApi;
 using Dashboard.API.Services.Widgets.Imgur;
 using Dashboard.API.Services.Widgets.LoremPicsum;
 using Dashboard.API.Services.Widgets.NewsApi;
-using Dashboard.API.Services.Widgets.Reddit;
 using Dashboard.API.Services.Widgets.Spotify;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -112,7 +111,6 @@ namespace Dashboard.API
             services.AddScoped<SpotifyHistoryWidgetService>();
             services.AddScoped<NewsApiTopHeadlinesWidgetService>();
             services.AddScoped<NewsApiSearchWidgetService>();
-            services.AddScoped<RedditTrophiesWidgetService>();
             services.AddScoped<CatApiRandomImagesWidgetService>();
             services.AddScoped<WidgetManagerService>();
         }
@@ -121,7 +119,6 @@ namespace Dashboard.API
         {
             services.AddScoped<ImgurServiceService>();
             services.AddScoped<SpotifyServiceService>();
-            services.AddScoped<RedditServiceService>();
             services.AddScoped<ServiceManagerService>();
         }
 
