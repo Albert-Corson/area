@@ -117,6 +117,7 @@ namespace Dashboard.API
         {
             services.AddScoped<ImgurServiceService>();
             services.AddScoped<SpotifyServiceService>();
+            services.AddScoped<RedditServiceService>();
             services.AddScoped<ServiceManagerService>();
         }
 

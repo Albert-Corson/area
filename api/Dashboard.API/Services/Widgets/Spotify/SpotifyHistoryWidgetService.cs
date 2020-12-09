@@ -25,7 +25,7 @@ namespace Dashboard.API.Services.Widgets.Spotify
 
         public bool ValidateServiceAuth(UserServiceTokensModel serviceTokens)
         {
-            SpotifyClient = SpotifyService.CreateClientFromJsonTokens(serviceTokens.Json!);
+            SpotifyClient = SpotifyService.ClientFromJsonTokens(serviceTokens.Json!);
             return SpotifyClient != null;
         }
 

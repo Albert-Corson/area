@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Dashboard.API.Exceptions.Http;
-using Dashboard.API.Models.Table;
 using Dashboard.API.Repositories;
 using Dashboard.API.Services.Services;
 using Microsoft.AspNetCore.Http;
@@ -19,13 +18,15 @@ namespace Dashboard.API.Services
 
         public ServiceManagerService(DatabaseRepository database, ILoggerFactory loggerFactory,
             ImgurServiceService imgur,
-            SpotifyServiceService spotify)
+            SpotifyServiceService spotify,
+            RedditServiceService reddit)
         {
             _logger = loggerFactory.CreateLogger("Service manager");
             _database = database;
             _service = new Dictionary<string, IServiceService> {
                 {imgur.Name, imgur},
-                {spotify.Name, spotify}
+                {spotify.Name, spotify},
+                {reddit.Name, reddit}
             };
         }
 
