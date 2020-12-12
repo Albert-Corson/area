@@ -6,7 +6,6 @@ using Dashboard.API.Models;
 using Dashboard.API.Models.Services;
 using Dashboard.API.Models.Table;
 using Dashboard.API.Models.Table.Owned;
-using Dashboard.API.Models.Widgets;
 using Imgur.API.Authentication.Impl;
 using Imgur.API.Enums;
 using Imgur.API.Models;

@@ -12,17 +12,14 @@ namespace Dashboard.API.Services.Services
 {
     public class SpotifyServiceService : IServiceService
     {
-        private readonly DatabaseRepository _database;
-
         private readonly string? _clientId;
 
         private readonly string? _clientSecret;
 
         private readonly Uri? _redirectUri;
 
-        public SpotifyServiceService(IConfiguration configuration, DatabaseRepository database)
+        public SpotifyServiceService(IConfiguration configuration)
         {
-            _database = database;
             var spotifyConf = configuration.GetSection("WidgetApiKeys").GetSection(Name);
             if (spotifyConf == null)
                 return;

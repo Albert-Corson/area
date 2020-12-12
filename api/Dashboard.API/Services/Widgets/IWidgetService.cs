@@ -1,8 +1,6 @@
 using Dashboard.API.Models;
-using Dashboard.API.Models.Table;
 using Dashboard.API.Models.Table.Owned;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Dashboard.API.Services.Widgets
 {
