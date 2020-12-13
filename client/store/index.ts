@@ -1,12 +1,7 @@
-import Vuex, { Store } from 'vuex'
+import { Store } from 'vuex'
+import { initializeStores } from '~/store/init'
 
-interface RootState {}
+const initializer = (store: Store<any>) => initializeStores(store)
 
-export const store = new Vuex.Store<RootState>({
-})
-
-const createStore = (): Store<RootState> => {
-  return store
-}
-
-export default createStore
+export const plugins = [ initializer ]
+export * from '~/store/init'
