@@ -1,3 +1,4 @@
+import path from 'path'
 import colors from 'vuetify/es5/util/colors'
 
 export default {
@@ -17,7 +18,7 @@ export default {
       { hid: 'description', name: 'description', content: '' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      { rel: 'icon', type: 'image/png', href: '/favicon.png' }
     ]
   },
 
@@ -27,8 +28,10 @@ export default {
 
   // Plugins to run before rendering page (https://go.nuxtjs.dev/config-plugins)
   plugins: [
+    '~/plugins/vuex-persist',
     '~/plugins/axios',
-    '~/plugins/api'
+    '~/plugins/api',
+    '~/plugins/vue-toasted'
   ],
 
   // Auto import components (https://go.nuxtjs.dev/config-components)
@@ -45,11 +48,18 @@ export default {
   // Modules (https://go.nuxtjs.dev/config-modules)
   modules: [
     // https://go.nuxtjs.dev/axios
+    '@nuxtjs/proxy',
     '@nuxtjs/axios'
   ],
 
+  proxy: {
+  },
+
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
-  axios: {},
+  axios: {
+    baseUrl: `http://${ process.env.API_HOST }:${ process.env.API_PORT }`,
+    progress: true
+  },
 
   // Vuetify module configuration (https://go.nuxtjs.dev/config-vuetify)
   vuetify: {
@@ -73,9 +83,13 @@ export default {
   // Build Configuration (https://go.nuxtjs.dev/config-build)
   build: {
     extend(config, { isClient }) {
+      // enable source map
       if (isClient) {
         config.devtool = 'source-map'
       }
+
+      config.resolve.alias['@components'] = path.resolve('./components')
+      config.resolve.alias['@stores'] = path.resolve('./store/modules')
     }
   },
 

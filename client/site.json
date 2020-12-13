@@ -1,0 +1,13 @@
+{
+  "pages": {
+    "/login": {
+      "authenticated": "no"
+    },
+    "/logout": {
+      "authenticated": "yes"
+    },
+    "/.*": {
+      "authenticated": "yes"
+    }
+  }
+}

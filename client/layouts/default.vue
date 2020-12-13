@@ -1,117 +1,80 @@
 <template>
-  <v-app dark>
-    <v-navigation-drawer
-      v-model="drawer"
-      :mini-variant="miniVariant"
-      :clipped="clipped"
-      fixed
-      app
-    >
-      <v-list>
-        <v-list-item
-          v-for="(item, i) in items"
-          :key="i"
-          :to="item.to"
-          router
-          exact
-        >
-          <v-list-item-action>
-            <v-icon>{{ item.icon }}</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title v-text="item.title" />
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
-    <v-app-bar
-      :clipped-left="clipped"
-      fixed
-      app
-    >
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-btn
-        icon
-        @click.stop="miniVariant = !miniVariant"
-      >
-        <v-icon>mdi-{{ `chevron-${miniVariant ? 'right' : 'left'}` }}</v-icon>
-      </v-btn>
-      <v-btn
-        icon
-        @click.stop="clipped = !clipped"
-      >
-        <v-icon>mdi-application</v-icon>
-      </v-btn>
-      <v-btn
-        icon
-        @click.stop="fixed = !fixed"
-      >
-        <v-icon>mdi-minus</v-icon>
-      </v-btn>
-      <v-toolbar-title v-text="title" />
-      <v-spacer />
-      <v-btn
-        icon
-        @click.stop="rightDrawer = !rightDrawer"
-      >
-        <v-icon>mdi-menu</v-icon>
-      </v-btn>
-    </v-app-bar>
-    <v-main>
-      <v-container>
-        <nuxt />
-      </v-container>
-    </v-main>
-    <v-navigation-drawer
-      v-model="rightDrawer"
-      :right="right"
-      temporary
-      fixed
-    >
-      <v-list>
-        <v-list-item @click.native="right = !right">
-          <v-list-item-action>
-            <v-icon light>
-              mdi-repeat
-            </v-icon>
-          </v-list-item-action>
-          <v-list-item-title>Switch drawer (click me)</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
-    <v-footer
-      :absolute="!fixed"
-      app
-    >
-      <span>&copy; {{ new Date().getFullYear() }}</span>
-    </v-footer>
-  </v-app>
+  <div class="default">
+    <dashboard-nav-bar />
+    <dashboard-header v-on:reload="reload"/>
+    <nuxt ref="page"/>
+    <dashboard-footer />
+  </div>
 </template>
 
-<script>
-export default {
-  data () {
-    return {
-      clipped: false,
-      drawer: false,
-      fixed: false,
-      items: [
-        {
-          icon: 'mdi-apps',
-          title: 'Welcome',
-          to: '/'
-        },
-        {
-          icon: 'mdi-chart-bubble',
-          title: 'Inspire',
-          to: '/inspire'
-        }
-      ],
-      miniVariant: false,
-      right: true,
-      rightDrawer: false,
-      title: 'Vuetify.js'
-    }
+<script lang="ts">
+import { Component, Vue, Prop } from 'nuxt-property-decorator'
+import DashboardNavBar from "~/components/navbar/NavBar.vue"
+import DashboardFooter from "~/components/footer/Footer.vue"
+import DashboardHeader from "~/components/header/Header.vue"
+
+@Component({
+  name: 'DefaultLayout',
+  components: {
+    DashboardNavBar,
+    DashboardFooter,
+    DashboardHeader
+  }
+})
+export default class DefaultLayout extends Vue {
+  // methods
+  public reload() {
+    // @ts-ignore
+    this.$refs.page?.$children?.[0]?.reload?.()
   }
 }
 </script>
+
+<style lang="scss">
+:root {
+  --main-bg-color: #1B2224;
+  --secondary-bg-color: #222B2E;
+  --focus-color: #2eb398;
+  --active-color: #E4E4E4;
+  --inactive-color: #474747;
+  --active-filter-color : invert(100%) sepia(0%) saturate(7495%) hue-rotate(273deg) brightness(87%) contrast(106%); 
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  color: var(--active-color);
+  font-family: sans-serif;
+}
+
+</style>
+
+<style scoped>
+
+.default {
+  background-color: var(--main-bg-color);
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 0.75fr 5fr;
+  grid-template-rows: 1fr 10fr 0.75fr;
+  grid-gap: 0px 0px;
+  grid-template-areas:
+    "header header"
+    "nav-bar page"
+    "footer page";
+}
+
+.page {
+  grid-area: page;
+  background-color: var(--secondary-bg-color);
+  border: 3px solid #2EB398;
+  border-bottom-width: 0px;
+  border-right-width: 0px;
+  overflow-y: auto;
+}
+
+</style>

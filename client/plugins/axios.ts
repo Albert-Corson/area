@@ -1,18 +1,14 @@
 import { initializeAxios } from '~/globals/axios'
 import { Plugin } from '@nuxt/types'
+import { AuthStore } from '~/store'
 
-const axiosPlugin: Plugin = ({ $axios, redirect }) => {
+const axiosPlugin: Plugin = ({ $axios }) => {
   initializeAxios($axios)
 
-  $axios.onRequest(config => {
-    console.log(`Making request to ${ config.url }`)
-  })
-
-  $axios.onError(error => {
-    const code = error.response?.status
-    console.error(`HTTP error ${ code }`)
-    redirect('/error')
-  })
+  const token = AuthStore.token?.access_token
+  if (token) {
+    $axios.setToken(token, 'Bearer')
+  }
 }
 
 export default axiosPlugin
