@@ -35,7 +35,7 @@ export interface IServiceRepository {
    * @param username user name on the given service
    * @param password user password on the given service
    */
-  registerService(serviceId: number, username?: string, password?: string): Promise<ResponseModel>
+  registerService(serviceId: number): Promise<ResponseModel<string>>
 }
 
 const makeServiceRepository = ($axios: NuxtAxiosInstance): IServiceRepository => ({
@@ -56,8 +56,8 @@ const makeServiceRepository = ($axios: NuxtAxiosInstance): IServiceRepository =>
     return $axios.$delete(`/services/${serviceId}`)
   },
 
-  registerService(serviceId: number, username?: string, password?: string): Promise<ResponseModel> {
-    return $axios.$post(`/services/${serviceId}`, { username, password })
+  registerService(serviceId: number): Promise<ResponseModel<string>> {
+    return $axios.$post(`/services/${serviceId}`)
   }
 
 })

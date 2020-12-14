@@ -45,6 +45,7 @@ export default class WidgetListItem extends Vue {
   position: relative;
   display: inline-block;
   padding: .5em 1em;
+  text-align: center;
 
   a {
     color: inherit;

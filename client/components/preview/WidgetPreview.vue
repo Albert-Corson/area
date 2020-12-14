@@ -5,9 +5,10 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'nuxt-property-decorator'
+import { Component, Vue, Prop, Watch } from 'nuxt-property-decorator'
 import WidgetModel from '~/api/models/WidgetModel'
 import PreviewTitle from '~/components/preview/Title.vue'
+import { WidgetStore, ServiceStore } from '~/store'
 
 @Component({
   name: 'WidgetPreview',
@@ -16,7 +17,31 @@ import PreviewTitle from '~/components/preview/Title.vue'
   }
 })
 export default class WidgetPreview extends Vue {
+  // props
   @Prop({ required: true }) readonly widget!: WidgetModel
+
+  // methods
+  public async fetchData() {
+    const res = await WidgetStore.fetchWidgetData({
+      widgetId: this.widget.id
+    })
+    if (res?.code === 401) {
+      const data: string | null = await ServiceStore.registerService(this.widget.service.id)
+      if (data) {
+        const authPopup = window.open(data)
+      }
+    }
+  }
+
+  // watchers
+  @Watch('widget')
+  widgetWatcher() {
+    this.fetchData()
+  }
+
+  mounted() {
+    this.fetchData()
+  }
 }
 </script>
 
