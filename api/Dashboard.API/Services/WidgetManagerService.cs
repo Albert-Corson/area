@@ -157,7 +157,7 @@ namespace Dashboard.API.Services
                     type = userParam.Type!;
                 } else {
                     var defaultParam = defaultParams.FirstOrDefault(model => model.Name == key);
-                    if (defaultParam != null && defaultParam.Required == true) {
+                    if (defaultParam != null && defaultParam.Required != true) {
                         userParams.Add(new UserWidgetParamModel {
                             Name = defaultParam.Name,
                             Type = defaultParam.Type,
