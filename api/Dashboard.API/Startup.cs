@@ -34,7 +34,7 @@ namespace Dashboard.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("05lENTWIKCwLNyA4APIZ8odlh848RQZb"));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration[JwtConstants.SecretKeyName]);
             var tokenValidationParameters = new TokenValidationParameters {
                 ValidIssuer = _configuration[JwtConstants.ValidIssuer],
                 ValidAudience = _configuration[JwtConstants.ValidAudience],
