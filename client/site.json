@@ -3,6 +3,9 @@
     "/login": {
       "authenticated": "no"
     },
+    "/register": {
+      "authenticated": "no"
+    },
     "/logout": {
       "authenticated": "yes"
     },

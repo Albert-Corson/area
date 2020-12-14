@@ -13,7 +13,13 @@ export default class Logout extends Vue {
   // lifecycle
   beforeMount() {
     AuthStore.logout()
-      .then(_ => this.$router.push('/login'))
+      .then(_ => {
+        // clear session data
+        localStorage.clear()
+        this.$router.push('/login')
+        // reload stores
+        window.location.reload()
+      })
   }
 }
 </script>

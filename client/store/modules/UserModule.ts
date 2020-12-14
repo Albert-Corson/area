@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { Mutation, Action, VuexModule, getModule, Module } from 'vuex-module-decorators'
+import { Mutation, Action, VuexModule, Module } from 'vuex-module-decorators'
 import UserModel from '~/api/models/UserModel'
 import { $api } from '~/globals/api'
 
@@ -38,15 +38,26 @@ class UserModule extends VuexModule {
   }
 
   @Action
-  public async createUser(username: string, password: string, email: string) {
+  public async createUser({ username, password, email }: {
+    username: string,
+    password: string,
+    email: string
+  }) {
     try {
       const response = await $api.user.createUser(username, password, email)
       if (response.successful) {
         Vue.toasted.success(`Successfully created new user '${ username }'`)
         // TODO
       }
+      return true
     } catch(e) {
-      Vue.toasted.error('Error while creating new user')
+      const res = e.response
+      if (res?.data?.error) {
+        Vue.toasted.error(res.data.error)
+      } else {
+        Vue.toasted.error('Error while creating new user')
+      }
+      return { code: res?.status, ...res?.data }
     }
   }
 
