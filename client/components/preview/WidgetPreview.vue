@@ -1,6 +1,7 @@
 <template>
   <div class="widget-preview">
-    <preview-title :text="widget.name"/>
+    <preview-title :text="widget.name"></preview-title>
+    <widget-applet-factory :widgetId="widget.id"></widget-applet-factory>
   </div>
 </template>
 
@@ -8,12 +9,14 @@
 import { Component, Vue, Prop, Watch } from 'nuxt-property-decorator'
 import WidgetModel from '~/api/models/WidgetModel'
 import PreviewTitle from '~/components/preview/Title.vue'
+import WidgetAppletFactory from '~/components/widgets-applets/WidgetAppletFactory.vue'
 import { WidgetStore, ServiceStore } from '~/store'
 
 @Component({
   name: 'WidgetPreview',
   components: {
-    PreviewTitle
+    PreviewTitle,
+    WidgetAppletFactory
   }
 })
 export default class WidgetPreview extends Vue {
