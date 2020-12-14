@@ -1,7 +1,6 @@
 <template>
   <div class="services page">
-    <service-list :services="services"
-      v-on:create="create"/>
+    <service-list :services="services"/>
   </div>
 </template>
 
@@ -22,10 +21,6 @@ export default class ServicesPage extends Vue {
   public reload() {
     ServiceStore.fetchServices()
     ServiceStore.fetchRegisteredServices()
-  }
-
-  public create(id : number) {
-    ServiceStore.registerService(id)
   }
 
   // computed
