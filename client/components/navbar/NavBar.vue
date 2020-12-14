@@ -11,6 +11,7 @@
        </div>
        <div v-else>
          <nav-button title="Sign in" icon="/svg/profil.svg" to="/login"></nav-button>
+         <nav-button title="Sign up" icon="/svg/profil.svg" to="/register"></nav-button>
        </div>
      </div>
   </div>
