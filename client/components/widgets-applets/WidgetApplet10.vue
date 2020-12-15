@@ -1,13 +1,4 @@
 <template>
-<<<<<<< HEAD
-  <div class="widget-applet-10">
-    <h1>Widget Applet 10</h1>
-  </div>
-</template>
-
-<script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
-=======
   <v-app class="widget-applet-10">
     <h1>{{ widget.name }}</h1>
     <div class="params">
@@ -74,16 +65,10 @@ interface NewsModel {
   link: string
   image: string
 }
->>>>>>> c374adcb92df025e9ba11ff04ac52a2bf23d2e8f
 
 @Component({
   name: 'WidgetApplet10',
   components: {
-<<<<<<< HEAD
-  }
-})
-export default class WidgetApplet10 extends Vue {
-=======
     MosaicList
   }
 })
@@ -119,13 +104,10 @@ export default class WidgetApplet10 extends Vue {
     // @ts-ignore
     this.language = res.params.find(p => p.name === 'language')?.value
   }
->>>>>>> c374adcb92df025e9ba11ff04ac52a2bf23d2e8f
 }
 
 </script>
 
-<<<<<<< HEAD
-=======
 <style lang="scss" scoped>
 h1 {
   margin-bottom: 1em;
@@ -162,4 +144,3 @@ h1 {
   }
 }
 </style>
->>>>>>> c374adcb92df025e9ba11ff04ac52a2bf23d2e8f

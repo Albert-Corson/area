@@ -1,13 +1,4 @@
 <template>
-<<<<<<< HEAD
-  <div class="widget-applet-7">
-    <h1>Widget Applet 7</h1>
-  </div>
-</template>
-
-<script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
-=======
   <v-app class="widget-applet-7">
     <div>
       <h1>{{ widget.name }}</h1>
@@ -45,16 +36,10 @@ interface Track
   link: string
   image: string
 }
->>>>>>> c374adcb92df025e9ba11ff04ac52a2bf23d2e8f
 
 @Component({
   name: 'WidgetApplet7',
   components: {
-<<<<<<< HEAD
-  }
-})
-export default class WidgetApplet7 extends Vue {
-=======
     MosaicList
   }
 })
@@ -78,13 +63,10 @@ export default class WidgetApplet7 extends Vue {
   beforeMount() {
     this.reload()
   }
->>>>>>> c374adcb92df025e9ba11ff04ac52a2bf23d2e8f
 }
 
 </script>
 
-<<<<<<< HEAD
-=======
 <style lang="scss" scoped>
 h1 {
   margin-bottom: 1em;
@@ -111,4 +93,3 @@ h1 {
   margin-top: 1em;
 }
 </style>
->>>>>>> c374adcb92df025e9ba11ff04ac52a2bf23d2e8f
