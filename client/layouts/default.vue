@@ -51,6 +51,12 @@ body {
   font-family: sans-serif;
 }
 
+.v-application {
+  background: inherit !important;
+  color: inherit !important;
+  font: inherit;
+}
+
 </style>
 
 <style scoped>

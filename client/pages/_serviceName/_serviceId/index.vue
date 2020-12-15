@@ -63,10 +63,4 @@ export default class ServicePage extends Vue {
 .widget-list {
   flex: 1;
 }
-
-.widget-preview {
-  flex: 1 1;
-  max-width: 700px;
-  background: black;
-}
 </style>

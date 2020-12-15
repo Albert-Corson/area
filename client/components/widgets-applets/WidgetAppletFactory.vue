@@ -1,6 +1,6 @@
 <template>
   <div class="widget-applet-factory">
-    <component :is="`WidgetApplet${ widgetId }`"/>
+    <component :is="`WidgetApplet${ widget.id }`" :widget="widget"/>
   </div>
 </template>
 
@@ -18,6 +18,7 @@ import WidgetApplet9 from '~/components/widgets-applets/WidgetApplet9.vue'
 import WidgetApplet10 from '~/components/widgets-applets/WidgetApplet10.vue'
 import WidgetApplet11 from '~/components/widgets-applets/WidgetApplet11.vue'
 import WidgetApplet12 from '~/components/widgets-applets/WidgetApplet12.vue'
+import WidgetModel from '~/api/models/WidgetModel'
 
 @Component({
   name: 'WidgetAppletFactory',
@@ -38,10 +39,9 @@ import WidgetApplet12 from '~/components/widgets-applets/WidgetApplet12.vue'
 })
 export default class WidgetAppletFactory extends Vue {
   // props
-  @Prop({ required: true, validator: v => (v >= 1 && v <= 12) }) readonly widgetId!: number
+  @Prop({
+    required: true,
+    validator: w => (w.id >= 1 && w.id <= 12) }
+  ) readonly widget!: WidgetModel
 }
 </script>
-
-<style lang="scss" scoped>
-
-</style>
