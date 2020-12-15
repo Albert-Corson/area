@@ -2,6 +2,7 @@ import Vue from 'vue'
 import { Mutation, Action, VuexModule, getModule, Module } from 'vuex-module-decorators'
 import WidgetModel from '~/api/models/WidgetModel'
 import { $api } from '~/globals/api'
+import { ServiceStore } from '~/store'
 
 @Module({
   name: 'modules/WidgetModule',
@@ -80,6 +81,13 @@ class WidgetModule extends VuexModule {
         Vue.toasted.error(res.data.error)
       } else {
         Vue.toasted.error('Error while fetching widget data')
+      }
+      if (res?.status === 401) {
+        // widget requires authentication
+        const data = await ServiceStore.registerService(widgetId)
+        if (data) {
+          window.open(data)
+        }
       }
       return { code: res?.status, ...res?.data }
     }
