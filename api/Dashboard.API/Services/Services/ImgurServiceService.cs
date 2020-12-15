@@ -99,13 +99,13 @@ namespace Dashboard.API.Services.Services
                 switch (galleryItem) {
                     case GalleryAlbum album:
                         responseItem.Image = album.Images.FirstOrDefault()?.Link;
-                        responseItem.Image = album.Title;
+                        responseItem.Header = album.Title;
                         responseItem.Content = album.Description;
                         responseItem.Link = album.Link;
                         break;
                     case GalleryImage image:
                         responseItem.Image = image.Link;
-                        responseItem.Image = image.Title;
+                        responseItem.Header = image.Title;
                         responseItem.Content = image.Description;
                         responseItem.Link = image.Link;
                         break;
