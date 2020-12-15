@@ -54,13 +54,13 @@ namespace Dashboard.API.Services.Services
             return loginRequest.ToUri();
         }
 
-        public void HandleSignInCallback(HttpContext context, int serviceId, UserModel user)
+        public bool HandleSignInCallback(HttpContext context, int serviceId, UserModel user)
         {
             if (_redirectUri == null || _clientId == null || _clientSecret == null)
-                return;
+                return false;
 
             if (!context.Request.Query.TryGetValue("code", out var code))
-                return;
+                return false;
 
             var task = new OAuthClient().RequestToken(
                 new AuthorizationCodeTokenRequest(_clientId, _clientSecret, code, _redirectUri)
@@ -68,7 +68,7 @@ namespace Dashboard.API.Services.Services
             task.Wait();
 
             if (!task.IsCompletedSuccessfully)
-                return;
+                return false;
 
             var tokensHolder = new SpotifyAuthModel {
                 Scope = task.Result.Scope,
@@ -79,10 +79,13 @@ namespace Dashboard.API.Services.Services
                 CreatedAt = task.Result.CreatedAt
             };
 
-            user.ServiceTokens?.Add(new UserServiceTokensModel {
+            if (user.ServiceTokens == null)
+                return false;
+            user.ServiceTokens.Add(new UserServiceTokensModel {
                 Json = tokensHolder.ToString(),
                 ServiceId = serviceId
             });
+            return true;
         }
 
         public SpotifyClient? ClientFromJson(string json)

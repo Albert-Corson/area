@@ -46,31 +46,32 @@ namespace Dashboard.API.Services
             return uri;
         }
 
-        public void HandleServiceSignInCallbackById(HttpContext context, int serviceId)
+        public bool HandleServiceSignInCallbackById(HttpContext context, int serviceId)
         {
             var serviceName = _database.Services.FirstOrDefault(model => model.Id == serviceId)?.Name;
 
             if (serviceName == null || !_service.TryGetValue(serviceName, out var service)) {
                 _logger.LogError($"Received signin callback with an invalid {{serviceId}} ({serviceId})");
-                return;
+                return false;
             }
 
             var userId = service.GetUserIdFromCallbackContext(context);
             if (userId == null)
-                return;
+                return false;
 
             var user = _database.Users
                 .Include(model => model.ServiceTokens)
                 .FirstOrDefault(model => model.Id == userId);
             if (user == null)
-                return;
+                return false;
 
             var oldTokens = user.ServiceTokens?.FirstOrDefault(model => model.ServiceId == serviceId);
             if (oldTokens != null)
                 _database.Remove(oldTokens);
 
-            service.HandleSignInCallback(context, serviceId, user);
+            var result = service.HandleSignInCallback(context, serviceId, user);
             _database.SaveChanges();
+            return result;
         }
     }
 }

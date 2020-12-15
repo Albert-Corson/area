@@ -11,6 +11,7 @@ using Dashboard.API.Repositories;
 using Dashboard.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -123,11 +124,16 @@ namespace Dashboard.API.Controllers
         [HttpGet]
         [Route(RoutesConstants.Services.SignInServiceCallback)]
         [ValidateModelState]
-        public void SignInServiceCallback(
+        public ContentResult SignInServiceCallback(
             [FromRoute] [Required] [Range(1, 2147483647)] int? serviceId
         )
         {
-            _serviceManager.HandleServiceSignInCallbackById(HttpContext, serviceId!.Value);
+            if (_serviceManager.HandleServiceSignInCallbackById(HttpContext, serviceId!.Value)) {
+                return Content("<h1>Success! You can now close this page!</h1>", "text/html");
+            }
+
+            Response.StatusCode = (int) HttpStatusCode.InternalServerError;
+            return Content("<h1>An error has occured, please try again</h1>", "text/html");
         }
     }
 }

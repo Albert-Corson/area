@@ -157,14 +157,16 @@ namespace Dashboard.API.Services
                     type = userParam.Type!;
                 } else {
                     var defaultParam = defaultParams.FirstOrDefault(model => model.Name == key);
-                    if (defaultParam != null && defaultParam.Required != true) {
-                        userParams.Add(new UserWidgetParamModel {
-                            Name = defaultParam.Name,
-                            Type = defaultParam.Type,
-                            WidgetId = widgetId,
-                            Value = GetParamValueByType(value, defaultParam.Type!)
-                        });
+                    if (defaultParam != null) {
                         type = defaultParam.Type!;
+                        if (defaultParam.Required != true) {
+                            userParams.Add(new UserWidgetParamModel {
+                                Name = defaultParam.Name,
+                                Type = defaultParam.Type,
+                                WidgetId = widgetId,
+                                Value = GetParamValueByType(value, defaultParam.Type!)
+                            });
+                        }
                     }
                 }
 

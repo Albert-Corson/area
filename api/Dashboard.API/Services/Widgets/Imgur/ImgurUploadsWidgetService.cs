@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using System.Linq;
 using Dashboard.API.Exceptions.Http;
 using Dashboard.API.Models;
 using Dashboard.API.Models.Table.Owned;
+using Dashboard.API.Models.Widgets;
 using Dashboard.API.Services.Services;
 using Imgur.API.Endpoints.Impl;
 using Imgur.API.Models.Impl;
@@ -41,14 +43,25 @@ namespace Dashboard.API.Services.Widgets.Imgur
             if (!task.IsCompletedSuccessfully)
                 throw new InternalServerErrorHttpException("Couldn't not reach Imgur's API");
 
-            response.Items = task.Result
-                .Select(item => new WidgetCallResponseItemModel {
-                    Image = item.Images.FirstOrDefault()?.Link,
-                    Header = item.Title,
-                    Content = item.Description,
-                    Link = item.Link
-                })
-                .Where(responseItem => responseItem.Image != null);
+            var items = new List<WidgetCallResponseItemModel>();
+            foreach (var album in task.Result)
+            {
+                var imageTask = new AlbumEndpoint(Imgur.Client).GetAlbumImagesAsync(album.Id);
+                imageTask.Wait();
+                if (!imageTask.IsCompletedSuccessfully)
+                    continue;
+                var imageLink = imageTask.Result.FirstOrDefault()?.Link;
+                if (imageLink == null)
+                    continue;
+                items.Add(new WidgetCallResponseItemModel {
+                    Image = imageLink,
+                    Header = album.Title,
+                    Content = album.Description,
+                    Link = album.Link
+                });
+            }
+
+            response.Items = items;
         }
     }
 }
