@@ -4,12 +4,15 @@
     <div v-if="item" class="joke">
       {{ item.content }}
     </div>
-    <v-btn
-      elevation="2"
-      @click="reload"
-      >
-      Another one
-    </v-btn>
+    <div v-if="item">
+      <v-btn
+        color="accent"
+        elevation="2"
+        @click="reload"
+        >
+        Another one
+      </v-btn>
+    </div>
   </v-app>
 </template>
 
