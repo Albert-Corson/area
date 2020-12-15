@@ -47,16 +47,16 @@ namespace Dashboard.API.Services.Services
             return userId;
         }
 
-        public void HandleSignInCallback(HttpContext context, int serviceId, UserModel user)
+        public bool HandleSignInCallback(HttpContext context, int serviceId, UserModel user)
         {
             if (!context.Request.Query.TryGetValue("code", out var code))
-                return;
+                return false;
 
             try {
                 var task = new Imgur.API.Endpoints.Impl.OAuth2Endpoint(Client).GetTokenByCodeAsync(code);
                 task.Wait();
                 if (!task.IsCompletedSuccessfully || task.Result == null)
-                    return;
+                    return false;
                 var tokensHolder = new ImgurAuthModel {
                     AccessToken = task.Result.AccessToken,
                     TokenType = task.Result.TokenType,
@@ -65,13 +65,16 @@ namespace Dashboard.API.Services.Services
                     AccountId = task.Result.AccountId,
                     ExpiresIn = task.Result.ExpiresIn
                 };
-                user.ServiceTokens?.Add(new UserServiceTokensModel {
+                if (user.ServiceTokens == null)
+                    return false;
+                user.ServiceTokens.Add(new UserServiceTokensModel {
                     ServiceId = serviceId,
                     Json = tokensHolder.ToString()
                 });
             } catch {
-                // ignored
+                return false;
             }
+            return true;
         }
 
         public static OAuth2Token? ImgurOAuth2TokenFromJson(string json)

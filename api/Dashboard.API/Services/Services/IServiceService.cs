@@ -12,6 +12,6 @@ namespace Dashboard.API.Services.Services
 
         public int? GetUserIdFromCallbackContext(HttpContext context);
 
-        public void HandleSignInCallback(HttpContext context, int serviceId, UserModel user);
+        public bool HandleSignInCallback(HttpContext context, int serviceId, UserModel user);
     }
 }
