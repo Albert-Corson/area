@@ -10,4 +10,4 @@ INSERT INTO public."WidgetHasParams" ("WidgetModelId", "Id", "Name", "Type", "Va
 INSERT INTO public."WidgetHasParams" ("WidgetModelId", "Id", "Name", "Type", "Value", "Required") VALUES (5, 5, 'sort', 'string', 'time', false);
 INSERT INTO public."WidgetHasParams" ("WidgetModelId", "Id", "Name", "Type", "Value", "Required") VALUES (10, 12, 'query', 'string', null, true);
 INSERT INTO public."WidgetHasParams" ("WidgetModelId", "Id", "Name", "Type", "Value", "Required") VALUES (9, 10, 'category', 'string', null, false);
-INSERT INTO public."WidgetHasParams" ("WidgetModelId", "Id", "Name", "Type", "Value", "Required") VALUES (2, 2, 'favoriteSort', 'string', 'newest', false);
+INSERT INTO public."WidgetHasParams" ("WidgetModelId", "Id", "Name", "Type", "Value", "Required") VALUES (2, 2, 'sort', 'string', 'newest', false);

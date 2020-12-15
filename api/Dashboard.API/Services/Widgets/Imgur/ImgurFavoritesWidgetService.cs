@@ -35,7 +35,7 @@ namespace Dashboard.API.Services.Widgets.Imgur
 
             Imgur.Client.SetOAuth2Token(_oAuth2Token);
 
-            var sort = widgetCallParams.Strings["favoriteSort"] == "newest" ? AccountGallerySortOrder.Newest : AccountGallerySortOrder.Oldest;
+            var sort = widgetCallParams.Strings["sort"] == "newest" ? AccountGallerySortOrder.Newest : AccountGallerySortOrder.Oldest;
 
             var task = new AccountEndpoint(Imgur.Client).GetAccountGalleryFavoritesAsync(sort: sort);
             task.Wait();
