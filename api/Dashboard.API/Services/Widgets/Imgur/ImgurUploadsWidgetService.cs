@@ -47,8 +47,7 @@ namespace Dashboard.API.Services.Widgets.Imgur
                     Header = item.Title,
                     Content = item.Description,
                     Link = item.Link
-                })
-                .Where(responseItem => responseItem.Image != null);
+                });
         }
     }
 }
