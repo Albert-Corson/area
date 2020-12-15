@@ -84,9 +84,12 @@ class WidgetModule extends VuexModule {
       }
       if (res?.status === 401) {
         // widget requires authentication
-        const data = await ServiceStore.registerService(widgetId)
-        if (data) {
-          window.open(data)
+        const widget = this.widgets.find(w => w.id === widgetId)
+        if (widget) {
+          const data = await ServiceStore.registerService(widget.service.id)
+          if (data) {
+            window.open(data)
+          }
         }
       }
       return { code: res?.status, ...res?.data }
