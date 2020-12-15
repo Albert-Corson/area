@@ -18,7 +18,7 @@
       <div>
         <v-btn
           elevation="2"
-          @click="update"
+          @click="reload"
           color="accent"
           >
           Query
@@ -72,15 +72,18 @@ export default class WidgetApplet9 extends Vue {
   // data
   public items: Array<NewsModel> = []
   public language: string = ''
+  public country: string = ''
 
   // props
   @Prop({ required: true }) readonly widget!: WidgetModel
 
   // methods
   public async reload() {
-    const params: { language?: string } = {}
+    const params: { language?: string, country?: string } = {}
     if (this.language)
       params.language = this.language
+    if (this.country)
+      params.country = this.country
 
     const res = await WidgetStore.fetchWidgetData({
       widgetId: this.widget.id,
@@ -94,11 +97,6 @@ export default class WidgetApplet9 extends Vue {
     })
     // @ts-ignore
     this.language = res.params.find(p => p.name === 'language')?.value
-  }
-
-  public updateSection(language: string) {
-    this.language = language
-    this.reload()
   }
 
   // lifecycle
