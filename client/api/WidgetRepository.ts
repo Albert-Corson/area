@@ -33,7 +33,7 @@ export interface IWidgetRepository {
    * 
    * @param widgetId widget id
    */
-  registerWidget(widgetId: number, params?: object): Promise<ResponseModel>
+  registerWidget(widgetId: number): Promise<ResponseModel>
 
   /**
    * Unregister the user from a widget
@@ -63,13 +63,22 @@ const makeWidgetRepository = ($axios: NuxtAxiosInstance): IWidgetRepository => (
   },
 
   fetchWidgetData(widgetId: number, params?: object): Promise<ResponseModel<WidgetModel>> {
-    return Promise.reject(new Error('Not implemented'))
-    // TODO: pass params object to query parameters
-    // return $axios.$get(`/widgets/${widgetId}`)
+    let url = `/widgets/${widgetId}`
+    let qparams = ''
+
+    if (params) {
+      for (let key of Object.keys(params)) {
+        qparams += qparams === '' ? '?' : '&'
+        // @ts-ignore
+        qparams += `${key}=${params[key]}`
+      }
+    }
+    url += qparams
+    return $axios.$get(url)
   },
 
-  registerWidget(widgetId: number, params?: object): Promise<ResponseModel> {
-    return $axios.$post(`/widgets/${widgetId}`, params)
+  registerWidget(widgetId: number): Promise<ResponseModel> {
+    return $axios.$post(`/widgets/${widgetId}`)
   },
 
   unregisterWidget(widgetId: number): Promise<ResponseModel> {

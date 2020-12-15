@@ -2,6 +2,7 @@ import Vue from 'vue'
 import { Mutation, Action, VuexModule, getModule, Module } from 'vuex-module-decorators'
 import WidgetModel from '~/api/models/WidgetModel'
 import { $api } from '~/globals/api'
+import { ServiceStore } from '~/store'
 
 @Module({
   name: 'modules/WidgetModule',
@@ -67,7 +68,7 @@ class WidgetModule extends VuexModule {
   }
 
   @Action
-  public async fetchWidgetData(widgetId: number, params?: object) {
+  public async fetchWidgetData({ widgetId, params }: { widgetId: number, params?: object }) {
     try {
       const response = await $api.widget.fetchWidgetData(widgetId, params)
       if (response.successful) {
@@ -75,14 +76,30 @@ class WidgetModule extends VuexModule {
         return response.data
       }
     } catch (e) {
-      Vue.toasted.error('Error while fetching widget data')
+      const res = e.response
+      if (res?.data?.error) {
+        Vue.toasted.error(res.data.error)
+      } else {
+        Vue.toasted.error('Error while fetching widget data')
+      }
+      if (res?.status === 401) {
+        // widget requires authentication
+        const widget = this.widgets.find(w => w.id === widgetId)
+        if (widget) {
+          const data = await ServiceStore.registerService(widget.service.id)
+          if (data) {
+            window.open(data)
+          }
+        }
+      }
+      return { code: res?.status, ...res?.data }
     }
   }
 
   @Action
-  public async registerWidget(widgetId: number, params?: object) {
+  public async registerWidget(widgetId: number) {
     try {
-      const response = await $api.widget.registerWidget(widgetId, params)
+      const response = await $api.widget.registerWidget(widgetId)
       if (response.successful) {
         // TODO
         return true

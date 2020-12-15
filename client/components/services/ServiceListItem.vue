@@ -1,8 +1,7 @@
 <template>
   <clickable><hoverable>
     <div class="service-list-item">
-      <nuxt-link class="cover" v-if="registered" :to="`/${ name }/${ id }`"/>
-      <div class="cover" v-else v-on:click="create"/>
+      <nuxt-link class="cover" :to="`/${ name }/${ id }`"/>
       <icon :src="icon" width="70" height="70"/>
       <div class="service-name">{{ name }}</div>
     </div>
@@ -29,10 +28,6 @@ export default class ServiceListItem extends Vue {
   @Prop({ required: false, default: true }) readonly registered!: boolean
   @Prop({ required: false, default: false }) readonly empty!: boolean
 
-  public create() {
-    this.$emit("create", this.id)
-  }
-
   get icon() {
     if (!this.registered) {
       return "/svg/unuse-service.svg"
@@ -49,6 +44,8 @@ export default class ServiceListItem extends Vue {
 .cover {
   width : 100%;
   height : 100%;
+  left: 0;
+  top: 0;
   position : absolute;
 }
 
@@ -56,6 +53,7 @@ export default class ServiceListItem extends Vue {
   position: relative;
   display: inline-block;
   padding: .5em 1em;
+  text-align: center;
 
   a {
     color: inherit;

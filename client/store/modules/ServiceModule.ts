@@ -82,17 +82,17 @@ class ServiceModule extends VuexModule {
   }
 
   @Action
-  public async registerService(serviceId: number, username?: string, password?: string) {
+  public async registerService(serviceId: number) {
     try {
-      const response = await $api.service.registerService(serviceId, username, password)
+      const response = await $api.service.registerService(serviceId)
       if (response.successful) {
         // TODO
-        return true
+        return response.data!
       }
     } catch (e) {
       Vue.toasted.error('Error while subscribing to a service')
     }
-    return false
+    return null
   }
 
   @Action
