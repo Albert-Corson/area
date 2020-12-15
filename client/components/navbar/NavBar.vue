@@ -5,8 +5,6 @@
        <div v-if="authenticated">
          <nav-button title="Home" icon="/svg/home.svg" to="/"></nav-button>
          <nav-button title="Services" icon="/svg/services.svg" to="/services"></nav-button>
-         <nav-button title="Widgets" icon="/svg/widgets.svg" to="/widgets"></nav-button>
-         <nav-button title="Profil" icon="/svg/profil.svg" to="/"></nav-button>
          <nav-button title="Sign out" icon="/svg/logout.svg" to="/logout"></nav-button>
        </div>
        <div v-else>
