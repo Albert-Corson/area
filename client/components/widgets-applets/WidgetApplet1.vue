@@ -67,7 +67,6 @@ export default class WidgetApplet1 extends Vue {
   // methods
   public async reload() {
     const params: { section?: string } = {}
-    console.log(this.section)
     if (this.section)
       params.section = this.section
 
@@ -75,6 +74,7 @@ export default class WidgetApplet1 extends Vue {
       widgetId: this.widget.id,
       params
     })
+    if (!res.items) return
     // @ts-ignore
     this.items = res.items.map(i => {
       i.isVideo = i.image.endsWith('.mp4')
