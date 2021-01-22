@@ -18,10 +18,10 @@ WORKDIR /src
 COPY . .
 
 # Restore
-RUN dotnet restore ./Dashboard.API/*.csproj
+RUN dotnet restore ./Area.API/*.csproj
 
 # Build
-RUN dotnet publish ./Dashboard.API/*.csproj -c Release -o /app
+RUN dotnet publish ./Area.API/*.csproj -c Release -o /app
 
 # ---- Runtime image ----
 FROM runtime
@@ -29,4 +29,4 @@ FROM runtime
 # SOURCES
 COPY --from=build /app .
 
-CMD dotnet Dashboard.API.dll
+CMD dotnet Area.API.dll

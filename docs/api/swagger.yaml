@@ -13,8 +13,8 @@ servers:
 
 info:
   version: "1.0.0"
-  title: Dashboard
-  description: This is the documentation of the Dashboards' API
+  title: Area
+  description: This is the documentation of the Areas' API
 
 tags:
   - name: auth

@@ -1,61 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Diagram>
   <ID>DATABASE</ID>
-  <OriginalElement>be066ebd-cffa-47a0-8bf3-9e496efe33f6.SCHEMA:dashboard.information_schema</OriginalElement>
+  <OriginalElement>be066ebd-cffa-47a0-8bf3-9e496efe33f6.SCHEMA:area.information_schema</OriginalElement>
   <nodes>
-    <node x="212.0" y="373.5">be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:dashboard.public.UsersToWidgets</node>
-    <node x="0.0" y="350.0">be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:dashboard.public.UserHasServiceTokens</node>
-    <node x="376.0" y="327.0">be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:dashboard.public.UserHasWidgetParams</node>
-    <node x="215.125" y="140.5">be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:dashboard.public.Users</node>
-    <node x="580.0" y="327.0">be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:dashboard.public.WidgetHasParams</node>
-    <node x="233.0" y="0.0">be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:dashboard.public.Services</node>
-    <node x="457.125" y="129.0">be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:dashboard.public.Widgets</node>
+    <node x="212.0" y="373.5">be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:area.public.UsersToWidgets</node>
+    <node x="0.0" y="350.0">be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:area.public.UserHasServiceTokens</node>
+    <node x="376.0" y="327.0">be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:area.public.UserHasWidgetParams</node>
+    <node x="215.125" y="140.5">be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:area.public.Users</node>
+    <node x="580.0" y="327.0">be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:area.public.WidgetHasParams</node>
+    <node x="233.0" y="0.0">be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:area.public.Services</node>
+    <node x="457.125" y="129.0">be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:area.public.Widgets</node>
   </nodes>
   <notes />
   <edges>
-    <edge source="be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:dashboard.public.UsersToWidgets" target="be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:dashboard.public.Users">
+    <edge source="be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:area.public.UsersToWidgets" target="be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:area.public.Users">
       <point x="-36.0" y="-39.0" />
       <point x="248.0" y="307.0" />
       <point x="274.125" y="307.0" />
       <point x="0.0" y="62.5" />
     </edge>
-    <edge source="be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:dashboard.public.UserHasWidgetParams" target="be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:dashboard.public.Users">
+    <edge source="be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:area.public.UserHasWidgetParams" target="be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:area.public.Users">
       <point x="-46.0" y="-85.5" />
       <point x="422.0" y="297.0" />
       <point x="313.45833333333337" y="297.0" />
       <point x="39.33333333333337" y="62.5" />
     </edge>
-    <edge source="be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:dashboard.public.WidgetHasParams" target="be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:dashboard.public.Widgets">
+    <edge source="be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:area.public.WidgetHasParams" target="be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:area.public.Widgets">
       <point x="0.0" y="-85.5" />
       <point x="665.0" y="307.0" />
       <point x="595.4583333333334" y="307.0" />
       <point x="55.33333333333337" y="74.0" />
     </edge>
-    <edge source="be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:dashboard.public.UserHasServiceTokens" target="be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:dashboard.public.Services">
+    <edge source="be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:area.public.UserHasServiceTokens" target="be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:area.public.Services">
       <point x="-48.0" y="-62.5" />
       <point x="48.0" y="104.0" />
       <point x="257.0" y="104.0" />
       <point x="-24.0" y="39.5" />
     </edge>
-    <edge source="be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:dashboard.public.Widgets" target="be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:dashboard.public.Services">
+    <edge source="be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:area.public.Widgets" target="be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:area.public.Services">
       <point x="0.0" y="-74.0" />
       <point x="540.125" y="104.0" />
       <point x="305.0" y="104.0" />
       <point x="24.0" y="39.5" />
     </edge>
-    <edge source="be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:dashboard.public.UserHasWidgetParams" target="be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:dashboard.public.Widgets">
+    <edge source="be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:area.public.UserHasWidgetParams" target="be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:area.public.Widgets">
       <point x="46.0" y="-85.5" />
       <point x="514.0" y="307.0" />
       <point x="540.125" y="307.0" />
       <point x="0.0" y="74.0" />
     </edge>
-    <edge source="be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:dashboard.public.UserHasServiceTokens" target="be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:dashboard.public.Users">
+    <edge source="be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:area.public.UserHasServiceTokens" target="be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:area.public.Users">
       <point x="48.0" y="-62.5" />
       <point x="144.0" y="307.0" />
       <point x="234.79166666666666" y="307.0" />
       <point x="-39.33333333333334" y="62.5" />
     </edge>
-    <edge source="be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:dashboard.public.UsersToWidgets" target="be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:dashboard.public.Widgets">
+    <edge source="be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:area.public.UsersToWidgets" target="be066ebd-cffa-47a0-8bf3-9e496efe33f6.TABLE:area.public.Widgets">
       <point x="36.0" y="-39.0" />
       <point x="320.0" y="307.0" />
       <point x="484.7916666666667" y="307.0" />
