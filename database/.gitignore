@@ -1,0 +1,4 @@
+sql/dashboard_public_UserHasServiceTokens.sql
+sql/dashboard_public_UserHasWidgetParams.sql
+sql/dashboard_public_Users.sql
+sql/dashboard_public_UsersToWidgets.sql
