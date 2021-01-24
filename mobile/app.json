@@ -1,0 +1,12 @@
+{
+  "name": "area",
+  "displayName": "area",
+  "expo": {
+    "name": "area",
+    "slug": "area",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
