@@ -7,22 +7,21 @@ using Area.API.Constants;
 using Area.API.Exceptions.Http;
 using Area.API.Models;
 using Area.API.Models.Table;
-using Area.API.Repositories;
 using Area.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using DbContext = Area.API.Database.DbContext;
 
 namespace Area.API.Controllers
 {
     public class ServicesController : ControllerBase
     {
-        private readonly DatabaseRepository _database;
+        private readonly DbContext _database;
         private readonly ServiceManagerService _serviceManager;
 
-        public ServicesController(DatabaseRepository database, ServiceManagerService serviceManager)
+        public ServicesController(DbContext database, ServiceManagerService serviceManager)
         {
             _database = database;
             _serviceManager = serviceManager;

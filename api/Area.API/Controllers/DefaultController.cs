@@ -3,19 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using Area.API.Constants;
 using Area.API.Models;
-using Area.API.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using DbContext = Area.API.Database.DbContext;
 
 namespace Area.API.Controllers
 {
     public class DefaultController : ControllerBase
     {
-        private readonly DatabaseRepository _database;
+        private readonly DbContext _database;
 
-        public DefaultController(DatabaseRepository database)
+        public DefaultController(DbContext database)
         {
             _database = database;
         }

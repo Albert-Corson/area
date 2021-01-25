@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Area.API.Repositories;
+using Area.API.Database;
 using Area.API.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -12,9 +12,9 @@ namespace Area.API.Authentication
 {
     public class JwtAuthentication : JwtBearerHandler
     {
-        private readonly DatabaseRepository _database;
+        private readonly DbContext _database;
 
-        public JwtAuthentication(IOptionsMonitor<JwtBearerOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock, DatabaseRepository database)
+        public JwtAuthentication(IOptionsMonitor<JwtBearerOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock, DbContext database)
             : base(options, logger, encoder, clock)
         {
             _database = database;

@@ -1,12 +1,11 @@
-using System;
 using System.Linq;
 using Area.API.Attributes;
 using Area.API.Common;
 using Area.API.Constants;
+using Area.API.Database;
 using Area.API.Exceptions.Http;
 using Area.API.Models;
 using Area.API.Models.Request;
-using Area.API.Repositories;
 using Area.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -19,9 +18,9 @@ namespace Area.API.Controllers
     {
         private readonly AuthService _service;
         private readonly IConfiguration _configuration;
-        private readonly DatabaseRepository _database;
+        private readonly DbContext _database;
 
-        public AuthController(AuthService service, DatabaseRepository database, IConfiguration configuration)
+        public AuthController(AuthService service, DbContext database, IConfiguration configuration)
         {
             _service = service;
             _database = database;

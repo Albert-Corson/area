@@ -3,7 +3,6 @@ using System.Text;
 using Area.API.Authentication;
 using Area.API.Constants;
 using Area.API.Middlewares;
-using Area.API.Repositories;
 using Area.API.Services;
 using Area.API.Services.Services;
 using Area.API.Services.Widgets.CatApi;
@@ -19,6 +18,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using DbContext = Area.API.Database.DbContext;
 
 namespace Area.API
 {
@@ -51,7 +51,7 @@ namespace Area.API
                     options.TokenValidationParameters = tokenValidationParameters;
                 });
 
-            services.AddDbContext<DatabaseRepository>(options => {
+            services.AddDbContext<DbContext>(options => {
                 string connectionString = $"Host={_configuration[PostgresConstants.HostKeyName] ?? "localhost"};" +
                                           $"Port={_configuration[PostgresConstants.PortKeyName] ?? "5432"};" +
                                           $"Username={_configuration[PostgresConstants.UserKeyName] ?? "postgres"};" +
@@ -127,7 +127,7 @@ namespace Area.API
         private static void InitDbContext(IApplicationBuilder app)
         {
             var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();
-            var dbContext = serviceScope.ServiceProvider.GetService<DatabaseRepository>();
+            var dbContext = serviceScope.ServiceProvider.GetService<DbContext>();
             if (dbContext == null)
                 throw new NullReferenceException("Can't obtain the DbContext");
             dbContext.Database.Migrate();

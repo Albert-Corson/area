@@ -7,22 +7,21 @@ using Area.API.Exceptions.Http;
 using Area.API.Models;
 using Area.API.Models.Table;
 using Area.API.Models.Table.ManyToMany;
-using Area.API.Repositories;
 using Area.API.Services;
-using Area.API.Models.Table.Owned;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using DbContext = Area.API.Database.DbContext;
 
 namespace Area.API.Controllers
 {
     public class WidgetsController : ControllerBase
     {
-        private readonly DatabaseRepository _database;
+        private readonly DbContext _database;
         private readonly WidgetManagerService _widgetManager;
 
-        public WidgetsController(DatabaseRepository database, WidgetManagerService widgetManager)
+        public WidgetsController(DbContext database, WidgetManagerService widgetManager)
         {
             _database = database;
             _widgetManager = widgetManager;

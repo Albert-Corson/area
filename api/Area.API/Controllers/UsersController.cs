@@ -3,11 +3,11 @@ using System.Linq;
 using Area.API.Attributes;
 using Area.API.Common;
 using Area.API.Constants;
+using Area.API.Database;
 using Area.API.Exceptions.Http;
 using Area.API.Models;
 using Area.API.Models.Request;
 using Area.API.Models.Table;
-using Area.API.Repositories;
 using Area.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -19,9 +19,9 @@ namespace Area.API.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IConfiguration _configuration;
-        private readonly DatabaseRepository _database;
+        private readonly DbContext _database;
 
-        public UsersController(DatabaseRepository database, IConfiguration configuration)
+        public UsersController(DbContext database, IConfiguration configuration)
         {
             _database = database;
             _configuration = configuration;

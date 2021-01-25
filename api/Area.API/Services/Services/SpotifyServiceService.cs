@@ -2,7 +2,6 @@ using System;
 using Area.API.Models.Services;
 using Area.API.Models.Table;
 using Area.API.Models.Table.Owned;
-using Area.API.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;

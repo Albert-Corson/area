@@ -2,21 +2,21 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Area.API.Exceptions.Http;
-using Area.API.Repositories;
 using Area.API.Services.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using DbContext = Area.API.Database.DbContext;
 
 namespace Area.API.Services
 {
     public class ServiceManagerService
     {
-        private readonly DatabaseRepository _database;
+        private readonly DbContext _database;
         private readonly IDictionary<string, IServiceService> _service;
         private readonly ILogger _logger;
 
-        public ServiceManagerService(DatabaseRepository database, ILoggerFactory loggerFactory,
+        public ServiceManagerService(DbContext database, ILoggerFactory loggerFactory,
             ImgurServiceService imgur,
             SpotifyServiceService spotify)
         {

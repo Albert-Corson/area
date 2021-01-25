@@ -4,7 +4,6 @@ using Area.API.Exceptions.Http;
 using Area.API.Models;
 using Area.API.Models.Table;
 using Area.API.Models.Table.Owned;
-using Area.API.Repositories;
 using Area.API.Services.Widgets;
 using Area.API.Services.Widgets.CatApi;
 using Area.API.Services.Widgets.Icanhazdadjoke;
@@ -15,6 +14,7 @@ using Area.API.Services.Widgets.Spotify;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Primitives;
+using DbContext = Area.API.Database.DbContext;
 
 namespace Area.API.Services
 {
@@ -62,11 +62,11 @@ namespace Area.API.Services
 
     public class WidgetManagerService
     {
-        private readonly DatabaseRepository _database;
+        private readonly DbContext _database;
         private readonly IDictionary<string, IWidgetService> _widgets;
 
         public WidgetManagerService(
-            DatabaseRepository database,
+            DbContext database,
             ImgurGalleryWidgetService imgurGallery,
             ImgurFavoritesWidgetService imgurFavorites,
             ImgurUploadsWidgetService imgurUploads,

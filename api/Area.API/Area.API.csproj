@@ -24,4 +24,7 @@
     <PackageReference Include="SpotifyAPI.Web.Auth" Version="6.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="5.6.3" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Repositories" />
+  </ItemGroup>
 </Project>

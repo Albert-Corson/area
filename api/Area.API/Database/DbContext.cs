@@ -2,11 +2,11 @@ using Area.API.Models.Table;
 using Area.API.Models.Table.ManyToMany;
 using Microsoft.EntityFrameworkCore;
 
-namespace Area.API.Repositories
+namespace Area.API.Database
 {
-    public class DatabaseRepository : DbContext
+    public class DbContext : Microsoft.EntityFrameworkCore.DbContext
     {
-        public DatabaseRepository(DbContextOptions<DatabaseRepository> options)
+        public DbContext(DbContextOptions<DbContext> options)
             : base(options)
         {}
 
