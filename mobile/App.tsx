@@ -1,19 +1,27 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, {useState} from 'react';
+import NavigationContainer from "./src/Navigation/NavigationContainer";
+import AppLoading from 'expo-app-loading';
+import {AppearanceProvider} from 'react-native-appearance';
+import loadResources from "./src/Loader/Loader";
 
-export default function App() {
+const App = () => {
+  const [ready, setReady] = useState(false);
+
+  if (!ready) {
+    return (
+      <AppLoading
+        startAsync={loadResources}
+        onFinish={() => setReady(true)}
+        onError={console.warn}
+      />
+    );
+  }
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-    </View>
+    <AppearanceProvider>
+      <NavigationContainer />
+    </AppearanceProvider>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
