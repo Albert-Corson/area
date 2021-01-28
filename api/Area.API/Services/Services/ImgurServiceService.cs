@@ -4,8 +4,6 @@ using System.Linq;
 using Area.API.Exceptions.Http;
 using Area.API.Models;
 using Area.API.Models.Services;
-using Area.API.Models.Table;
-using Area.API.Models.Table.Owned;
 using Imgur.API.Authentication.Impl;
 using Imgur.API.Enums;
 using Imgur.API.Models;
@@ -47,16 +45,16 @@ namespace Area.API.Services.Services
             return userId;
         }
 
-        public bool HandleSignInCallback(HttpContext context, int serviceId, UserModel user)
+        public string? HandleSignInCallback(HttpContext context)
         {
             if (!context.Request.Query.TryGetValue("code", out var code))
-                return false;
+                return null;
 
             try {
                 var task = new Imgur.API.Endpoints.Impl.OAuth2Endpoint(Client).GetTokenByCodeAsync(code);
                 task.Wait();
                 if (!task.IsCompletedSuccessfully || task.Result == null)
-                    return false;
+                    return null;
                 var tokensHolder = new ImgurAuthModel {
                     AccessToken = task.Result.AccessToken,
                     TokenType = task.Result.TokenType,
@@ -65,16 +63,10 @@ namespace Area.API.Services.Services
                     AccountId = task.Result.AccountId,
                     ExpiresIn = task.Result.ExpiresIn
                 };
-                if (user.ServiceTokens == null)
-                    return false;
-                user.ServiceTokens.Add(new UserServiceTokensModel {
-                    ServiceId = serviceId,
-                    Json = tokensHolder.ToString()
-                });
+                return tokensHolder.ToString();
             } catch {
-                return false;
+                return null;
             }
-            return true;
         }
 
         public static OAuth2Token? ImgurOAuth2TokenFromJson(string json)

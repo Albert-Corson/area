@@ -1,7 +1,6 @@
-using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Area.API.Database;
+using Area.API.Repositories;
 using Area.API.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -12,12 +11,12 @@ namespace Area.API.Authentication
 {
     public class JwtAuthentication : JwtBearerHandler
     {
-        private readonly DbContext _database;
+        private readonly UserRepository _userRepository;
 
-        public JwtAuthentication(IOptionsMonitor<JwtBearerOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock, DbContext database)
+        public JwtAuthentication(IOptionsMonitor<JwtBearerOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock, UserRepository userRepository)
             : base(options, logger, encoder, clock)
         {
-            _database = database;
+            _userRepository = userRepository;
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -30,7 +29,7 @@ namespace Area.API.Authentication
 
             var userId = AuthService.GetUserIdFromPrincipal(authenticateResult.Principal);
 
-            if (userId == null || _database.Users.FirstOrDefault(model => model.Id == userId) == null)
+            if (userId == null || !_userRepository.UserExists(userId.Value))
                 return AuthenticateResult.Fail("This user does not exist");
 
             return authenticateResult;

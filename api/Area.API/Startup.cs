@@ -3,6 +3,7 @@ using System.Text;
 using Area.API.Authentication;
 using Area.API.Constants;
 using Area.API.Middlewares;
+using Area.API.Repositories;
 using Area.API.Services;
 using Area.API.Services.Services;
 using Area.API.Services.Widgets.CatApi;
@@ -68,6 +69,7 @@ namespace Area.API
 
             AddWidgetServices(services);
             AddServiceServices(services);
+            AddRepositoryServices(services);            
 
             services
                 .AddControllers()
@@ -131,6 +133,13 @@ namespace Area.API
             if (dbContext == null)
                 throw new NullReferenceException("Can't obtain the DbContext");
             dbContext.Database.Migrate();
+        }
+
+        private static void AddRepositoryServices(IServiceCollection services)
+        {
+            services.AddTransient<UserRepository>();
+            services.AddTransient<ServiceRepository>();
+            services.AddTransient<WidgetRepository>();
         }
     }
 }

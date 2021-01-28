@@ -7,24 +7,25 @@ using Area.API.Constants;
 using Area.API.Exceptions.Http;
 using Area.API.Models;
 using Area.API.Models.Table;
+using Area.API.Repositories;
 using Area.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using DbContext = Area.API.Database.DbContext;
 
 namespace Area.API.Controllers
 {
     public class ServicesController : ControllerBase
     {
-        private readonly DbContext _database;
+        private readonly ServiceRepository _serviceRepository;
+        private readonly UserRepository _userRepository;
         private readonly ServiceManagerService _serviceManager;
 
-        public ServicesController(DbContext database, ServiceManagerService serviceManager)
+        public ServicesController(ServiceManagerService serviceManager, ServiceRepository serviceRepository, UserRepository userRepository)
         {
-            _database = database;
             _serviceManager = serviceManager;
+            _serviceRepository = serviceRepository;
+            _userRepository = userRepository;
         }
 
         [HttpGet]
@@ -33,7 +34,7 @@ namespace Area.API.Controllers
         public JsonResult GetServices()
         {
             return new ResponseModel<List<ServiceModel>> {
-                Data = _database.Services.AsQueryable().ToList()
+                Data = _serviceRepository.GetServices().ToList()
             };
         }
 
@@ -43,16 +44,8 @@ namespace Area.API.Controllers
         public JsonResult GetMyService()
         {
             var userId = AuthService.GetUserIdFromPrincipal(User);
-            var user = _database.Users
-                .Include(model => model.Widgets).ThenInclude(model => model.Widget).ThenInclude(model => model!.Service)
-                .First(model => model.Id == userId);
 
-            List<ServiceModel> services = new List<ServiceModel>();
-            foreach (var widget in user.Widgets!) {
-                if (services.Find(model => model.Id == widget.Widget!.ServiceId) != null)
-                    continue;
-                services.Add(widget.Widget!.Service!);
-            }
+            var services = _serviceRepository.GetServicesByUser(userId!.Value);
 
             return new ResponseModel<List<ServiceModel>> {
                 Data = services
@@ -67,7 +60,7 @@ namespace Area.API.Controllers
             [FromRoute] [Required] [Range(1, 2147483647)] int? serviceId
         )
         {
-            var service = _database.Services.FirstOrDefault(model => model.Id == serviceId);
+            var service = _serviceRepository.GetService(serviceId!.Value);
 
             if (service == null)
                 throw new NotFoundHttpException();
@@ -106,17 +99,9 @@ namespace Area.API.Controllers
         )
         {
             var userId = AuthService.GetUserIdFromPrincipal(User);
-            var serviceTokens = _database.Users
-                .Where(model => model.Id == userId)
-                .Include(model => model.ServiceTokens!
-                    .Where(tokensModel => tokensModel.ServiceId == serviceId))
-                .SelectMany(model => model.ServiceTokens)
-                .FirstOrDefault();
 
-            if (serviceTokens != null) {
-                _database.Remove(serviceTokens);
-                _database.SaveChanges();
-            }
+            if (!_userRepository.RemoveServiceCredentials(userId!.Value, serviceId!.Value))
+                throw new NotFoundHttpException();
             return StatusModel.Success();
         }
 

@@ -13,7 +13,7 @@ namespace Area.API.Models.Table.Owned
         public WidgetModel? Widget { get; set; }
 
         [NotMapped]
-        [JsonIgnore]
-        public override bool? Required => true;
+        [JsonProperty("required")]
+        public override bool? Required => false;
     }
 }

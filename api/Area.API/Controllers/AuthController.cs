@@ -1,30 +1,25 @@
-using System.Linq;
 using Area.API.Attributes;
-using Area.API.Common;
 using Area.API.Constants;
-using Area.API.Database;
 using Area.API.Exceptions.Http;
 using Area.API.Models;
 using Area.API.Models.Request;
+using Area.API.Repositories;
 using Area.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 
 namespace Area.API.Controllers
 {
     public class AuthController : ControllerBase
     {
         private readonly AuthService _service;
-        private readonly IConfiguration _configuration;
-        private readonly DbContext _database;
+        private readonly UserRepository _userRepository;
 
-        public AuthController(AuthService service, DbContext database, IConfiguration configuration)
+        public AuthController(AuthService service, UserRepository userRepository)
         {
             _service = service;
-            _database = database;
-            _configuration = configuration;
+            _userRepository = userRepository;
         }
 
         [HttpPost]
@@ -34,9 +29,7 @@ namespace Area.API.Controllers
             [FromBody] SignInModel body
         )
         {
-            var encryptedPasswd = Encryptor.Encrypt(_configuration[JwtConstants.SecretKeyName], body.Password!);
-
-            var user = _database.Users.FirstOrDefault(model => model.Username == body.Username && model.Password == encryptedPasswd);
+            var user = _userRepository.GetUser(body.Username!, body.Password!);
             if (user?.Id == null)
                 throw new UnauthorizedHttpException();
 

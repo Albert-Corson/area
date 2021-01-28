@@ -7,24 +7,27 @@ using Area.API.Exceptions.Http;
 using Area.API.Models;
 using Area.API.Models.Table;
 using Area.API.Models.Table.ManyToMany;
+using Area.API.Repositories;
 using Area.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using DbContext = Area.API.Database.DbContext;
 
 namespace Area.API.Controllers
 {
     public class WidgetsController : ControllerBase
     {
-        private readonly DbContext _database;
         private readonly WidgetManagerService _widgetManager;
+        private readonly UserRepository _userRepository;
+        private readonly ServiceRepository _serviceRepository;
+        private readonly WidgetRepository _widgetRepository;
 
-        public WidgetsController(DbContext database, WidgetManagerService widgetManager)
+        public WidgetsController(WidgetManagerService widgetManager, WidgetRepository widgetRepository, ServiceRepository serviceRepository, UserRepository userRepository)
         {
-            _database = database;
             _widgetManager = widgetManager;
+            _widgetRepository = widgetRepository;
+            _serviceRepository = serviceRepository;
+            _userRepository = userRepository;
         }
 
         [HttpGet]
@@ -35,27 +38,18 @@ namespace Area.API.Controllers
             [FromQuery] [Range(1, 2147483647)] int? serviceId
         )
         {
-            List<WidgetModel>? widgets;
+            IEnumerable<WidgetModel> widgets;
 
             if (serviceId != null) {
-                var service = _database.Services
-                    .Include(model => model.Widgets).ThenInclude(model => model.Service)
-                    .Include(model => model.Widgets).ThenInclude(model => model.Params)
-                    .FirstOrDefault(model => model.Id == serviceId);
-
-                if (service?.Id == null)
+                if (!_serviceRepository.ServiceExists(serviceId.Value))
                     throw new NotFoundHttpException("Service not found");
-
-                widgets = service.Widgets?.ToList() ?? new List<WidgetModel>();
+                widgets = _widgetRepository.GetWidgetsByService(serviceId.Value);
             } else {
-                widgets = _database.Widgets
-                    .Include(model => model.Service)
-                    .Include(model => model.Params)
-                    .AsQueryable().ToList();
+                widgets = _widgetRepository.GetWidgets();
             }
 
             return new ResponseModel<List<WidgetModel>> {
-                Data = widgets
+                Data = widgets.ToList()
             };
         }
 
@@ -68,27 +62,17 @@ namespace Area.API.Controllers
         {
             var userId = AuthService.GetUserIdFromPrincipal(User);
 
-            var user = _database.Users
-                .Include(model => model.Widgets).ThenInclude(userWidget => userWidget.Widget).ThenInclude(widget => widget!.Service)
-                .Include(model => model.Widgets).ThenInclude(userWidget => userWidget.Widget).ThenInclude(widget => widget!.Params)
-                .Include(model => model.WidgetParams)
-                .FirstOrDefault(model => model.Id == userId)!;
-
-            var userToWidgets = user.Widgets;
-
             List<WidgetModel> widgets;
-            if (serviceId != null && userToWidgets != null) {
-                widgets = userToWidgets
-                    .Where(model => model.Widget!.ServiceId == serviceId)
-                    .Select(model => model.Widget).ToList()!;
-            } else if (userToWidgets != null) {
-                widgets = userToWidgets.Select(model => model.Widget).ToList()!;
-            } else {
-                widgets = new List<WidgetModel>();
-            }
+
+            widgets = serviceId != null ?
+                _widgetRepository.GetUserWidgetsByService(userId!.Value, serviceId.Value).ToList()
+                : _widgetRepository.GetUserWidgets(userId!.Value).ToList();
+
+            var userWidgetParams = _userRepository.GetUserWidgetParams(userId.Value).ToList();
 
             foreach (var widget in widgets) {
-                widget.Params = WidgetManagerService.BuildUserWidgetCallParams(user.WidgetParams!.Where(model => model.WidgetId == widget.Id)!, widget.Params!);
+                var currentParam = userWidgetParams.Where(model => model.WidgetId == widget.Id);
+                widget.Params = WidgetManagerService.BuildUserWidgetCallParams(currentParam, widget.Params!);
             }
 
             return new ResponseModel<List<WidgetModel>> {
@@ -118,24 +102,9 @@ namespace Area.API.Controllers
         )
         {
             var userId = AuthService.GetUserIdFromPrincipal(User);
-            var user = _database.Users
-                .Include(model => model.WidgetParams)
-                .First(model => model.Id == userId);
 
-            _database.Remove(new UserWidgetModel {
-                UserId = userId,
-                WidgetId = widgetId
-            });
-
-            var userWidgetParams = user.WidgetParams?.Where(model => model.WidgetId == widgetId);
-            if (userWidgetParams != null) {
-                foreach (var param in userWidgetParams) {
-                    _database.Remove(param);
-                }
-            }
-
-            _database.SaveChanges();
-
+            if (!_userRepository.RemoveWidgetSubscription(userId!.Value, widgetId!.Value))
+                throw new NotFoundHttpException();
             return StatusModel.Success();
         }
 
@@ -149,21 +118,10 @@ namespace Area.API.Controllers
         {
             var userId = AuthService.GetUserIdFromPrincipal(User);
 
-            var widget = _database.Widgets.FirstOrDefault(model => model.Id == widgetId);
-            if (widget == null)
+            if (_widgetRepository.WidgetExists(widgetId!.Value))
                 throw new NotFoundHttpException();
 
-            var user = _database.Users.First(model => model.Id == userId);
-
-            user.Widgets ??= new List<UserWidgetModel>();
-
-            user.Widgets.Add(new UserWidgetModel {
-                UserId = userId,
-                WidgetId = widgetId
-            });
-
-            _database.SaveChanges();
-
+            _userRepository.AddWidgetSubscription(userId!.Value, widgetId!.Value);
             return StatusModel.Success();
         }
     }
