@@ -32,7 +32,7 @@ namespace Area.API.Services.Widgets.Imgur
             var task = galleryEndpoint.GetGalleryAsync(section);
             task.Wait();
             if (!task.IsCompletedSuccessfully)
-                throw new InternalServerErrorHttpException("Couldn't not reach Imgur's API");
+                throw new InternalServerErrorHttpException("Could not reach Imgur");
 
             response.Items = ImgurServiceService.WidgetResponseItemsFromGallery(task.Result);
         }

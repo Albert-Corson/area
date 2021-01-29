@@ -30,7 +30,7 @@ namespace Area.API.Authentication
             var userId = AuthService.GetUserIdFromPrincipal(authenticateResult.Principal);
 
             if (userId == null || !_userRepository.UserExists(userId.Value))
-                return AuthenticateResult.Fail("This user does not exist");
+                return AuthenticateResult.Fail("The associated user does not exist");
 
             return authenticateResult;
         }

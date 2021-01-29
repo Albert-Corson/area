@@ -42,7 +42,7 @@ namespace Area.API.Controllers
 
             if (serviceId != null) {
                 if (!_serviceRepository.ServiceExists(serviceId.Value))
-                    throw new NotFoundHttpException("Service not found");
+                    throw new NotFoundHttpException("This service does not exist");
                 widgets = _widgetRepository.GetWidgetsByService(serviceId.Value, true);
             } else {
                 widgets = _widgetRepository.GetWidgets(true);
@@ -102,7 +102,7 @@ namespace Area.API.Controllers
             var userId = AuthService.GetUserIdFromPrincipal(User);
 
             if (!_userRepository.RemoveWidgetSubscription(userId!.Value, widgetId!.Value))
-                throw new NotFoundHttpException();
+                throw new NotFoundHttpException("The user is not subscribed to this widget");
             return StatusModel.Success();
         }
 
@@ -117,7 +117,7 @@ namespace Area.API.Controllers
             var userId = AuthService.GetUserIdFromPrincipal(User);
 
             if (!_widgetRepository.WidgetExists(widgetId!.Value))
-                throw new NotFoundHttpException();
+                throw new NotFoundHttpException("This widget does not exist");
 
             _userRepository.AddWidgetSubscription(userId!.Value, widgetId!.Value);
             return StatusModel.Success();

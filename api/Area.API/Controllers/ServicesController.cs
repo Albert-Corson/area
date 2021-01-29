@@ -63,7 +63,7 @@ namespace Area.API.Controllers
             var service = _serviceRepository.GetService(serviceId!.Value);
 
             if (service == null)
-                throw new NotFoundHttpException();
+                throw new NotFoundHttpException("This service does not exist");
 
             return new ResponseModel<ServiceModel> {
                 Data = service
@@ -100,8 +100,7 @@ namespace Area.API.Controllers
         {
             var userId = AuthService.GetUserIdFromPrincipal(User);
 
-            if (!_userRepository.RemoveServiceCredentials(userId!.Value, serviceId!.Value))
-                throw new NotFoundHttpException();
+            _userRepository.RemoveServiceCredentials(userId!.Value, serviceId!.Value);
             return StatusModel.Success();
         }
 

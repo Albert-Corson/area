@@ -102,16 +102,14 @@ namespace Area.API.Services
         public WidgetCallResponseModel CallWidgetById(HttpContext context, int widgetId)
         {
             var userId = AuthService.GetUserIdFromPrincipal(context.User);
-            if (userId == null)
-                throw new UnauthorizedHttpException();
 
-            var user = _userRepository.GetUser(userId.Value);
+            var user = userId != null ? _userRepository.GetUser(userId.Value) : null;
             if (user == null)
-                throw new UnauthorizedHttpException();
+                throw new InternalServerErrorHttpException(); // this means that the JWT falsely validated
 
             var widget = _widgetRepository.GetWidget(widgetId, true);
             if (widget == null || !_widgets.TryGetValue(widget.Name!, out var widgetService))
-                throw new NotFoundHttpException("Widget not found");
+                throw new NotFoundHttpException("This widget does not exist");
 
             if (widget.RequiresAuth == true)
                 ValidateSignInState(widgetService, user, widget.ServiceId!.Value);
@@ -182,7 +180,7 @@ namespace Area.API.Services
                 if (defaultParam.Required != true)
                     callParams.TryAddAny(defaultParam.Name!, defaultParam.Value!, defaultParam.Type!);
                 else if (callParams.Contains(defaultParam.Name!, defaultParam.Type!) == false)
-                    throw new BadRequestHttpException($"Missing parameter `{defaultParam.Name}` of type `{defaultParam.Type}`");
+                    throw new BadRequestHttpException($"Missing query parameter `{defaultParam.Name}` of type `{defaultParam.Type}`");
             }
 
             return callParams;
@@ -201,11 +199,11 @@ namespace Area.API.Services
             var serviceToken = user.ServiceTokens!.FirstOrDefault(model => model.ServiceId == serviceId);
 
             if (serviceToken == null)
-                throw new UnauthorizedHttpException("You need to be signed-in to the service");
+                throw new UnauthorizedHttpException("You need to sign-in to the service");
             if (widgetService.ValidateServiceAuth(serviceToken))
                 return;
             _userRepository.RemoveServiceCredentials(user.Id!.Value, serviceId);
-            throw new UnauthorizedHttpException("You need sign-in to the service again");
+            throw new UnauthorizedHttpException("You need to sign-in to the service again");
         }
     }
 }

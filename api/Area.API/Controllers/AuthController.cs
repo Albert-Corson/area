@@ -39,7 +39,7 @@ namespace Area.API.Controllers
 
             var user = _userRepository.GetUser(body.Username!, encryptedPasswd);
             if (user?.Id == null)
-                throw new UnauthorizedHttpException();
+                throw new UnauthorizedHttpException("Invalid username/password");
 
             return new ResponseModel<UserTokenModel> {
                 Data = new UserTokenModel {
