@@ -3,13 +3,13 @@ import {createStackNavigator} from '@react-navigation/stack';
 import SignInScreen from '../Screens/SignInScreen';
 import SignUpScreen from '../Screens/SignUpScreen';
 import HelpScreen from '../Screens/HelpScreen';
-import WidgetsScreen from '../Screens/WidgetsScreen';
+import DashboardScreen from '../Screens/DashboardScreen';
 
 export type RootStackParamList = {
   Login: undefined;
   SignUp: undefined;
   Help: undefined;
-  Widgets: undefined;
+  Dashboard: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -19,7 +19,7 @@ const StackNavigator = (): JSX.Element => (
     <Stack.Screen name={'Login'} component={SignInScreen} />
     <Stack.Screen name={'SignUp'} component={SignUpScreen} />
     <Stack.Screen name={'Help'} component={HelpScreen} />
-    <Stack.Screen name={'Widgets'} component={WidgetsScreen} />
+    <Stack.Screen name={'Dashboard'} component={DashboardScreen} />
   </Stack.Navigator>
 );
 
