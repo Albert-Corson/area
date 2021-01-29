@@ -1,9 +1,12 @@
-import React, {createContext} from 'react';
-import {Block} from '../Types/Block';
-import {GridStore} from './GridStore';
+import React, { createContext } from 'react';
+import { GridStore } from './GridStore';
+import { AuthStore } from './AuthStore';
+import { UserStore } from './UserStore';
 
 export class RootStore {
-    gridStore: GridStore = new GridStore(this);
+    grid: GridStore = new GridStore(this);
+    auth: AuthStore = new AuthStore(this);
+    user: UserStore = new UserStore(this);
 }
 
 export default createContext(new RootStore());

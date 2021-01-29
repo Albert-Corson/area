@@ -15,14 +15,14 @@ const seedData = [
 configure({enforceActions: 'always'});
 
 export class GridStore {
-    rootStore: RootStore;
+    private _rootStore: RootStore;
     @observable private _modifying = false;
     @observable private _blocks: Array<Block> = [];
 
 
     constructor(rootStore: RootStore) {
       makeAutoObservable(this);
-      this.rootStore = rootStore;
+      this._rootStore = rootStore;
       this.initGrid();
     }
 
@@ -36,7 +36,7 @@ export class GridStore {
     }
 
     private get fillBlock() {
-      return ({color: '#00000000', unactive: true});
+      return ({color: '#000000FF', unactive: true});
     }
 
     @action
