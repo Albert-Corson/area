@@ -95,7 +95,7 @@ export class AuthStore {
   @action
   public signIn = async (): Promise<boolean> => {
     if (!this._email.length || !this._password.length) {
-      this._error = 'All entry are required';
+      this._error = 'All entries are required';
       return false;
     }
 
