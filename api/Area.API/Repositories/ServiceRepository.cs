@@ -7,57 +7,49 @@ using DbContext = Area.API.Database.DbContext;
 
 namespace Area.API.Repositories
 {
-    public class ServiceRepository
+    public class ServiceRepository : ARepository
     {
-        private readonly DbContext _database;
-
-        public ServiceRepository(DbContext database)
-        {
-            _database = database;
-        }
+        public ServiceRepository(DbContext database) : base(database)
+        { }
 
         public bool ServiceExists(int serviceId)
         {
             return GetService(serviceId) != null;
         }
 
-        public IEnumerable<ServiceModel> GetServices(bool asNoTracking = true)
+        public IEnumerable<ServiceModel> GetServices(bool includeChildren = false, bool asNoTracking = true)
         {
-            return asNoTracking ? _database.Services.AsNoTracking() : _database.Services.AsQueryable();
-        }
+            var queryable = asNoTracking ? Database.Services.AsNoTracking() : Database.Services.AsQueryable();
 
-        public IEnumerable<ServiceModel> GetServicesWithChildren(bool asNoTracking = true)
-        {
-            var queryable = asNoTracking ? _database.Services.AsNoTracking() : _database.Services.AsQueryable();
-
-            return queryable
-                .Include(model => model.Widgets)
-                .ThenInclude(model => model.Params);
+            return includeChildren
+                ? queryable.Include(model => model.Widgets)
+                    .ThenInclude(model => model.Params)
+                : queryable;
         }
 
         public List<ServiceModel> GetServicesByUser(int userId)
         {
-            var userWidgets = _database.Set<UserWidgetModel>()
+            var services = Database.Set<UserWidgetModel>()
                 .AsNoTracking()
                 .Where(model => model.UserId == userId)
-                .Include(model => model.Widget)
-                .ThenInclude(model => model!.Service);
+                .Include(model => model.Widget).ThenInclude(model => model!.Service)
+                .Select(model => model.Widget!)
+                .Select(model => model.Service);
 
-            List<ServiceModel> services = new List<ServiceModel>();
-            foreach (var userWidget in userWidgets) {
-                if (services.Contains(userWidget.Widget!.Service!))
-                    continue;
-                services.Add(userWidget.Widget.Service!);
+            List<ServiceModel> filteredServices = new List<ServiceModel>();
+            foreach (var service in services) {
+                if (!filteredServices.Exists(model => model.Id == service!.Id))
+                    filteredServices.Add(service!);
             }
 
-            return services;
+            return filteredServices;
         }
 
-        public ServiceModel? GetService(int serviceId)
+        public ServiceModel? GetService(int serviceId, bool asNoTracking = true)
         {
-            return _database.Services
-                .AsNoTracking()
-                .FirstOrDefault(model => model.Id == serviceId);
+            var queryable = asNoTracking ? Database.Services.AsNoTracking() : Database.Services.AsQueryable();
+
+            return queryable.FirstOrDefault(model => model.Id == serviceId);
         }
     }
 }

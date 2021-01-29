@@ -7,64 +7,72 @@ using DbContext = Area.API.Database.DbContext;
 
 namespace Area.API.Repositories
 {
-    public class WidgetRepository
+    public class WidgetRepository : ARepository
     {
-        private readonly DbContext _database;
-
-        public WidgetRepository(DbContext database)
-        {
-            _database = database;
-        }
+        public WidgetRepository(DbContext database) : base(database)
+        { }
 
         public bool WidgetExists(int widgetId)
         {
-            return _database.Widgets.SingleOrDefault(model => model.Id == widgetId) != null;
+            return Database.Widgets.SingleOrDefault(model => model.Id == widgetId) != null;
         }
 
-        public IEnumerable<WidgetModel> GetWidgets()
+        public IEnumerable<WidgetModel> GetWidgets(bool includeChildren = false, bool asNoTracking = true)
         {
-            return _database.Widgets
-                .AsNoTracking()
-                .Include(model => model.Params)
-                .Include(model => model.Service);
+            var queryable = asNoTracking ? Database.Widgets.AsNoTracking() : Database.Widgets.AsQueryable();
+
+            return includeChildren
+                ? queryable.Include(model => model.Params)
+                    .Include(model => model.Service)
+                : queryable;
         }
 
-        public IEnumerable<WidgetModel> GetWidgetsByService(int serviceId)
+        public IEnumerable<WidgetModel> GetWidgetsByService(int serviceId, bool includeChildren = false,
+            bool asNoTracking = true)
         {
-            return _database.Widgets
-                .AsNoTracking()
-                .Where(model => model.ServiceId == serviceId)
-                .Include(model => model.Params)
-                .Include(model => model.Service);
+            var queryable = asNoTracking ? Database.Widgets.AsNoTracking() : Database.Widgets.AsQueryable();
+            queryable = queryable.Where(model => model.ServiceId == serviceId);
+
+            return includeChildren
+                ? queryable
+                    .Include(model => model.Params)
+                    .Include(model => model.Service)
+                : queryable;
         }
 
-        public WidgetModel? GetWidgetWithParams(int widgetId)
+        public WidgetModel? GetWidget(int widgetId, bool includeParams = false, bool asNoTracking = true)
         {
-            return _database.Widgets
-                .AsNoTracking()
-                .Include(model => model.Params)
-                .SingleOrDefault(model => model.Id == widgetId);
+            var queryable = asNoTracking ? Database.Widgets.AsNoTracking() : Database.Widgets.AsQueryable();
+
+            queryable = includeParams
+                ? queryable.Include(model => model.Params)
+                : queryable;
+
+            return queryable.FirstOrDefault(model => model.Id == widgetId);
         }
 
-        public IEnumerable<WidgetModel> GetUserWidgets(int userId)
+        public IEnumerable<WidgetModel> GetUserWidgets(int userId, bool includeChildren = false,
+            bool asNoTracking = true)
         {
-            return _database.Set<UserWidgetModel>()
-                .Where(model => model.UserId == userId)
-                .Include(model => model.Widget)
-                .Select(model => model.Widget!)
-                .Include(model => model!.Service)
-                .Include(model => model!.Params);
+            var queryable = asNoTracking
+                ? Database.Set<UserWidgetModel>().AsNoTracking()
+                : Database.Set<UserWidgetModel>().AsQueryable();
+
+            queryable = queryable.Where(model => model.UserId == userId);
+
+            queryable = includeChildren
+                ? queryable.Include(model => model.Widget).ThenInclude(model => model!.Service)
+                    .Include(model => model.Widget).ThenInclude(model => model!.Params)
+                : queryable;
+
+
+            return queryable.Select(model => model.Widget!);
         }
 
-        public IEnumerable<WidgetModel> GetUserWidgetsByService(int userId, int serviceId)
+        public IEnumerable<WidgetModel> GetUserWidgetsByService(int userId, int serviceId, bool asNoTracking = true)
         {
-            return _database.Set<UserWidgetModel>()
-                .Where(model => model.UserId == userId)
-                .Include(model => model.Widget)
-                .Select(model => model.Widget!)
-                .Where(model => model.ServiceId == serviceId)
-                .Include(model => model!.Service)
-                .Include(model => model!.Params);
+            return GetUserWidgets(userId, asNoTracking: asNoTracking)
+                .Where(model => model.ServiceId == serviceId);
         }
     }
 }

@@ -11,23 +11,17 @@ using DbContext = Area.API.Database.DbContext;
 
 namespace Area.API.Repositories
 {
-    public class UserRepository
+    public class UserRepository : ARepository
     {
-        private readonly DbContext _database;
-        private readonly IConfiguration _configuration;
-
-        public UserRepository(DbContext database, IConfiguration configuration)
-        {
-            _database = database;
-            _configuration = configuration;
-        }
+        public UserRepository(DbContext database) : base(database)
+        { }
 
         public bool UserExists(int? userId = null, string? username = null, string? email = null)
         {
             if (userId == null && username == null && email == null)
                 return false;
 
-            return _database.Users
+            return Database.Users
                 .AsNoTracking()
                 .FirstOrDefault(model =>
                     (userId == null || model.Id == userId.Value)
@@ -36,35 +30,23 @@ namespace Area.API.Repositories
                 ) != null;
         }
 
-        public UserModel? GetUser(string username, string clearPasswd)
+        public UserModel? GetUser(string username, string passwd, bool asNoTracking = true)
         {
-            var encryptedPasswd = Encryptor.Encrypt(_configuration[JwtConstants.SecretKeyName], clearPasswd);
+            var queryable = asNoTracking ? Database.Users.AsNoTracking() : Database.Users.AsQueryable();
 
-            return _database.Users
-                .AsNoTracking()
-                .FirstOrDefault(model => model.Username == username && model.Password == encryptedPasswd);
+            return queryable.FirstOrDefault(model => model.Username == username && model.Password == passwd);
         }
 
-        public UserModel? GetUser(int userId)
+        public UserModel? GetUser(int userId, bool asNoTracking = true)
         {
-            return _database.Users
-                .AsNoTracking()
-                .FirstOrDefault(model => model.Id == userId);
+            var queryable = asNoTracking ? Database.Users.AsNoTracking() : Database.Users.AsQueryable();
+
+            return queryable.FirstOrDefault(model => model.Id == userId);
         }
 
-        public bool AddUser(string username, string email, string clearPasswd)
+        public void AddUser(UserModel user)
         {
-            var encryptedPasswd = Encryptor.Encrypt(_configuration[JwtConstants.SecretKeyName], clearPasswd);
-
-            if (encryptedPasswd == null)
-                return false;
-            _database.Users.Add(new UserModel {
-                Username = username,
-                Password = encryptedPasswd,
-                Email = email
-            });
-            _database.SaveChanges();
-            return true;
+            Database.Users.Add(user);
         }
 
         public bool RemoveUser(int userId)
@@ -73,93 +55,55 @@ namespace Area.API.Repositories
 
             if (user == null)
                 return false;
-            _database.Users.Remove(user);
-            _database.SaveChanges();
+            Database.Users.Remove(user);
             return true;
         }
 
         public IEnumerable<UserWidgetParamModel> GetUserWidgetParams(int userId, int? widgetId = null)
         {
-            var widgetParams = _database.Users
-                .Where(model => model.Id == userId)
-                .Include(model => model.WidgetParams)
-                .SelectMany(model => model.WidgetParams);
+            var widgetParams = Database.Users.AsNoTracking()
+                .FirstOrDefault(model => model.Id == userId)
+                ?.WidgetParams?.ToList()
+                ?? new List<UserWidgetParamModel>();
 
             return widgetId != null ? widgetParams.Where(model => model.WidgetId == widgetId) : widgetParams;
         }
 
-        public bool AddWidgetParam(int userId, int widgetId, string name, string type, string value)
-        {
-            var user = _database.Users
-                .SingleOrDefault(model => model.Id == userId);
-
-            if (user == null)
-                return false;
-
-            user.WidgetParams!.Add(new UserWidgetParamModel {
-                Name = name,
-                Type = type,
-                Value = value,
-                WidgetId = widgetId
-            });
-            _database.SaveChanges();
-            return true;
-        }
-
-        public bool RemoveWidgetSubscription(int userId, int widgetId)
-        {
-            var dbSet = _database.Set<UserWidgetModel>();
-
-            var subscription = dbSet.SingleOrDefault(model => model.UserId == userId && model.WidgetId == widgetId);
-            var userParams = _database.Users
-                .SingleOrDefault(model => model.Id == userId)
-                ?.WidgetParams
-                ?.Where(model => model.WidgetId == widgetId);
-
-            if (userParams != null)
-                _database.RemoveRange(userParams);
-            if (subscription == null)
-                return false;
-            dbSet.Remove(subscription);
-            _database.SaveChanges();
-            return true;
-        }
-
         public void AddWidgetSubscription(int userId, int widgetId)
         {
-            var dbSet = _database.Set<UserWidgetModel>();
+            var dbSet = Database.Set<UserWidgetModel>();
             var existingSub = dbSet.SingleOrDefault(model => model.UserId == userId && model.WidgetId == widgetId);
 
-            if (existingSub == null)
+            if (existingSub != null)
                 return;
 
             dbSet.Add(new UserWidgetModel {
                 UserId = userId,
                 WidgetId = widgetId
             });
-            _database.SaveChanges();
         }
 
-        public bool RemoveServiceCredentials(int userId, int serviceId)
+        public bool RemoveWidgetSubscription(int userId, int widgetId)
         {
-            var user = _database.Users
-                .AsNoTracking()
-                .Include(model => model.ServiceTokens)
-                .FirstOrDefault(model => model.Id == userId);
+            var dbSet = Database.Set<UserWidgetModel>();
 
-            var serviceToken = user?.ServiceTokens
-                ?.FirstOrDefault(model => model.ServiceId == serviceId);
+            var subscription = dbSet.SingleOrDefault(model => model.UserId == userId && model.WidgetId == widgetId);
+            var userParams = Database.Users
+                .SingleOrDefault(model => model.Id == userId)
+                ?.WidgetParams
+                ?.Where(model => model.WidgetId == widgetId);
 
-            if (serviceToken == null)
+            if (userParams != null)
+                Database.RemoveRange(userParams);
+            if (subscription == null)
                 return false;
-            _database.Set<UserServiceTokensModel>().Remove(serviceToken);
-            _database.SaveChanges();
+            dbSet.Remove(subscription);
             return true;
         }
 
         public bool AddServiceCredentials(int userId, int serviceId, string jsonTokens)
         {
-            var user = _database.Users
+            var user = Database.Users
                 .SingleOrDefault(model => model.Id == userId);
 
             if (user == null)
@@ -171,7 +115,22 @@ namespace Area.API.Repositories
                 Json = jsonTokens,
                 ServiceId = serviceId
             });
-            _database.SaveChanges();
+            return true;
+        }
+
+        public bool RemoveServiceCredentials(int userId, int serviceId)
+        {
+            var user = Database.Users
+                .AsNoTracking()
+                .Include(model => model.ServiceTokens)
+                .FirstOrDefault(model => model.Id == userId);
+
+            var serviceToken = user?.ServiceTokens
+                ?.FirstOrDefault(model => model.ServiceId == serviceId);
+
+            if (serviceToken == null)
+                return false;
+            Database.Set<UserServiceTokensModel>().Remove(serviceToken);
             return true;
         }
     }

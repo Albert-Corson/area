@@ -43,9 +43,9 @@ namespace Area.API.Controllers
             if (serviceId != null) {
                 if (!_serviceRepository.ServiceExists(serviceId.Value))
                     throw new NotFoundHttpException("Service not found");
-                widgets = _widgetRepository.GetWidgetsByService(serviceId.Value);
+                widgets = _widgetRepository.GetWidgetsByService(serviceId.Value, true);
             } else {
-                widgets = _widgetRepository.GetWidgets();
+                widgets = _widgetRepository.GetWidgets(true);
             }
 
             return new ResponseModel<List<WidgetModel>> {
@@ -62,11 +62,9 @@ namespace Area.API.Controllers
         {
             var userId = AuthService.GetUserIdFromPrincipal(User);
 
-            List<WidgetModel> widgets;
-
-            widgets = serviceId != null ?
+            var widgets = serviceId != null ?
                 _widgetRepository.GetUserWidgetsByService(userId!.Value, serviceId.Value).ToList()
-                : _widgetRepository.GetUserWidgets(userId!.Value).ToList();
+                : _widgetRepository.GetUserWidgets(userId!.Value, true).ToList();
 
             var userWidgetParams = _userRepository.GetUserWidgetParams(userId.Value).ToList();
 
@@ -118,7 +116,7 @@ namespace Area.API.Controllers
         {
             var userId = AuthService.GetUserIdFromPrincipal(User);
 
-            if (_widgetRepository.WidgetExists(widgetId!.Value))
+            if (!_widgetRepository.WidgetExists(widgetId!.Value))
                 throw new NotFoundHttpException();
 
             _userRepository.AddWidgetSubscription(userId!.Value, widgetId!.Value);

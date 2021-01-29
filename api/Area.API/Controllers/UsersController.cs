@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Area.API.Attributes;
+using Area.API.Common;
 using Area.API.Constants;
 using Area.API.Exceptions.Http;
 using Area.API.Models;
@@ -10,16 +11,19 @@ using Area.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
 namespace Area.API.Controllers
 {
     public class UsersController : ControllerBase
     {
         private readonly UserRepository _userRepository;
+        private readonly IConfiguration _configuration;
 
-        public UsersController(UserRepository userRepository)
+        public UsersController(UserRepository userRepository, IConfiguration configuration)
         {
             _userRepository = userRepository;
+            _configuration = configuration;
         }
 
         [HttpPost]
@@ -32,8 +36,16 @@ namespace Area.API.Controllers
             if (_userRepository.UserExists(email: body.Email, username: body.Username))
                 throw new ConflictHttpException("Username or email already in use");
 
-            if (!_userRepository.AddUser(body.Username!, body.Email!, body.Password!))
+            var encryptedPasswd = Encryptor.Encrypt(_configuration[JwtConstants.SecretKeyName], body.Password!);
+            if (encryptedPasswd == null)
                 throw new InternalServerErrorHttpException();
+
+            _userRepository.AddUser(new UserModel {
+                Username = body.Username,
+                Password = encryptedPasswd,
+                Email = body.Email
+            });
+
             return StatusModel.Success();
         }
 

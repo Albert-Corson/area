@@ -109,7 +109,7 @@ namespace Area.API.Services
             if (user == null)
                 throw new UnauthorizedHttpException();
 
-            var widget = _widgetRepository.GetWidgetWithParams(widgetId);
+            var widget = _widgetRepository.GetWidget(widgetId, true);
             if (widget == null || !_widgets.TryGetValue(widget.Name!, out var widgetService))
                 throw new NotFoundHttpException("Widget not found");
 
@@ -120,7 +120,7 @@ namespace Area.API.Services
                 userId.Value,
                 widgetId,
                 widget.Params ?? new List<WidgetParamModel>(),
-                _userRepository.GetUserWidgetParams(userId!.Value, widgetId).ToList(),
+                _userRepository.GetUser(userId!.Value, false)!.WidgetParams!,
                 context.Request.Query);
 
             var response = new WidgetCallResponseModel(widgetCallParams.MergeAll());
@@ -139,7 +139,7 @@ namespace Area.API.Services
                 Value = model.Value
             }));
             parameters.AddRange(widgetParams
-                .Where(model => parameters.Exists(param => param.Name != model.Name)));
+                .Where(model => !parameters.Exists(param => param.Name == model.Name)));
             return parameters;
         }
 
@@ -158,12 +158,12 @@ namespace Area.API.Services
                     if (defaultParam != null) {
                         type = defaultParam.Type!;
                         if (defaultParam.Required != true) {
-                            _userRepository.AddWidgetParam(
-                                userId,
-                                widgetId,
-                                defaultParam.Name!,
-                                defaultParam.Type!,
-                                GetParamValueByType(value, defaultParam.Type!));
+                            userParams.Add(new UserWidgetParamModel {
+                                Name = defaultParam.Name,
+                                Type = type,
+                                Value = GetParamValueByType(value, type!),
+                                WidgetId = widgetId
+                            });
                         }
                     }
                 }

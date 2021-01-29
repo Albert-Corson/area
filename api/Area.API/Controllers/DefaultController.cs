@@ -33,7 +33,7 @@ namespace Area.API.Controllers
         {
             var clientIp = HttpContext.Connection.RemoteIpAddress.MapToIPv4() + ":" + HttpContext.Connection.RemotePort;
 
-            var serviceModels = _serviceRepository.GetServicesWithChildren().ToList();
+            var serviceModels = _serviceRepository.GetServices(true).ToList();
 
             foreach (var widget in serviceModels.Where(service => service.Widgets != null).SelectMany(service => service.Widgets)) {
                 widget.Id = null;

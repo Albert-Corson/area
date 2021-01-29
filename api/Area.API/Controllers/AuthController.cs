@@ -1,4 +1,5 @@
 using Area.API.Attributes;
+using Area.API.Common;
 using Area.API.Constants;
 using Area.API.Exceptions.Http;
 using Area.API.Models;
@@ -8,6 +9,7 @@ using Area.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
 namespace Area.API.Controllers
 {
@@ -15,11 +17,13 @@ namespace Area.API.Controllers
     {
         private readonly AuthService _service;
         private readonly UserRepository _userRepository;
+        private readonly IConfiguration _configuration;
 
-        public AuthController(AuthService service, UserRepository userRepository)
+        public AuthController(AuthService service, UserRepository userRepository, IConfiguration configuration)
         {
             _service = service;
             _userRepository = userRepository;
+            _configuration = configuration;
         }
 
         [HttpPost]
@@ -29,7 +33,11 @@ namespace Area.API.Controllers
             [FromBody] SignInModel body
         )
         {
-            var user = _userRepository.GetUser(body.Username!, body.Password!);
+            var encryptedPasswd = Encryptor.Encrypt(_configuration[JwtConstants.SecretKeyName], body.Password!);
+            if (encryptedPasswd == null)
+                throw new InternalServerErrorHttpException();
+
+            var user = _userRepository.GetUser(body.Username!, encryptedPasswd);
             if (user?.Id == null)
                 throw new UnauthorizedHttpException();
 
