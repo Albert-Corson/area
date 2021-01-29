@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import React, {useContext, useRef} from 'react';
+import {StyleSheet} from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -7,45 +7,52 @@ import Animated, {
   withSpring,
   runOnJS,
 } from 'react-native-reanimated';
-import { PanGestureHandler, TapGestureHandler, State, GestureHandlerGestureEventNativeEvent, PanGestureHandlerGestureEvent, TapGestureHandlerGestureEvent } from 'react-native-gesture-handler';
+import {PanGestureHandler, TapGestureHandler, State, TapGestureHandlerGestureEvent} from 'react-native-gesture-handler';
 import {Size} from '../Types/Block';
+import RootStoreContext from '../Stores/RootStore';
+import Grid from '../Tools/Grid';
 
 
 interface Props {
   index: number;
-  modifying: boolean;
   backgroundColor: string;
-  zIndex: number;
   containerStyle: Record<string, number | string>;
-  size?: Size;
-  setSize: (index: number, size: number) => void;
-  onMove: (index: number, offsetX: number, offsetXY: number) => void;
 }
 
 const DraggableContainer = ({
   index,
-  modifying,
   backgroundColor,
-  zIndex,
   containerStyle,
-  size = Size.normal,
-  setSize,
-  onMove
 }: Props): JSX.Element => {
+  const store = useContext(RootStoreContext).gridStore;
   //drag
   const translateY = useSharedValue<number>(0);
   const translateX = useSharedValue<number>(0);
   const elevation = useSharedValue<number>(1);
-  // widget growth
-  //const width = useSharedValue<number>(175);
-  //const height = useSharedValue<number>(175);
   // multiple gesture handlers refs
   const panRef = useRef(null);
   const tapRef = useRef(null);
+  // block info
+  const size = store.getBlockSize(index);
+  const modifying = store.isBlockMutable(index);
+  const gridSize = store.blocks.length;
+
+  const onDrop = (index: number, offsetX: number, offsetY: number): void => {
+    const [x, y]: number[] = [index % 2, Math.floor(index / 2)];
+    const hoveredBlockIndex: number = Grid.getHoveredBlockIndex(x, y, offsetX, offsetY);
+
+    if (
+      index != hoveredBlockIndex &&
+      hoveredBlockIndex >= 0 &&
+      hoveredBlockIndex < store.blocks.length
+    ) {
+      store.swithAtIndexes(index, hoveredBlockIndex);
+    }
+  };
 
   const onStartDrag = (_: any, ctx: any) => {
     'worklet';
-    elevation.value = zIndex + 1;
+    elevation.value = gridSize + 1;
 
     ctx.offsetX = translateX.value;
     ctx.offsetY = translateY.value;
@@ -59,7 +66,7 @@ const DraggableContainer = ({
 
   const onEndDrag = (_: any, ctx: any) => {
     'worklet';
-    runOnJS(onMove)(index, translateX.value, translateY.value);
+    runOnJS(onDrop)(index, translateX.value, translateY.value);
 
     translateY.value = withSpring(0, {
       damping: 60,
@@ -69,15 +76,15 @@ const DraggableContainer = ({
       damping: 60,
       stiffness: 500,
     });
-    elevation.value = zIndex;
+    elevation.value = gridSize;
   };
 
   const onTap = (e: TapGestureHandlerGestureEvent) => {
     if (e.nativeEvent.state !== State.ACTIVE) {
       return;
     }
-    setSize(index, size != Size.full ? size << 1 : Size.normal);
-  }
+    store.setBlockSize(index, size != Size.full ? size << 1 : Size.normal);
+  };
 
   const onDragEvent = useAnimatedGestureHandler({
     onStart: onStartDrag,
@@ -88,8 +95,8 @@ const DraggableContainer = ({
   const dragStyle = useAnimatedStyle(() => {
     return {
       transform: [
-        { translateX: translateX.value },
-        { translateY: translateY.value },
+        {translateX: translateX.value},
+        {translateY: translateY.value},
       ]
     };
   });
@@ -101,7 +108,7 @@ const DraggableContainer = ({
     };
   });
 
-  const widgetStyle = { ...styles.box, backgroundColor }
+  const widgetStyle = {...styles.box, backgroundColor};
 
   if (size !== Size.normal) {
     widgetStyle.width = 375;
@@ -135,13 +142,15 @@ const DraggableContainer = ({
           </Animated.View>
         </TapGestureHandler>
       ) : (
-          <Animated.View style={[widgetStyle]}
-          >
-          </Animated.View>
-        )}
+        <Animated.View style={[widgetStyle]}
+        >
+        </Animated.View>
+      )}
     </Animated.View>
   );
 };
+
+export default DraggableContainer;
 
 const styles = StyleSheet.create({
   box: {
@@ -151,5 +160,3 @@ const styles = StyleSheet.create({
     backgroundColor: 'black'
   }
 });
-
-export default DraggableContainer;

@@ -5,6 +5,7 @@ export enum Size {
 }
 
 export interface Block {
+    color: string;
     size?: Size;
     unactive?: boolean;
 }
