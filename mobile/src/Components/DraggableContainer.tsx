@@ -24,7 +24,7 @@ const DraggableContainer = ({
   backgroundColor,
   containerStyle,
 }: Props): JSX.Element => {
-  const store = useContext(RootStoreContext).gridStore;
+  const store = useContext(RootStoreContext).grid;
   //drag
   const translateY = useSharedValue<number>(0);
   const translateX = useSharedValue<number>(0);

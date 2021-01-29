@@ -1,5 +1,6 @@
 import React from 'react';
 import {TextInput as RNTextInput, StyleSheet, View} from 'react-native';
+// @ts-ignore
 import InsetShadow from 'react-native-inset-shadow';
 
 interface Props {

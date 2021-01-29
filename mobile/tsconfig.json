@@ -7,6 +7,7 @@
     "noEmit": true,
     "skipLibCheck": true,
     "experimentalDecorators": true,
+    "strictPropertyInitialization": false,
     "resolveJsonModule": true,
     "strict": true,
     "target": "ES2017"
