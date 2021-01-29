@@ -19,6 +19,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using DbContext = Area.API.Database.DbContext;
 
 namespace Area.API
 {
@@ -51,7 +52,7 @@ namespace Area.API
                     options.TokenValidationParameters = tokenValidationParameters;
                 });
 
-            services.AddDbContext<DatabaseRepository>(options => {
+            services.AddDbContext<DbContext>(options => {
                 string connectionString = $"Host={_configuration[PostgresConstants.HostKeyName] ?? "localhost"};" +
                                           $"Port={_configuration[PostgresConstants.PortKeyName] ?? "5432"};" +
                                           $"Username={_configuration[PostgresConstants.UserKeyName] ?? "postgres"};" +
@@ -68,6 +69,7 @@ namespace Area.API
 
             AddWidgetServices(services);
             AddServiceServices(services);
+            AddRepositoryServices(services);            
 
             services
                 .AddControllers()
@@ -127,10 +129,17 @@ namespace Area.API
         private static void InitDbContext(IApplicationBuilder app)
         {
             var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();
-            var dbContext = serviceScope.ServiceProvider.GetService<DatabaseRepository>();
+            var dbContext = serviceScope.ServiceProvider.GetService<DbContext>();
             if (dbContext == null)
                 throw new NullReferenceException("Can't obtain the DbContext");
             dbContext.Database.Migrate();
+        }
+
+        private static void AddRepositoryServices(IServiceCollection services)
+        {
+            services.AddTransient<UserRepository>();
+            services.AddTransient<ServiceRepository>();
+            services.AddTransient<WidgetRepository>();
         }
     }
 }

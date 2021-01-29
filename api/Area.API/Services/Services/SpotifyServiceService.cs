@@ -1,8 +1,5 @@
 using System;
 using Area.API.Models.Services;
-using Area.API.Models.Table;
-using Area.API.Models.Table.Owned;
-using Area.API.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -54,13 +51,13 @@ namespace Area.API.Services.Services
             return loginRequest.ToUri();
         }
 
-        public bool HandleSignInCallback(HttpContext context, int serviceId, UserModel user)
+        public string? HandleSignInCallback(HttpContext context)
         {
             if (_redirectUri == null || _clientId == null || _clientSecret == null)
-                return false;
+                return null;
 
             if (!context.Request.Query.TryGetValue("code", out var code))
-                return false;
+                return null;
 
             var task = new OAuthClient().RequestToken(
                 new AuthorizationCodeTokenRequest(_clientId, _clientSecret, code, _redirectUri)
@@ -68,7 +65,7 @@ namespace Area.API.Services.Services
             task.Wait();
 
             if (!task.IsCompletedSuccessfully)
-                return false;
+                return null;
 
             var tokensHolder = new SpotifyAuthModel {
                 Scope = task.Result.Scope,
@@ -79,13 +76,7 @@ namespace Area.API.Services.Services
                 CreatedAt = task.Result.CreatedAt
             };
 
-            if (user.ServiceTokens == null)
-                return false;
-            user.ServiceTokens.Add(new UserServiceTokensModel {
-                Json = tokensHolder.ToString(),
-                ServiceId = serviceId
-            });
-            return true;
+            return tokensHolder.ToString();
         }
 
         public SpotifyClient? ClientFromJson(string json)

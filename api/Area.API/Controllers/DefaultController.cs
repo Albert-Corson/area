@@ -6,18 +6,17 @@ using Area.API.Models;
 using Area.API.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 namespace Area.API.Controllers
 {
     public class DefaultController : ControllerBase
     {
-        private readonly DatabaseRepository _database;
+        private readonly ServiceRepository _serviceRepository;
 
-        public DefaultController(DatabaseRepository database)
+        public DefaultController(ServiceRepository serviceRepository)
         {
-            _database = database;
+            _serviceRepository = serviceRepository;
         }
 
         [Route(RoutesConstants.Default.Error)]
@@ -34,10 +33,7 @@ namespace Area.API.Controllers
         {
             var clientIp = HttpContext.Connection.RemoteIpAddress.MapToIPv4() + ":" + HttpContext.Connection.RemotePort;
 
-            var serviceModels = _database.Services
-                .Include(model => model.Widgets).ThenInclude(model => model.Params)
-                .AsNoTracking()
-                .ToList();
+            var serviceModels = _serviceRepository.GetServices(true).ToList();
 
             foreach (var widget in serviceModels.Where(service => service.Widgets != null).SelectMany(service => service.Widgets)) {
                 widget.Id = null;

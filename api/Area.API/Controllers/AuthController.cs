@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using Area.API.Attributes;
 using Area.API.Common;
 using Area.API.Constants;
@@ -18,13 +16,13 @@ namespace Area.API.Controllers
     public class AuthController : ControllerBase
     {
         private readonly AuthService _service;
+        private readonly UserRepository _userRepository;
         private readonly IConfiguration _configuration;
-        private readonly DatabaseRepository _database;
 
-        public AuthController(AuthService service, DatabaseRepository database, IConfiguration configuration)
+        public AuthController(AuthService service, UserRepository userRepository, IConfiguration configuration)
         {
             _service = service;
-            _database = database;
+            _userRepository = userRepository;
             _configuration = configuration;
         }
 
@@ -36,8 +34,10 @@ namespace Area.API.Controllers
         )
         {
             var encryptedPasswd = Encryptor.Encrypt(_configuration[JwtConstants.SecretKeyName], body.Password!);
+            if (encryptedPasswd == null)
+                throw new InternalServerErrorHttpException();
 
-            var user = _database.Users.FirstOrDefault(model => model.Username == body.Username && model.Password == encryptedPasswd);
+            var user = _userRepository.GetUser(body.Username!, encryptedPasswd);
             if (user?.Id == null)
                 throw new UnauthorizedHttpException();
 

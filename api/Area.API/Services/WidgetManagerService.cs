@@ -13,7 +13,6 @@ using Area.API.Services.Widgets.LoremPicsum;
 using Area.API.Services.Widgets.NewsApi;
 using Area.API.Services.Widgets.Spotify;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Primitives;
 
 namespace Area.API.Services
@@ -62,11 +61,13 @@ namespace Area.API.Services
 
     public class WidgetManagerService
     {
-        private readonly DatabaseRepository _database;
         private readonly IDictionary<string, IWidgetService> _widgets;
+        private readonly UserRepository _userRepository;
+        private readonly WidgetRepository _widgetRepository;
 
         public WidgetManagerService(
-            DatabaseRepository database,
+            UserRepository userRepository,
+            WidgetRepository widgetRepository,
             ImgurGalleryWidgetService imgurGallery,
             ImgurFavoritesWidgetService imgurFavorites,
             ImgurUploadsWidgetService imgurUploads,
@@ -80,7 +81,8 @@ namespace Area.API.Services
             CatApiRandomImagesWidgetService catApiRandomImages,
             IcanhazdadjokeRandomJokeWidgetService icanhazdadjokeRandomJoke)
         {
-            _database = database;
+            _userRepository = userRepository;
+            _widgetRepository = widgetRepository;
             _widgets = new Dictionary<string, IWidgetService> {
                 {imgurGallery.Name, imgurGallery},
                 {imgurFavorites.Name, imgurFavorites},
@@ -103,16 +105,11 @@ namespace Area.API.Services
             if (userId == null)
                 throw new UnauthorizedHttpException();
 
-            var user = _database.Users
-                .Include(model => model.WidgetParams!
-                    .Where(paramModel => paramModel.WidgetId == widgetId))
-                .FirstOrDefault(model => model.Id == userId);
+            var user = _userRepository.GetUser(userId.Value);
             if (user == null)
                 throw new UnauthorizedHttpException();
 
-            var widget = _database.Widgets
-                .Include(model => model.Params)
-                .FirstOrDefault(model => model.Id == widgetId);
+            var widget = _widgetRepository.GetWidget(widgetId, true);
             if (widget == null || !_widgets.TryGetValue(widget.Name!, out var widgetService))
                 throw new NotFoundHttpException("Widget not found");
 
@@ -120,9 +117,10 @@ namespace Area.API.Services
                 ValidateSignInState(widgetService, user, widget.ServiceId!.Value);
 
             var widgetCallParams = BuildWidgetCallParams(
+                userId.Value,
                 widgetId,
                 widget.Params ?? new List<WidgetParamModel>(),
-                user.WidgetParams ?? new List<UserWidgetParamModel>(),
+                _userRepository.GetUser(userId!.Value, false)!.WidgetParams!,
                 context.Request.Query);
 
             var response = new WidgetCallResponseModel(widgetCallParams.MergeAll());
@@ -141,11 +139,11 @@ namespace Area.API.Services
                 Value = model.Value
             }));
             parameters.AddRange(widgetParams
-                .Where(model => parameters.Exists(param => param.Name != model.Name)));
+                .Where(model => !parameters.Exists(param => param.Name == model.Name)));
             return parameters;
         }
 
-        private WidgetCallParameters BuildWidgetCallParams(int widgetId, ICollection<WidgetParamModel> defaultParams, ICollection<UserWidgetParamModel> userParams, IQueryCollection queryParams)
+        private WidgetCallParameters BuildWidgetCallParams(int userId, int widgetId, ICollection<WidgetParamModel> defaultParams, ICollection<UserWidgetParamModel> userParams, IQueryCollection queryParams)
         {
             var callParams = new WidgetCallParameters();
 
@@ -162,9 +160,9 @@ namespace Area.API.Services
                         if (defaultParam.Required != true) {
                             userParams.Add(new UserWidgetParamModel {
                                 Name = defaultParam.Name,
-                                Type = defaultParam.Type,
-                                WidgetId = widgetId,
-                                Value = GetParamValueByType(value, defaultParam.Type!)
+                                Type = type,
+                                Value = GetParamValueByType(value, type!),
+                                WidgetId = widgetId
                             });
                         }
                     }
@@ -173,8 +171,6 @@ namespace Area.API.Services
                 if (type != null)
                     callParams.TryAddAny(key, value, type);
             }
-
-            _database.SaveChanges();
 
             foreach (var userParam in userParams) {
                 if (userParam.WidgetId != widgetId)
@@ -208,7 +204,7 @@ namespace Area.API.Services
                 throw new UnauthorizedHttpException("You need to be signed-in to the service");
             if (widgetService.ValidateServiceAuth(serviceToken))
                 return;
-            _database.Remove(serviceToken);
+            _userRepository.RemoveServiceCredentials(user.Id!.Value, serviceId);
             throw new UnauthorizedHttpException("You need sign-in to the service again");
         }
     }

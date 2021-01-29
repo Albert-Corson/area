@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using Area.API.Attributes;
 using Area.API.Common;
 using Area.API.Constants;
@@ -18,12 +17,12 @@ namespace Area.API.Controllers
 {
     public class UsersController : ControllerBase
     {
+        private readonly UserRepository _userRepository;
         private readonly IConfiguration _configuration;
-        private readonly DatabaseRepository _database;
 
-        public UsersController(DatabaseRepository database, IConfiguration configuration)
+        public UsersController(UserRepository userRepository, IConfiguration configuration)
         {
-            _database = database;
+            _userRepository = userRepository;
             _configuration = configuration;
         }
 
@@ -34,22 +33,19 @@ namespace Area.API.Controllers
             [FromBody] RegisterModel body
         )
         {
-            var existingUser = _database.Users.FirstOrDefault(model => model.Email == body.Email || model.Username == body.Username);
-
-            if (existingUser != null)
+            if (_userRepository.UserExists(email: body.Email, username: body.Username))
                 throw new ConflictHttpException("Username or email already in use");
 
             var encryptedPasswd = Encryptor.Encrypt(_configuration[JwtConstants.SecretKeyName], body.Password!);
-
             if (encryptedPasswd == null)
                 throw new InternalServerErrorHttpException();
 
-            _database.Users.Add(new UserModel {
+            _userRepository.AddUser(new UserModel {
                 Username = body.Username,
                 Password = encryptedPasswd,
                 Email = body.Email
             });
-            _database.SaveChanges();
+
             return StatusModel.Success();
         }
 
@@ -61,7 +57,7 @@ namespace Area.API.Controllers
             [FromRoute] [Required] [Range(1, 2147483647)] int? userId
         )
         {
-            var user = _database.Users.FirstOrDefault(model => model.Id == userId);
+            var user = _userRepository.GetUser(userId!.Value);
 
             if (user == null)
                 throw new NotFoundHttpException();
@@ -80,10 +76,11 @@ namespace Area.API.Controllers
         public JsonResult GetMyUser()
         {
             var userId = AuthService.GetUserIdFromPrincipal(User);
-            var user = _database.Users.First(model => model.Id == userId);
+
+            var user = _userRepository.GetUser(userId!.Value);
 
             return new ResponseModel<UserModel> {
-                Data = user
+                Data = user!
             };
         }
 
@@ -100,10 +97,8 @@ namespace Area.API.Controllers
             if (currentUserId != userId)
                 throw new UnauthorizedHttpException("You can only delete your own account");
 
-            var user = _database.Users.First(model => model.Id == userId);
-
-            _database.Users.Remove(user);
-            _database.SaveChanges();
+            if (!_userRepository.RemoveUser(userId!.Value))
+                throw new NotFoundHttpException();
 
             return StatusModel.Success();
         }

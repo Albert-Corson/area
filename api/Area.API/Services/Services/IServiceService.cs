@@ -1,5 +1,4 @@
 using System;
-using Area.API.Models.Table;
 using Microsoft.AspNetCore.Http;
 
 namespace Area.API.Services.Services
@@ -12,6 +11,6 @@ namespace Area.API.Services.Services
 
         public int? GetUserIdFromCallbackContext(HttpContext context);
 
-        public bool HandleSignInCallback(HttpContext context, int serviceId, UserModel user);
+        public string? HandleSignInCallback(HttpContext context);
     }
 }
