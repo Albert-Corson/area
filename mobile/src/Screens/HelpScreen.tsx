@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {
   View,
   Text,
@@ -14,14 +14,16 @@ import {Form as styles} from '../StyleSheets/Form';
 import windowPadding from '../StyleSheets/WindowPadding';
 import {RootStackParamList} from '../Navigation/StackNavigator';
 import {StackNavigationProp} from '@react-navigation/stack';
+import RootStoreContext from '../Stores/RootStore';
+import { observer } from 'mobx-react-lite';
 
 interface Props {
   navigation: StackNavigationProp<RootStackParamList>
 }
 
-const HelpScreen = ({navigation}: Props): JSX.Element => {
-  const [email, setEmail] = useState('');
-
+const HelpScreen = observer(({navigation}: Props): JSX.Element => {
+  const store = useContext(RootStoreContext).auth;
+  
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -33,16 +35,16 @@ const HelpScreen = ({navigation}: Props): JSX.Element => {
             <Text style={[styles.title, {fontSize: 30, fontFamily: 'DosisBold'}]}>Recover password</Text>
           </View>
           <TextInput
-            value={email}
+            value={store.email}
             placeholder={'Email...'}
-            onChange={setEmail}
+            onChange={(val) => store.email = val}
             containerStyle={styles.input}
           />
           <GradientFlatButton
             value={'Envoyer un mail'}
             width={325}
             containerStyle={{margin: 10}}
-            onPress={() => console.log('not implemented')}
+            onPress={store.resetPassword}
           />
           <View style={{flexDirection: 'row'}}>
             <TextButton
@@ -59,6 +61,6 @@ const HelpScreen = ({navigation}: Props): JSX.Element => {
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
-};
+});
 
 export default HelpScreen;

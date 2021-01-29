@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {
   Text,
   KeyboardAvoidingView,
@@ -12,48 +12,17 @@ import GradientFlatButton from '../Components/GradientFlatButton';
 import TextButton from '../Components/TextButton';
 import {Form as styles} from '../StyleSheets/Form';
 import windowPadding from '../StyleSheets/WindowPadding';
-import Auth from '../Api/Auth';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RootStackParamList} from '../Navigation/StackNavigator';
+import RootStoreContext from '../Stores/RootStore';
+import { observer } from 'mobx-react-lite';
 
 interface Props {
   navigation: StackNavigationProp<RootStackParamList>;
 }
 
-interface Credentials {
-  email: string;
-  firstName: string;
-  lastName: string;
-  userName: string;
-  password: string;
-}
-
-const SignUpScreen = ({navigation}: Props) => {
-  const [credentials, setCredentials] = useState<Credentials>({
-    email: '',
-    firstName: '',
-    lastName: '',
-    userName: '',
-    password: '',
-  });
-  const [error, setError] = useState<string>('');
-
-  const onPress = () => {
-    if (Object.keys(credentials).filter((key) => !credentials[key].length).length) {
-      setError('You must complete complete form');
-      return;
-    }
-    Auth.SignUp(credentials)
-      .then(({status, body}) => {
-        if (status < 400) {
-          navigation.navigate('Login');
-          setError('');
-        } else {
-          setError(body?.detail ?? 'An error occurred');
-        }
-      })
-      .catch(_ => setError('An error occurred'));
-  };
+const SignUpScreen = observer(({navigation}: Props) => {
+  const store = useContext(RootStoreContext).auth;
 
   return (
     <KeyboardAvoidingView
@@ -63,44 +32,41 @@ const SignUpScreen = ({navigation}: Props) => {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.inner}>
           <Text style={{...styles.title, fontSize: 60}}>Register</Text>
-          <Text style={styles.error}>{error}</Text>
+          <Text style={styles.error}>{store.error}</Text>
           <TextInput
-            value={credentials.email}
+            value={store.email}
             placeholder={'Email...'}
-            onChange={(email) => setCredentials({...credentials, email})}
+            onChange={(val) => store.email = val}
             containerStyle={styles.input}
           />
           <TextInput
-            value={credentials.userName}
-            placeholder={'Pseudo...'}
-            onChange={(userName) => setCredentials({...credentials, userName})}
+            value={store.username}
+            placeholder={'Username...'}
+            onChange={(val) => store.username = val}
             containerStyle={styles.input}
           />
-          <View style={{flexDirection: 'row'}}>
-            <TextInput
-              value={credentials.firstName}
-              placeholder={'Firstname...'}
-              onChange={(firstName) => setCredentials({...credentials, firstName})}
-              containerStyle={{...styles.input, width: '47%'}}
-            />
-            <TextInput
-              value={credentials.lastName}
-              placeholder={'Lastname...'}
-              onChange={(lastName) => setCredentials({...credentials, lastName})}
-              containerStyle={{...styles.input, width: '47%'}}
-            />
-          </View>
           <TextInput
-            value={credentials.password}
+            value={store.password}
             placeholder={'Password...'}
-            onChange={(password) => setCredentials({...credentials, password})}
+            onChange={(val) => store.password = val}
+            containerStyle={styles.input}
+            secure={true}
+          />
+          <TextInput
+            value={store.confirm}
+            placeholder={'Confirm password...'}
+            onChange={(val) => store.confirm = val}
             containerStyle={styles.input}
             secure={true}
           />
           <GradientFlatButton
             value={'Sign up'}
             width={325}
-            onPress={onPress}
+            onPress={async () => {
+              if (await store.signUp()) {
+                navigation.navigate('Login');
+              }
+            }}
             containerStyle={{margin: 10}}
           />
           <View style={{flexDirection: 'row'}}>
@@ -118,6 +84,6 @@ const SignUpScreen = ({navigation}: Props) => {
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
-};
+});
 
 export default SignUpScreen;

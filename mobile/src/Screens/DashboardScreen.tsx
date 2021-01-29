@@ -5,12 +5,13 @@ import DraggableContainer from '../Components/DraggableContainer';
 import {FontAwesome} from '@expo/vector-icons';
 import BottomSheet from 'reanimated-bottom-sheet';
 import {WidgetSelector, WidgetSelectorHeader} from '../Components/WidgetSelector';
+//@ts-ignore
 import InsetShadow from 'react-native-inset-shadow';
 import RootStoreContext from '../Stores/RootStore';
 import {observer} from 'mobx-react-lite';
 
 const WidgetsScreen = observer((): JSX.Element => {
-  const store = useContext(RootStoreContext).gridStore;
+  const store = useContext(RootStoreContext).grid;
   const sheetRef = useRef<BottomSheet>(null);
   
   return (
