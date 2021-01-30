@@ -39,6 +39,9 @@ namespace Area.API.Controllers
                 throw new BadRequestHttpException(
                     "Password too weak. At least 8 characters, with and without capitals, with numerical and special characters required.");
 
+            if (!UsernameUtilities.IsUsernameValid(body.Username!))
+                throw new BadRequestHttpException("Invalid username");
+
             if (_userRepository.UserExists(email: body.Email, username: body.Username))
                 throw new ConflictHttpException("Username or email already in use");
 
