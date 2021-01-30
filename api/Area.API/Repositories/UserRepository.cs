@@ -118,7 +118,7 @@ namespace Area.API.Repositories
             return true;
         }
 
-        public bool RemoveServiceCredentials(int userId, int serviceId)
+        public void RemoveServiceCredentials(int userId, int serviceId)
         {
             var user = Database.Users
                 .AsNoTracking()
@@ -128,10 +128,8 @@ namespace Area.API.Repositories
             var serviceToken = user?.ServiceTokens
                 ?.FirstOrDefault(model => model.ServiceId == serviceId);
 
-            if (serviceToken == null)
-                return false;
-            Database.Set<UserServiceTokensModel>().Remove(serviceToken);
-            return true;
+            if (serviceToken != null)
+                Database.Set<UserServiceTokensModel>().Remove(serviceToken);
         }
     }
 }

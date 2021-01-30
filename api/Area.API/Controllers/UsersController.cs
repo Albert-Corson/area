@@ -60,7 +60,7 @@ namespace Area.API.Controllers
             var user = _userRepository.GetUser(userId!.Value);
 
             if (user == null)
-                throw new NotFoundHttpException();
+                throw new NotFoundHttpException("This user does not exist");
 
             return new ResponseModel<UserModel> {
                 Data = new UserModel {
@@ -98,7 +98,7 @@ namespace Area.API.Controllers
                 throw new UnauthorizedHttpException("You can only delete your own account");
 
             if (!_userRepository.RemoveUser(userId!.Value))
-                throw new NotFoundHttpException();
+                throw new InternalServerErrorHttpException(); // this should never happen, but we still have to handle the error
 
             return StatusModel.Success();
         }

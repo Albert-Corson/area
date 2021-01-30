@@ -33,7 +33,7 @@ namespace Area.API.Services.Widgets.Imgur
             task.Wait();
 
             if (!task.IsCompletedSuccessfully)
-                throw new InternalServerErrorHttpException("Couldn't not reach Imgur's API");
+                throw new InternalServerErrorHttpException("Could not reach Imgur");
 
             response.Items = ImgurServiceService.WidgetResponseItemsFromGallery(task.Result);
         }

@@ -35,7 +35,7 @@ namespace Area.API.Services
             var serviceName = _serviceRepository.GetService(serviceId)?.Name;
 
             if (serviceName == null)
-                throw new NotFoundHttpException();
+                throw new NotFoundHttpException("This service does not exist");
             if (!_service.TryGetValue(serviceName, out var service))
                 return null;
 

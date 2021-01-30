@@ -4,8 +4,8 @@ namespace Area.API.Constants
     {
         public static class Default
         {
-            public const string Error = "/Error";
-            public const string AboutDotJson = "/About.json";
+            public const string Error = "/error";
+            public const string AboutDotJson = "/about.json";
         }
 
         public static class Auth
