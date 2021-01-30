@@ -116,7 +116,7 @@ namespace Area.API.Services
                 ValidateSignInState(widgetService, user, widget.ServiceId!.Value);
 
             var widgetCallParams = BuildWidgetCallParams(
-                userId.Value,
+                userId!.Value,
                 widgetId,
                 widget.Params ?? new List<WidgetParamModel>(),
                 _userRepository.GetUser(userId!.Value, false)!.WidgetParams!,

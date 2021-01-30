@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using System.Net.Mail;
 
 namespace Area.API.Utilities
 {
@@ -49,6 +50,17 @@ namespace Area.API.Utilities
                 new Claim(JwtRegisteredClaimNames.AuthTime, DateTime.Now.Ticks.ToString()),
                 new Claim(JwtRegisteredClaimNames.Typ, "refresh_token"),
             });
+        }
+
+        public static bool IsValidEmail(string email)
+        {
+            try {
+                var addr = new MailAddress(email);
+                return addr.Address == email;
+            }
+            catch {
+                return false;
+            }
         }
 
         private string GenerateToken(DateTime expiryTime, IEnumerable<Claim> claims)

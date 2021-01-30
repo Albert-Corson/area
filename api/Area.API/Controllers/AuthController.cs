@@ -1,5 +1,4 @@
 using Area.API.Attributes;
-using Area.API.Common;
 using Area.API.Constants;
 using Area.API.Exceptions.Http;
 using Area.API.Models;
@@ -33,7 +32,7 @@ namespace Area.API.Controllers
             [FromBody] SignInModel body
         )
         {
-            var encryptedPasswd = Encryptor.Encrypt(_configuration[JwtConstants.SecretKeyName], body.Password!);
+            var encryptedPasswd = PasswordUtilities.Encrypt(_configuration[JwtConstants.SecretKeyName], body.Password!);
             if (encryptedPasswd == null)
                 throw new InternalServerErrorHttpException();
 

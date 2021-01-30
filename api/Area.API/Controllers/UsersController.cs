@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using Area.API.Attributes;
-using Area.API.Common;
 using Area.API.Constants;
 using Area.API.Exceptions.Http;
 using Area.API.Models;
@@ -33,10 +32,17 @@ namespace Area.API.Controllers
             [FromBody] RegisterModel body
         )
         {
+            if (!AuthUtilities.IsValidEmail(body.Email!))
+                throw new BadRequestHttpException("Please provide a valid email address");
+
+            if (PasswordUtilities.IsWeakPassword(body.Password!))
+                throw new BadRequestHttpException(
+                    "Password too weak. At least 8 characters, with and without capitals, with numerical and special characters required.");
+
             if (_userRepository.UserExists(email: body.Email, username: body.Username))
                 throw new ConflictHttpException("Username or email already in use");
 
-            var encryptedPasswd = Encryptor.Encrypt(_configuration[JwtConstants.SecretKeyName], body.Password!);
+            var encryptedPasswd = PasswordUtilities.Encrypt(_configuration[JwtConstants.SecretKeyName], body.Password!);
             if (encryptedPasswd == null)
                 throw new InternalServerErrorHttpException();
 
