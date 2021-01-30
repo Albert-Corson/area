@@ -6,18 +6,17 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using JwtConstants = Area.API.Constants.JwtConstants;
 
-namespace Area.API.Services
+namespace Area.API.Utilities
 {
-    public class AuthService
+    public class AuthUtilities
     {
         private const string ClaimTypeUserId = "uid";
         private const string Algorithm = SecurityAlgorithms.HmacSha256;
         private readonly IConfiguration _configuration;
         private readonly TokenValidationParameters _validationParameters;
 
-        public AuthService(IConfiguration configuration, TokenValidationParameters validationParameters)
+        public AuthUtilities(IConfiguration configuration, TokenValidationParameters validationParameters)
         {
             _configuration = configuration;
             _validationParameters = validationParameters;

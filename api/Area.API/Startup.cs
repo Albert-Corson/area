@@ -12,6 +12,7 @@ using Area.API.Services.Widgets.Imgur;
 using Area.API.Services.Widgets.LoremPicsum;
 using Area.API.Services.Widgets.NewsApi;
 using Area.API.Services.Widgets.Spotify;
+using Area.API.Utilities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -65,7 +66,7 @@ namespace Area.API
 
             services.AddSingleton(_configuration);
             services.AddSingleton(tokenValidationParameters);
-            services.AddSingleton<AuthService>();
+            services.AddSingleton<AuthUtilities>();
 
             AddWidgetServices(services);
             AddServiceServices(services);

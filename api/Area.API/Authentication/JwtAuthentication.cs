@@ -1,7 +1,7 @@
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Area.API.Repositories;
-using Area.API.Services;
+using Area.API.Utilities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Logging;
@@ -27,7 +27,7 @@ namespace Area.API.Authentication
                 return authenticateResult;
             }
 
-            var userId = AuthService.GetUserIdFromPrincipal(authenticateResult.Principal);
+            var userId = AuthUtilities.GetUserIdFromPrincipal(authenticateResult.Principal);
 
             if (userId == null || !_userRepository.UserExists(userId.Value))
                 return AuthenticateResult.Fail("The associated user does not exist");

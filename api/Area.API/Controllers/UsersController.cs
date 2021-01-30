@@ -7,7 +7,7 @@ using Area.API.Models;
 using Area.API.Models.Request;
 using Area.API.Models.Table;
 using Area.API.Repositories;
-using Area.API.Services;
+using Area.API.Utilities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -75,7 +75,7 @@ namespace Area.API.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public JsonResult GetMyUser()
         {
-            var userId = AuthService.GetUserIdFromPrincipal(User);
+            var userId = AuthUtilities.GetUserIdFromPrincipal(User);
 
             var user = _userRepository.GetUser(userId!.Value);
 
@@ -92,7 +92,7 @@ namespace Area.API.Controllers
             [FromRoute] [Required] [Range(1, 2147483647)] int? userId
         )
         {
-            var currentUserId = AuthService.GetUserIdFromPrincipal(User);
+            var currentUserId = AuthUtilities.GetUserIdFromPrincipal(User);
 
             if (currentUserId != userId)
                 throw new UnauthorizedHttpException("You can only delete your own account");

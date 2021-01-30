@@ -6,9 +6,9 @@ using Area.API.Constants;
 using Area.API.Exceptions.Http;
 using Area.API.Models;
 using Area.API.Models.Table;
-using Area.API.Models.Table.ManyToMany;
 using Area.API.Repositories;
 using Area.API.Services;
+using Area.API.Utilities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -60,7 +60,7 @@ namespace Area.API.Controllers
             [FromQuery] [Range(1, 2147483647)] int? serviceId
         )
         {
-            var userId = AuthService.GetUserIdFromPrincipal(User);
+            var userId = AuthUtilities.GetUserIdFromPrincipal(User);
 
             var widgets = serviceId != null ?
                 _widgetRepository.GetUserWidgetsByService(userId!.Value, serviceId.Value).ToList()
@@ -99,7 +99,7 @@ namespace Area.API.Controllers
             [FromRoute] [Required] [Range(1, 2147483647)] int? widgetId
         )
         {
-            var userId = AuthService.GetUserIdFromPrincipal(User);
+            var userId = AuthUtilities.GetUserIdFromPrincipal(User);
 
             if (!_userRepository.RemoveWidgetSubscription(userId!.Value, widgetId!.Value))
                 throw new NotFoundHttpException("The user is not subscribed to this widget");
@@ -114,7 +114,7 @@ namespace Area.API.Controllers
             [FromRoute] [Required] [Range(1, 2147483647)] int? widgetId
         )
         {
-            var userId = AuthService.GetUserIdFromPrincipal(User);
+            var userId = AuthUtilities.GetUserIdFromPrincipal(User);
 
             if (!_widgetRepository.WidgetExists(widgetId!.Value))
                 throw new NotFoundHttpException("This widget does not exist");
