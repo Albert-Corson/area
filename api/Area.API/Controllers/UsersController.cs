@@ -66,7 +66,7 @@ namespace Area.API.Controllers
             [FromRoute] [Required] [Range(1, 2147483647)] int? userId
         )
         {
-            var user = _userRepository.GetUser(userId!.Value);
+            var user = _userRepository.GetUser(userId);
 
             if (user == null)
                 throw new NotFoundHttpException("This user does not exist");
@@ -86,7 +86,7 @@ namespace Area.API.Controllers
         {
             var userId = AuthUtilities.GetUserIdFromPrincipal(User);
 
-            var user = _userRepository.GetUser(userId!.Value);
+            var user = _userRepository.GetUser(userId);
 
             return new ResponseModel<UserModel> {
                 Data = user!

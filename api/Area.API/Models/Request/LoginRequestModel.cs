@@ -5,8 +5,8 @@ namespace Area.API.Models.Request
     public class SignInModel
     {
         [JsonRequired]
-        [JsonProperty("username")]
-        public string? Username { get; set; }
+        [JsonProperty("identifier")]
+        public string? Identifier { get; set; }
 
         [JsonRequired]
         [JsonProperty("password")]
