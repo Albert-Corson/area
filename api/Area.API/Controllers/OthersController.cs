@@ -8,16 +8,17 @@ using Microsoft.AspNetCore.WebUtilities;
 
 namespace Area.API.Controllers
 {
-    public class DefaultController : ControllerBase
+    public class OthersController : ControllerBase
     {
         private readonly ServiceRepository _serviceRepository;
 
-        public DefaultController(ServiceRepository serviceRepository)
+        public OthersController(ServiceRepository serviceRepository)
         {
             _serviceRepository = serviceRepository;
         }
 
         [Route(RoutesConstants.Error)]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public StatusModel Error()
         {
             return new StatusModel {
@@ -27,6 +28,7 @@ namespace Area.API.Controllers
         }
 
         [Route(RoutesConstants.AboutDotJson)]
+        [HttpGet]
         public AboutDotJsonModel AboutDotJson()
         {
             var clientIp = HttpContext.Connection.RemoteIpAddress.MapToIPv4() + ":" + HttpContext.Connection.RemotePort;

@@ -4,8 +4,8 @@ namespace Area.API.Constants
     {
         private const string Api = "/api";
 
+        public const string Docs = "docs";  
         public const string Error = "/error";
-
         public const string AboutDotJson = Api + "/about.json";
 
         public static class Auth

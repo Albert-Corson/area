@@ -21,7 +21,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
+using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace Area.API
 {
@@ -70,6 +72,7 @@ namespace Area.API
             AddWidgetServices(services);
             AddServiceServices(services);
             AddRepositoryServices(services);
+            AddSwaggerServices(services);
 
             services
                 .AddControllers()
@@ -86,10 +89,26 @@ namespace Area.API
             });
         }
 
+        private static void AddSwaggerServices(IServiceCollection services)
+        {
+            services.AddSwaggerGenNewtonsoftSupport();
+
+            services.AddSwaggerGen(options => {
+                options.SwaggerDoc("v1", new OpenApiInfo {
+                    Title = "Area API documentation",
+                    Version = "1.0.0",
+                    Description = "This the documentation of the Area dashboard API",
+                });
+                options.EnableAnnotations(true, true);
+            });
+        }
+
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             InitDbContext(app);
+
+            ConfigureSwagger(app);
 
             app.UseStatusCodePagesWithReExecute(RoutesConstants.Error);
 
@@ -102,6 +121,17 @@ namespace Area.API
             app.UseMiddleware<HttpExceptionHandlingMiddleware>();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+        }
+
+        private static void ConfigureSwagger(IApplicationBuilder app)
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI(options => {
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "Area");
+                options.RoutePrefix = RoutesConstants.Docs;
+                options.DocumentTitle = "Area API";
+                options.DefaultModelRendering(ModelRendering.Example);
+            });
         }
 
         private static void AddWidgetServices(IServiceCollection services)
