@@ -138,17 +138,6 @@ components:
           type: string
         successful:
           type: boolean
-    Credentials:
-      additionalProperties: false
-      type: object
-      required:
-        - username
-        - password
-      properties:
-        username:
-          type: string
-        password:
-          type: string
     UserTokens:
       additionalProperties: false
       type: object
@@ -339,7 +328,17 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Credentials"
+              type: object
+              required:
+                - identifier
+                - password
+              properties:
+                identifier:
+                  type: string
+                  description: The user's email or username
+                password:
+                  type: string
+                  description: The user's password
       responses:
         default:
           $ref: "#/components/responses/UserTokensResponse"
@@ -387,12 +386,16 @@ paths:
             schema:
               type: object
               required:
+                - identifier
+                - password
                 - email
               properties:
+                username:
+                  type: string
+                password:
+                  type: string
                 email:
                   type: string
-              allOf:
-                - $ref: "#/components/schemas/Credentials"
       responses:
         default:
           $ref: "#/components/responses/EmptyConfirmationResponse"

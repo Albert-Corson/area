@@ -36,7 +36,8 @@ namespace Area.API.Controllers
             if (encryptedPasswd == null)
                 throw new InternalServerErrorHttpException();
 
-            var user = _userRepository.GetUser(body.Username!, encryptedPasswd);
+            var user = _userRepository.GetUser(email: body.Identifier!, passwd: encryptedPasswd)
+                       ?? _userRepository.GetUser(username: body.Identifier!, passwd: encryptedPasswd);
             if (user?.Id == null)
                 throw new UnauthorizedHttpException("Invalid username/password");
 

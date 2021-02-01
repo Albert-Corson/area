@@ -104,7 +104,7 @@ namespace Area.API.Services
         {
             var userId = AuthUtilities.GetUserIdFromPrincipal(context.User);
 
-            var user = userId != null ? _userRepository.GetUser(userId.Value) : null;
+            var user = userId != null ? _userRepository.GetUser(userId) : null;
             if (user == null)
                 throw new InternalServerErrorHttpException(); // this means that the JWT falsely validated
 
@@ -119,7 +119,7 @@ namespace Area.API.Services
                 userId!.Value,
                 widgetId,
                 widget.Params ?? new List<WidgetParamModel>(),
-                _userRepository.GetUser(userId!.Value, false)!.WidgetParams!,
+                _userRepository.GetUser(userId, asNoTracking: false)!.WidgetParams!,
                 context.Request.Query);
 
             var response = new WidgetCallResponseModel(widgetCallParams.MergeAll());

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Area.API.Models.Table;
@@ -27,18 +28,19 @@ namespace Area.API.Repositories
                 ) != null;
         }
 
-        public UserModel? GetUser(string username, string passwd, bool asNoTracking = true)
+        public UserModel? GetUser(int? userId = null, string? username = null, string? email = null, string? passwd = null, bool asNoTracking = true)
         {
             var queryable = asNoTracking ? Database.Users.AsNoTracking() : Database.Users.AsQueryable();
 
-            return queryable.FirstOrDefault(model => model.Username == username && model.Password == passwd);
-        }
+            if (userId == null && username == null && email == null && passwd == null)
+                throw new ArgumentException("At least one non-null argument expected");
 
-        public UserModel? GetUser(int userId, bool asNoTracking = true)
-        {
-            var queryable = asNoTracking ? Database.Users.AsNoTracking() : Database.Users.AsQueryable();
-
-            return queryable.FirstOrDefault(model => model.Id == userId);
+            return queryable.FirstOrDefault(model =>
+                (userId == null || model.Id == userId)
+                && (username == null || model.Username == username)
+                && (email == null || model.Email == email)
+                && (passwd == null || model.Password == passwd)
+                );
         }
 
         public void AddUser(UserModel user)
