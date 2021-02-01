@@ -1,15 +1,15 @@
 using System.Collections.Generic;
 using System.Linq;
+using Area.API.DbContexts;
 using Area.API.Models.Table;
 using Area.API.Models.Table.ManyToMany;
 using Microsoft.EntityFrameworkCore;
-using DbContext = Area.API.Database.DbContext;
 
 namespace Area.API.Repositories
 {
     public class WidgetRepository : ARepository
     {
-        public WidgetRepository(DbContext database) : base(database)
+        public WidgetRepository(AreaDbContext database) : base(database)
         { }
 
         public bool WidgetExists(int widgetId)

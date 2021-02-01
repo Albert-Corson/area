@@ -1,17 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Area.API.DbContexts;
 using Area.API.Models.Table;
 using Area.API.Models.Table.ManyToMany;
 using Area.API.Models.Table.Owned;
 using Microsoft.EntityFrameworkCore;
-using DbContext = Area.API.Database.DbContext;
 
 namespace Area.API.Repositories
 {
     public class UserRepository : ARepository
     {
-        public UserRepository(DbContext database) : base(database)
+        public UserRepository(AreaDbContext database) : base(database)
         { }
 
         public bool UserExists(int? userId = null, string? username = null, string? email = null)

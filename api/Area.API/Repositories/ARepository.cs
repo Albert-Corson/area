@@ -1,13 +1,13 @@
 using System;
-using Area.API.Database;
+using Area.API.DbContexts;
 
 namespace Area.API.Repositories
 {
     public class ARepository : IDisposable
     {
-        protected readonly DbContext Database;
+        protected readonly AreaDbContext Database;
 
-        protected ARepository(DbContext database)
+        protected ARepository(AreaDbContext database)
         {
             Database = database;
         }

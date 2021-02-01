@@ -1,15 +1,15 @@
 using System.Collections.Generic;
 using System.Linq;
+using Area.API.DbContexts;
 using Area.API.Models.Table;
 using Area.API.Models.Table.ManyToMany;
 using Microsoft.EntityFrameworkCore;
-using DbContext = Area.API.Database.DbContext;
 
 namespace Area.API.Repositories
 {
     public class ServiceRepository : ARepository
     {
-        public ServiceRepository(DbContext database) : base(database)
+        public ServiceRepository(AreaDbContext database) : base(database)
         { }
 
         public bool ServiceExists(int serviceId)
