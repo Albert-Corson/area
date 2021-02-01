@@ -2,15 +2,15 @@ namespace Area.API.Constants
 {
     public static class RoutesConstants
     {
-        public static class Default
-        {
-            public const string Error = "/error";
-            public const string AboutDotJson = "/about.json";
-        }
+        private const string Api = "/api";
+
+        public const string Error = "/error";
+
+        public const string AboutDotJson = Api + "/about.json";
 
         public static class Auth
         {
-            private const string Base = "/auth";
+            private const string Base = Api + "/auth";
 
             public const string SignIn = Base + "/token";
             public const string RefreshAccessToken = Base + "/refresh";
@@ -19,7 +19,7 @@ namespace Area.API.Constants
 
         public static class Users
         {
-            private const string Base = "/users";
+            private const string Base = Api + "/users";
 
             public const string SignUp = Base;
             public const string GetMyUser = Base + "/me";
@@ -29,7 +29,7 @@ namespace Area.API.Constants
 
         public static class Services
         {
-            private const string Base = "/services";
+            private const string Base = Api + "/services";
 
             public const string GetServices = Base;
             public const string GetMyServices = Base + "/me";
@@ -41,7 +41,7 @@ namespace Area.API.Constants
 
         public static class Widgets
         {
-            private const string Base = "/widgets";
+            private const string Base = Api + "/widgets";
 
             public const string GetWidgets = Base;
             public const string GetMyWidgets = Base + "/me";

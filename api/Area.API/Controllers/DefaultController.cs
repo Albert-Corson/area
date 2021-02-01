@@ -19,7 +19,7 @@ namespace Area.API.Controllers
             _serviceRepository = serviceRepository;
         }
 
-        [Route(RoutesConstants.Default.Error)]
+        [Route(RoutesConstants.Error)]
         public JsonResult Error()
         {
             return new StatusModel {
@@ -28,7 +28,7 @@ namespace Area.API.Controllers
             };
         }
 
-        [Route(RoutesConstants.Default.AboutDotJson)]
+        [Route(RoutesConstants.AboutDotJson)]
         public JsonResult AboutDotJson()
         {
             var clientIp = HttpContext.Connection.RemoteIpAddress.MapToIPv4() + ":" + HttpContext.Connection.RemotePort;

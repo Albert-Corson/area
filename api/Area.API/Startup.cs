@@ -90,7 +90,7 @@ namespace Area.API
         {
             InitDbContext(app);
 
-            app.UseStatusCodePagesWithReExecute(RoutesConstants.Default.Error);
+            app.UseStatusCodePagesWithReExecute(RoutesConstants.Error);
 
             app.UseRouting();
 
