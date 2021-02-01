@@ -14,7 +14,11 @@ namespace Area.API.Repositories
 
         public void Dispose()
         {
-            Database.SaveChanges();
+            try {
+                Database.SaveChanges();
+            } catch (ObjectDisposedException) {
+                // ignored
+            }
         }
     }
 }

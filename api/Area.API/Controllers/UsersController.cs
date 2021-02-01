@@ -1,13 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using Area.API.Attributes;
-using Area.API.Common;
 using Area.API.Constants;
 using Area.API.Exceptions.Http;
 using Area.API.Models;
 using Area.API.Models.Request;
 using Area.API.Models.Table;
 using Area.API.Repositories;
-using Area.API.Services;
+using Area.API.Utilities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -33,10 +32,20 @@ namespace Area.API.Controllers
             [FromBody] RegisterModel body
         )
         {
+            if (!AuthUtilities.IsValidEmail(body.Email!))
+                throw new BadRequestHttpException("Please provide a valid email address");
+
+            if (PasswordUtilities.IsWeakPassword(body.Password!))
+                throw new BadRequestHttpException(
+                    "Password too weak. At least 8 characters, with and without capitals, with numerical and special characters required.");
+
+            if (!UsernameUtilities.IsUsernameValid(body.Username!))
+                throw new BadRequestHttpException("Invalid username");
+
             if (_userRepository.UserExists(email: body.Email, username: body.Username))
                 throw new ConflictHttpException("Username or email already in use");
 
-            var encryptedPasswd = Encryptor.Encrypt(_configuration[JwtConstants.SecretKeyName], body.Password!);
+            var encryptedPasswd = PasswordUtilities.Encrypt(_configuration[JwtConstants.SecretKeyName], body.Password!);
             if (encryptedPasswd == null)
                 throw new InternalServerErrorHttpException();
 
@@ -75,7 +84,7 @@ namespace Area.API.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public JsonResult GetMyUser()
         {
-            var userId = AuthService.GetUserIdFromPrincipal(User);
+            var userId = AuthUtilities.GetUserIdFromPrincipal(User);
 
             var user = _userRepository.GetUser(userId!.Value);
 
@@ -92,7 +101,7 @@ namespace Area.API.Controllers
             [FromRoute] [Required] [Range(1, 2147483647)] int? userId
         )
         {
-            var currentUserId = AuthService.GetUserIdFromPrincipal(User);
+            var currentUserId = AuthUtilities.GetUserIdFromPrincipal(User);
 
             if (currentUserId != userId)
                 throw new UnauthorizedHttpException("You can only delete your own account");

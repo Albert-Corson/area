@@ -1,11 +1,10 @@
 using Area.API.Attributes;
-using Area.API.Common;
 using Area.API.Constants;
 using Area.API.Exceptions.Http;
 using Area.API.Models;
 using Area.API.Models.Request;
 using Area.API.Repositories;
-using Area.API.Services;
+using Area.API.Utilities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,13 +14,13 @@ namespace Area.API.Controllers
 {
     public class AuthController : ControllerBase
     {
-        private readonly AuthService _service;
+        private readonly AuthUtilities _authUtilities;
         private readonly UserRepository _userRepository;
         private readonly IConfiguration _configuration;
 
-        public AuthController(AuthService service, UserRepository userRepository, IConfiguration configuration)
+        public AuthController(AuthUtilities authUtilities, UserRepository userRepository, IConfiguration configuration)
         {
-            _service = service;
+            _authUtilities = authUtilities;
             _userRepository = userRepository;
             _configuration = configuration;
         }
@@ -33,7 +32,7 @@ namespace Area.API.Controllers
             [FromBody] SignInModel body
         )
         {
-            var encryptedPasswd = Encryptor.Encrypt(_configuration[JwtConstants.SecretKeyName], body.Password!);
+            var encryptedPasswd = PasswordUtilities.Encrypt(_configuration[JwtConstants.SecretKeyName], body.Password!);
             if (encryptedPasswd == null)
                 throw new InternalServerErrorHttpException();
 
@@ -43,8 +42,8 @@ namespace Area.API.Controllers
 
             return new ResponseModel<UserTokenModel> {
                 Data = new UserTokenModel {
-                    RefreshToken = _service.GenerateRefreshToken(user.Id.Value),
-                    AccessToken = _service.GenerateAccessToken(user.Id.Value)
+                    RefreshToken = _authUtilities.GenerateRefreshToken(user.Id.Value),
+                    AccessToken = _authUtilities.GenerateAccessToken(user.Id.Value)
                 }
             };
         }
@@ -56,15 +55,15 @@ namespace Area.API.Controllers
             [FromBody] RefreshTokenModel body
         )
         {
-            var userId = _service.GetUserIdFromRefreshToken(body.RefreshToken!);
+            var userId = _authUtilities.GetUserIdFromRefreshToken(body.RefreshToken!);
 
             if (userId == null)
                 throw new UnauthorizedHttpException();
 
             return new ResponseModel<UserTokenModel> {
                 Data = new UserTokenModel {
-                    RefreshToken = _service.GenerateRefreshToken(userId.Value),
-                    AccessToken = _service.GenerateAccessToken(userId.Value)
+                    RefreshToken = _authUtilities.GenerateRefreshToken(userId.Value),
+                    AccessToken = _authUtilities.GenerateAccessToken(userId.Value)
                 }
             };
         }

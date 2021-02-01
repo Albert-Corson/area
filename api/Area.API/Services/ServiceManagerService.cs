@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Area.API.Exceptions.Http;
 using Area.API.Repositories;
 using Area.API.Services.Services;
+using Area.API.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
@@ -39,7 +40,7 @@ namespace Area.API.Services
             if (!_service.TryGetValue(serviceName, out var service))
                 return null;
 
-            var userId = AuthService.GetUserIdFromPrincipal(context.User);
+            var userId = AuthUtilities.GetUserIdFromPrincipal(context.User);
             if (userId == null)
                 return null;
 
