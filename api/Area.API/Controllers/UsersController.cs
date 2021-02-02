@@ -26,9 +26,9 @@ namespace Area.API.Controllers
         }
 
         [HttpPost]
-        [Route(RoutesConstants.Users.SignUp)]
+        [Route(RoutesConstants.Users.Register)]
         [ValidateModelState]
-        public JsonResult SignUp(
+        public JsonResult Register(
             [FromBody] RegisterModel body
         )
         {
