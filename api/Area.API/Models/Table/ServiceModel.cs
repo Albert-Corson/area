@@ -9,12 +9,12 @@ namespace Area.API.Models.Table
         [ForeignKey("ServiceId")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [JsonProperty("id")]
-        public int? Id { get; set; }
+        public int Id { get; set; }
 
         [JsonProperty("name")]
-        public string? Name { get; set; }
+        public string Name { get; set; } = null!;
 
         [JsonIgnore]
-        public ICollection<WidgetModel>? Widgets { get; set; }
+        public ICollection<WidgetModel> Widgets { get; set; } = null!;
     }
 }

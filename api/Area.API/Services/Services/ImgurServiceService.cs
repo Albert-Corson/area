@@ -79,7 +79,7 @@ namespace Area.API.Services.Services
                     holder.TokenType,
                     holder.AccountId,
                     holder.AccountUsername,
-                    holder.ExpiresIn!.Value);
+                    holder.ExpiresIn);
             } catch {
                 return null;
             }

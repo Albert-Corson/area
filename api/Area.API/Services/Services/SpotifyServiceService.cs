@@ -87,12 +87,12 @@ namespace Area.API.Services.Services
             try {
                 var holder = JsonConvert.DeserializeObject<SpotifyAuthModel>(json);
                 var tokens = new AuthorizationCodeTokenResponse {
-                    Scope = holder.Scope!,
-                    AccessToken = holder.AccessToken!,
-                    RefreshToken = holder.RefreshToken!,
-                    ExpiresIn = holder.ExpiresIn!.Value,
-                    TokenType = holder.TokenType!,
-                    CreatedAt = holder.CreatedAt!.Value
+                    Scope = holder.Scope,
+                    AccessToken = holder.AccessToken,
+                    RefreshToken = holder.RefreshToken,
+                    ExpiresIn = holder.ExpiresIn,
+                    TokenType = holder.TokenType,
+                    CreatedAt = holder.CreatedAt
                 };
 
                 var clientConfig = SpotifyClientConfig

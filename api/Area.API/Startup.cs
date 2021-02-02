@@ -21,6 +21,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 
 namespace Area.API
 {
@@ -74,7 +75,9 @@ namespace Area.API
 
             services
                 .AddControllers()
-                .AddNewtonsoftJson();
+                .AddNewtonsoftJson(options => {
+                    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                });
 
             services.AddCors(options => {
                 options.AddDefaultPolicy(builder => {

@@ -6,12 +6,12 @@ namespace Area.API.Models
     public class UserTokenModel
     {
         [JsonProperty("access_token")]
-        public string? AccessToken { get; set; }
+        public string AccessToken { get; set; } = null!;
 
         [JsonProperty("expires_in")]
-        public long? ExpiresIn { get; set; } = JwtConstants.AccessTokenLifespan;
+        public long ExpiresIn { get; set; } = JwtConstants.AccessTokenLifespan;
 
         [JsonProperty("refresh_token")]
-        public string? RefreshToken { get; set; }
+        public string RefreshToken { get; set; } = null!;
     }
 }

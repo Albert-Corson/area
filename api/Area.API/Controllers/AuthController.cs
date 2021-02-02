@@ -28,7 +28,7 @@ namespace Area.API.Controllers
         [HttpPost]
         [Route(RoutesConstants.Auth.SignIn)]
         [ValidateModelState]
-        public JsonResult SignIn(
+        public ResponseModel<UserTokenModel> SignIn(
             [FromBody] SignInModel body
         )
         {
@@ -36,15 +36,15 @@ namespace Area.API.Controllers
             if (encryptedPasswd == null)
                 throw new InternalServerErrorHttpException();
 
-            var user = _userRepository.GetUser(email: body.Identifier!, passwd: encryptedPasswd)
-                       ?? _userRepository.GetUser(username: body.Identifier!, passwd: encryptedPasswd);
-            if (user?.Id == null)
+            var user = _userRepository.GetUser(email: body.Identifier, passwd: encryptedPasswd)
+                       ?? _userRepository.GetUser(username: body.Identifier, passwd: encryptedPasswd);
+            if (user == null)
                 throw new UnauthorizedHttpException("Invalid username/password");
 
             return new ResponseModel<UserTokenModel> {
                 Data = new UserTokenModel {
-                    RefreshToken = _authUtilities.GenerateRefreshToken(user.Id.Value),
-                    AccessToken = _authUtilities.GenerateAccessToken(user.Id.Value)
+                    RefreshToken = _authUtilities.GenerateRefreshToken(user.Id),
+                    AccessToken = _authUtilities.GenerateAccessToken(user.Id)
                 }
             };
         }
@@ -52,7 +52,7 @@ namespace Area.API.Controllers
         [HttpPost]
         [Route(RoutesConstants.Auth.RefreshAccessToken)]
         [ValidateModelState]
-        public JsonResult RefreshAccessToken(
+        public ResponseModel<UserTokenModel> RefreshAccessToken(
             [FromBody] RefreshTokenModel body
         )
         {
@@ -72,7 +72,7 @@ namespace Area.API.Controllers
         [HttpDelete]
         [Route(RoutesConstants.Auth.RevokeUserTokens)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public JsonResult RevokeUserTokens()
+        public StatusModel RevokeUserTokens()
         {
             // TODO: (optional) revoke the credentials
             return StatusModel.Failed("Not implemented");

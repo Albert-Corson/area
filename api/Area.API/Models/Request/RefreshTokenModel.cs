@@ -4,8 +4,7 @@ namespace Area.API.Models.Request
 {
     public class RefreshTokenModel
     {
-        [JsonRequired]
-        [JsonProperty("refresh_token")]
-        public string? RefreshToken { get; set; }
+        [JsonProperty("refresh_token", Required = Required.Always)]
+        public string RefreshToken { get; set; } = null!;
     }
 }

@@ -6,29 +6,23 @@ namespace Area.API.Models.Services
 {
     public class SpotifyAuthModel
     {
-        [Required]
-        [JsonProperty("access_token")]
-        public string? AccessToken { get; set; }
+        [JsonProperty("access_token", Required = Required.Always)]
+        public string AccessToken { get; set; } = null!;
 
-        [Required]
-        [JsonProperty("token_type")]
-        public string? TokenType { get; set; }
+        [JsonProperty("token_type", Required = Required.Always)]
+        public string TokenType { get; set; } = null!;
 
-        [Required]
-        [JsonProperty("expires_in")]
-        public int? ExpiresIn { get; set; }
+        [JsonProperty("expires_in", Required = Required.Always)]
+        public int ExpiresIn { get; set; }
 
-        [Required]
-        [JsonProperty("scope")]
-        public string? Scope { get; set; }
+        [JsonProperty("scope", Required = Required.Always)]
+        public string Scope { get; set; } = null!;
 
-        [Required]
-        [JsonProperty("refresh_token")]
-        public string? RefreshToken { get; set; }
+        [JsonProperty("refresh_token", Required = Required.Always)]
+        public string RefreshToken { get; set; } = null!;
 
-        [Required]
-        [JsonProperty("created_at")]
-        public DateTime? CreatedAt { get; set; }
+        [JsonProperty("created_at", Required = Required.Always)]
+        public DateTime CreatedAt { get; set; }
 
         public override string ToString()
         {

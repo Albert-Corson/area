@@ -54,7 +54,7 @@ namespace Area.API.Services
             list.AddRange(Integers.Select(pair => new WidgetParamModel {
                 Name = pair.Key,
                 Type = "integer",
-                Value = pair.Value.ToString()
+                Value = pair.Value?.ToString()
             }));
             return list;
         }
@@ -113,10 +113,9 @@ namespace Area.API.Services
                 throw new NotFoundHttpException("This widget does not exist");
 
             if (widget.RequiresAuth == true)
-                ValidateSignInState(widgetService, user, widget.ServiceId!.Value);
+                ValidateSignInState(widgetService, user, widget.ServiceId);
 
             var widgetCallParams = BuildWidgetCallParams(
-                userId!.Value,
                 widgetId,
                 widget.Params ?? new List<WidgetParamModel>(),
                 _userRepository.GetUser(userId, asNoTracking: false)!.WidgetParams!,
@@ -142,7 +141,7 @@ namespace Area.API.Services
             return parameters;
         }
 
-        private WidgetCallParameters BuildWidgetCallParams(int userId, int widgetId, ICollection<WidgetParamModel> defaultParams, ICollection<UserWidgetParamModel> userParams, IQueryCollection queryParams)
+        private WidgetCallParameters BuildWidgetCallParams(int widgetId, ICollection<WidgetParamModel> defaultParams, ICollection<UserWidgetParamModel> userParams, IQueryCollection queryParams)
         {
             var callParams = new WidgetCallParameters();
 
@@ -203,7 +202,7 @@ namespace Area.API.Services
                 throw new UnauthorizedHttpException("You need to sign-in to the service");
             if (widgetService.ValidateServiceAuth(serviceToken))
                 return;
-            _userRepository.RemoveServiceCredentials(user.Id!.Value, serviceId);
+            _userRepository.RemoveServiceCredentials(user.Id, serviceId);
             throw new UnauthorizedHttpException("You need to sign-in to the service again");
         }
     }

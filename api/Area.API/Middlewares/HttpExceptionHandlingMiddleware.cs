@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Area.API.Exceptions;
 using Area.API.Models;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 namespace Area.API.Middlewares
 {
@@ -47,7 +48,7 @@ namespace Area.API.Middlewares
 
             context.Response.StatusCode = (int) statusCode;
 
-            return context.Response.WriteAsync(responseBody.ToString());
+            return context.Response.WriteAsync(JsonConvert.SerializeObject(responseBody));
         }
     }
 }

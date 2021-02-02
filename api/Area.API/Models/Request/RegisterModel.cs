@@ -4,16 +4,13 @@ namespace Area.API.Models.Request
 {
     public class RegisterModel
     {
-        [JsonRequired]
-        [JsonProperty("username")]
-        public string? Username { get; set; }
+        [JsonProperty("username", Required = Required.Always)]
+        public string Username { get; set; } = null!;
 
-        [JsonRequired]
-        [JsonProperty("password")]
-        public string? Password { get; set; }
+        [JsonProperty("password", Required = Required.Always)]
+        public string Password { get; set; } = null!;
 
-        [JsonRequired]
-        [JsonProperty("email")]
-        public string? Email { get; set; }
+        [JsonProperty("email", Required = Required.Always)]
+        public string Email { get; set; } = null!;
     }
 }

@@ -22,13 +22,13 @@ namespace Area.API.Models.Widgets
         }
 
         [JsonProperty("source")]
-        public string? Source { get; set; }
+        public string Source { get; set; } = null!;
 
         [JsonProperty("author")]
-        public string? Author { get; set; }
+        public string Author { get; set; } = null!;
 
         [JsonProperty("description")]
-        public string? Description { get; set; }
+        public string Description { get; set; } = null!;
 
         [JsonProperty("published_at")]
         public long? PublishedAt { get; set; }

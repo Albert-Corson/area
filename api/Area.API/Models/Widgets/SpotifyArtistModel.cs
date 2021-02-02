@@ -8,7 +8,7 @@ namespace Area.API.Models.Widgets
     public class SpotifyArtistModel : WidgetCallResponseItemModel
     {
         public SpotifyArtistModel()
-        {}
+        { }
 
         public SpotifyArtistModel(FullArtist artist)
         {
@@ -25,12 +25,12 @@ namespace Area.API.Models.Widgets
         }
 
         [JsonProperty("followers")]
-        public int? Followers { get; set; }
+        public int Followers { get; set; }
 
         [JsonProperty("genres")]
-        public IEnumerable<string>? Genres { get; set; }
+        public IEnumerable<string> Genres { get; set; } = null!;
 
         [JsonProperty("popularity")]
-        public int? Popularity { get; set; }
+        public int Popularity { get; set; }
     }
 }

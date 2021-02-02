@@ -7,10 +7,10 @@ namespace Area.API.Models.Table.Owned
     [Table("UserHasServiceTokens")]
     public class UserServiceTokensModel
     {
-        public string? Json { get; set; }
+        public string Json { get; set; } = null!;
 
-        public int? ServiceId { get; set; }
+        public int ServiceId { get; set; }
 
-        public ServiceModel? Service { get; set; }
+        public ServiceModel Service { get; set; } = null!;
     }
 }

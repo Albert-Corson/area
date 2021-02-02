@@ -12,27 +12,27 @@ namespace Area.API.Models.Table
         [ForeignKey("WidgetId")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [JsonProperty("id")]
-        public int? Id { get; set; }
+        public int Id { get; set; }
 
         [JsonProperty("name")]
-        public string? Name { get; set; }
+        public string Name { get; set; } = null!;
 
         [JsonProperty("description")]
-        public string? Description { get; set; }
+        public string Description { get; set; } = null!;
 
         [JsonProperty("requires_auth")]
-        public bool? RequiresAuth { get; set; }
+        public bool RequiresAuth { get; set; }
 
         [JsonIgnore]
-        public int? ServiceId { get; set; }
+        public int ServiceId { get; set; }
 
         [JsonProperty("service")]
-        public ServiceModel? Service { get; set; }
+        public ServiceModel Service { get; set; } = null!;
 
         [JsonIgnore]
-        public ICollection<UserWidgetModel>? Users { get; set; }
+        public ICollection<UserWidgetModel> Users { get; set; } = null!;
 
         [JsonProperty("params")]
-        public ICollection<WidgetParamModel>? Params;
+        public ICollection<WidgetParamModel> Params { get; set; } = null!;
     }
 }

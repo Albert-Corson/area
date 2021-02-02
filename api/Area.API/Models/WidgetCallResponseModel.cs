@@ -27,7 +27,7 @@ namespace Area.API.Models
         }
 
         [JsonProperty("params")]
-        public IEnumerable<WidgetParamModel>? CallParams { get; }
+        public IEnumerable<WidgetParamModel> CallParams { get; }
 
         [JsonProperty("items")]
         public IEnumerable<WidgetCallResponseItemModel>? Items { get; set; }

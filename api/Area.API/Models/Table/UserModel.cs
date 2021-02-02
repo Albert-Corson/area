@@ -11,24 +11,24 @@ namespace Area.API.Models.Table
         [ForeignKey("UserId")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [JsonProperty("id")]
-        public int? Id { get; set; }
+        public int Id { get; set; }
 
         [JsonProperty("username")]
-        public string? Username { get; set; }
+        public string Username { get; set; } = null!;
 
         [JsonProperty("email")]
-        public string? Email { get; set; }
+        public string Email { get; set; } = null!;
 
         [JsonIgnore]
-        public string? Password { get; set; }
+        public string Password { get; set; } = null!;
 
         [JsonIgnore]
-        public ICollection<UserWidgetModel>? Widgets { get; set; }
+        public ICollection<UserWidgetModel> Widgets { get; set; } = null!;
 
         [JsonIgnore]
-        public ICollection<UserServiceTokensModel>? ServiceTokens { get; set; }
+        public ICollection<UserServiceTokensModel> ServiceTokens { get; set; } = null!;
 
         [JsonIgnore]
-        public ICollection<UserWidgetParamModel>? WidgetParams { get; set; }
+        public ICollection<UserWidgetParamModel> WidgetParams { get; set; } = null!;
     }
 }
