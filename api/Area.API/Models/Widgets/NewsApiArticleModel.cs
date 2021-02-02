@@ -6,7 +6,7 @@ namespace Area.API.Models.Widgets
     public class NewsApiArticleModel : WidgetCallResponseItemModel
     {
         public NewsApiArticleModel()
-        {}
+        { }
 
         public NewsApiArticleModel(Article article)
         {

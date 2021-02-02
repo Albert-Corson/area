@@ -28,7 +28,8 @@ namespace Area.API.Repositories
                 ) != null;
         }
 
-        public UserModel? GetUser(int? userId = null, string? username = null, string? email = null, string? passwd = null, bool asNoTracking = true)
+        public UserModel? GetUser(int? userId = null, string? username = null, string? email = null,
+            string? passwd = null, bool asNoTracking = true)
         {
             var queryable = asNoTracking ? Database.Users.AsNoTracking() : Database.Users.AsQueryable();
 
@@ -40,7 +41,7 @@ namespace Area.API.Repositories
                 && (username == null || model.Username == username)
                 && (email == null || model.Email == email)
                 && (passwd == null || model.Password == passwd)
-                );
+            );
         }
 
         public void AddUser(UserModel user)
@@ -61,8 +62,8 @@ namespace Area.API.Repositories
         public IEnumerable<UserWidgetParamModel> GetUserWidgetParams(int userId, int? widgetId = null)
         {
             var widgetParams = Database.Users.AsNoTracking()
-                .FirstOrDefault(model => model.Id == userId)
-                ?.WidgetParams?.ToList()
+                    .FirstOrDefault(model => model.Id == userId)
+                    ?.WidgetParams.ToList()
                 ?? new List<UserWidgetParamModel>();
 
             return widgetId != null ? widgetParams.Where(model => model.WidgetId == widgetId) : widgetParams;
@@ -90,7 +91,7 @@ namespace Area.API.Repositories
             var userParams = Database.Users
                 .SingleOrDefault(model => model.Id == userId)
                 ?.WidgetParams
-                ?.Where(model => model.WidgetId == widgetId);
+                .Where(model => model.WidgetId == widgetId);
 
             if (userParams != null)
                 Database.RemoveRange(userParams);
@@ -124,8 +125,7 @@ namespace Area.API.Repositories
                 .Include(model => model.ServiceTokens)
                 .FirstOrDefault(model => model.Id == userId);
 
-            var serviceToken = user?.ServiceTokens
-                ?.FirstOrDefault(model => model.ServiceId == serviceId);
+            var serviceToken = user?.ServiceTokens.FirstOrDefault(model => model.ServiceId == serviceId);
 
             if (serviceToken != null)
                 Database.Set<UserServiceTokensModel>().Remove(serviceToken);

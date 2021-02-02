@@ -5,6 +5,12 @@ namespace Area.API.Models
 {
     public class AboutDotJsonModel
     {
+        [JsonProperty("client")]
+        public ClientModel Client { get; set; } = null!;
+
+        [JsonProperty("server")]
+        public ServerModel Server { get; set; } = null!;
+
         public class ClientModel
         {
             [JsonProperty("host")]
@@ -22,14 +28,14 @@ namespace Area.API.Models
 
         public class WidgetModel
         {
+            [JsonProperty("params")]
+            public IEnumerable<WidgetParamModel> Params = null!;
+
             [JsonProperty("name")]
             public string Name { get; set; } = null!;
 
             [JsonProperty("description")]
             public string Description { get; set; } = null!;
-
-            [JsonProperty("params")]
-            public IEnumerable<WidgetParamModel> Params = null!;
         }
 
         public class ServiceModel
@@ -49,11 +55,5 @@ namespace Area.API.Models
             [JsonProperty("services")]
             public IEnumerable<ServiceModel> Services { get; set; } = null!;
         }
-
-        [JsonProperty("client")]
-        public ClientModel Client { get; set; } = null!;
-
-        [JsonProperty("server")]
-        public ServerModel Server { get; set; } = null!;
     }
 }

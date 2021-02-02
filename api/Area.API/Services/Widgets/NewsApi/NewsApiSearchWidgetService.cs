@@ -1,12 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Area.API.Exceptions.Http;
 using Area.API.Models;
 using Area.API.Models.Widgets;
-using Area.API.Models.Table;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using NewsAPI;
 using NewsAPI.Constants;
@@ -28,7 +24,9 @@ namespace Area.API.Services.Widgets.NewsApi
         }
 
         public string Name { get; } = "News search";
-        public void CallWidgetApi(HttpContext context, WidgetCallParameters widgetCallParams, ref WidgetCallResponseModel response)
+
+        public void CallWidgetApi(WidgetCallParameters widgetCallParams,
+            ref WidgetCallResponseModel response)
         {
             var everythingRequest = new EverythingRequest {
                 From = DateTime.Now.Subtract(TimeSpan.FromDays(31)),
@@ -36,7 +34,8 @@ namespace Area.API.Services.Widgets.NewsApi
             };
 
             var languageStr = widgetCallParams.Strings["language"];
-            if (!string.IsNullOrWhiteSpace(languageStr) && Enum.TryParse<Languages>(languageStr, true, out var language))
+            if (!string.IsNullOrWhiteSpace(languageStr) &&
+                Enum.TryParse<Languages>(languageStr, true, out var language))
                 everythingRequest.Language = language;
 
             var news = _client?.GetEverything(everythingRequest);

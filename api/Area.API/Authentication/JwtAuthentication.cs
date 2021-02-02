@@ -13,7 +13,8 @@ namespace Area.API.Authentication
     {
         private readonly UserRepository _userRepository;
 
-        public JwtAuthentication(IOptionsMonitor<JwtBearerOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock, UserRepository userRepository)
+        public JwtAuthentication(IOptionsMonitor<JwtBearerOptions> options, ILoggerFactory logger, UrlEncoder encoder,
+            ISystemClock clock, UserRepository userRepository)
             : base(options, logger, encoder, clock)
         {
             _userRepository = userRepository;
@@ -23,9 +24,8 @@ namespace Area.API.Authentication
         {
             var authenticateResult = await base.HandleAuthenticateAsync();
 
-            if (!authenticateResult.Succeeded) {
+            if (!authenticateResult.Succeeded)
                 return authenticateResult;
-            }
 
             var userId = AuthUtilities.GetUserIdFromPrincipal(authenticateResult.Principal);
 

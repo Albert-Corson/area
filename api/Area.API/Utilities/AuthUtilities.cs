@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net.Mail;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using System.Net.Mail;
+using JwtConstants = Area.API.Constants.JwtConstants;
 
 namespace Area.API.Utilities
 {
@@ -36,19 +37,19 @@ namespace Area.API.Utilities
 
         public string GenerateAccessToken(int userId)
         {
-            return GenerateToken(DateTime.Now.AddTicks(Constants.JwtConstants.AccessTokenLifespan), new[] {
+            return GenerateToken(DateTime.Now.AddTicks(JwtConstants.AccessTokenLifespan), new[] {
                 new Claim(ClaimTypeUserId, userId.ToString()),
                 new Claim(JwtRegisteredClaimNames.AuthTime, DateTime.Now.Ticks.ToString()),
-                new Claim(JwtRegisteredClaimNames.Typ, "access_token"),
+                new Claim(JwtRegisteredClaimNames.Typ, "access_token")
             });
         }
 
         public string GenerateRefreshToken(int userId)
         {
-            return GenerateToken(DateTime.Now.AddTicks(Constants.JwtConstants.RefreshTokenLifespan), new[] {
+            return GenerateToken(DateTime.Now.AddTicks(JwtConstants.RefreshTokenLifespan), new[] {
                 new Claim(ClaimTypeUserId, userId.ToString()),
                 new Claim(JwtRegisteredClaimNames.AuthTime, DateTime.Now.Ticks.ToString()),
-                new Claim(JwtRegisteredClaimNames.Typ, "refresh_token"),
+                new Claim(JwtRegisteredClaimNames.Typ, "refresh_token")
             });
         }
 
@@ -57,8 +58,7 @@ namespace Area.API.Utilities
             try {
                 var addr = new MailAddress(email);
                 return addr.Address == email;
-            }
-            catch {
+            } catch {
                 return false;
             }
         }
@@ -68,12 +68,12 @@ namespace Area.API.Utilities
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["SECRET_SALT"]));
             var signingCredentials = new SigningCredentials(key, Algorithm);
             var token = new JwtSecurityToken(
-                issuer: _configuration["ValidIssuer"],
-                audience: _configuration["ValidAudience"],
-                claims: claims,
-                notBefore: DateTime.Now,
-                expires: expiryTime,
-                signingCredentials: signingCredentials
+                _configuration["ValidIssuer"],
+                _configuration["ValidAudience"],
+                claims,
+                DateTime.Now,
+                expiryTime,
+                signingCredentials
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
@@ -108,8 +108,8 @@ namespace Area.API.Utilities
 
         private static bool IsJwtWithValidSecurityAlgorithm(SecurityToken validatedToken)
         {
-            return (validatedToken is JwtSecurityToken jwtSecurityToken)
-                   && jwtSecurityToken.Header.Alg.Equals(Algorithm, StringComparison.InvariantCultureIgnoreCase);
+            return validatedToken is JwtSecurityToken jwtSecurityToken
+                && jwtSecurityToken.Header.Alg.Equals(Algorithm, StringComparison.InvariantCultureIgnoreCase);
         }
     }
 }

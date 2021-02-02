@@ -15,8 +15,8 @@ namespace Area.API.Controllers
     public class AuthController : ControllerBase
     {
         private readonly AuthUtilities _authUtilities;
-        private readonly UserRepository _userRepository;
         private readonly IConfiguration _configuration;
+        private readonly UserRepository _userRepository;
 
         public AuthController(AuthUtilities authUtilities, UserRepository userRepository, IConfiguration configuration)
         {
@@ -37,7 +37,7 @@ namespace Area.API.Controllers
                 throw new InternalServerErrorHttpException();
 
             var user = _userRepository.GetUser(email: body.Identifier, passwd: encryptedPasswd)
-                       ?? _userRepository.GetUser(username: body.Identifier, passwd: encryptedPasswd);
+                ?? _userRepository.GetUser(username: body.Identifier, passwd: encryptedPasswd);
             if (user == null)
                 throw new UnauthorizedHttpException("Invalid username/password");
 

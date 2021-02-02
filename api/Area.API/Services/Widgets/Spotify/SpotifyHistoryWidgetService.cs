@@ -5,7 +5,6 @@ using Area.API.Models;
 using Area.API.Models.Table.Owned;
 using Area.API.Models.Widgets;
 using Area.API.Services.Services;
-using Microsoft.AspNetCore.Http;
 using SpotifyAPI.Web;
 
 namespace Area.API.Services.Widgets.Spotify
@@ -29,16 +28,17 @@ namespace Area.API.Services.Widgets.Spotify
             return SpotifyClient != null;
         }
 
-        public void CallWidgetApi(HttpContext context, WidgetCallParameters widgetCallParams, ref WidgetCallResponseModel response)
+        public void CallWidgetApi(WidgetCallParameters widgetCallParams,
+            ref WidgetCallResponseModel response)
         {
-
             var task = SpotifyClient!.Player.GetRecentlyPlayed();
             task.Wait();
 
             if (!task.IsCompletedSuccessfully)
                 throw new InternalServerErrorHttpException("Couldn't reach Spotify");
 
-            response.Items = task.Result.Items?.Select(item => new SpotifyTrackModel(item.Track)) ?? new List<SpotifyTrackModel>();
+            response.Items = task.Result.Items?.Select(item => new SpotifyTrackModel(item.Track)) ??
+                new List<SpotifyTrackModel>();
         }
     }
 }

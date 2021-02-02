@@ -24,7 +24,8 @@ namespace Area.API.Middlewares
             } catch (HttpException exception) {
                 await HandleExceptionAsync(context, GenerateResponseBody(exception.Message), exception.StatusCode);
             } catch (Exception exception) {
-                await HandleExceptionAsync(context, GenerateResponseBody(exception.Message), HttpStatusCode.InternalServerError);
+                await HandleExceptionAsync(context, GenerateResponseBody(exception.Message),
+                    HttpStatusCode.InternalServerError);
             }
         }
 
@@ -36,7 +37,8 @@ namespace Area.API.Middlewares
             };
         }
 
-        private static Task HandleExceptionAsync(HttpContext context, StatusModel responseBody, HttpStatusCode statusCode)
+        private static Task HandleExceptionAsync(HttpContext context, StatusModel responseBody,
+            HttpStatusCode statusCode)
         {
             // Check if the response status, reason and headers can be modified.
             // If HasStarted is true, they can't.

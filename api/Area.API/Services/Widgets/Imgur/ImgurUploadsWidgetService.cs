@@ -4,10 +4,8 @@ using Area.API.Exceptions.Http;
 using Area.API.Models;
 using Area.API.Models.Table.Owned;
 using Area.API.Services.Services;
-using Area.API.Models.Widgets;
 using Imgur.API.Endpoints.Impl;
 using Imgur.API.Models.Impl;
-using Microsoft.AspNetCore.Http;
 
 namespace Area.API.Services.Widgets.Imgur
 {
@@ -30,7 +28,8 @@ namespace Area.API.Services.Widgets.Imgur
 
         public string Name { get; } = "Imgur uploads";
 
-        public void CallWidgetApi(HttpContext context, WidgetCallParameters widgetCallParams, ref WidgetCallResponseModel response)
+        public void CallWidgetApi(WidgetCallParameters widgetCallParams,
+            ref WidgetCallResponseModel response)
         {
             if (Imgur.Client == null || _oAuth2Token == null)
                 throw new InternalServerErrorHttpException();
@@ -44,8 +43,7 @@ namespace Area.API.Services.Widgets.Imgur
                 throw new InternalServerErrorHttpException("Could not reach Imgur");
 
             var items = new List<WidgetCallResponseItemModel>();
-            foreach (var album in task.Result)
-            {
+            foreach (var album in task.Result) {
                 var imageTask = new AlbumEndpoint(Imgur.Client).GetAlbumImagesAsync(album.Id);
                 imageTask.Wait();
                 if (!imageTask.IsCompletedSuccessfully)

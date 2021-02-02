@@ -3,7 +3,6 @@ using Area.API.Exceptions.Http;
 using Area.API.Models;
 using CatApiWrapper;
 using CatApiWrapper.RequestBuilders;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 
 namespace Area.API.Services.Widgets.CatApi
@@ -23,7 +22,8 @@ namespace Area.API.Services.Widgets.CatApi
 
         public string Name { get; } = "Random cat images";
 
-        public void CallWidgetApi(HttpContext context, WidgetCallParameters widgetCallParams, ref WidgetCallResponseModel response)
+        public void CallWidgetApi(WidgetCallParameters widgetCallParams,
+            ref WidgetCallResponseModel response)
         {
             try {
                 var request = new GetRequestBuilder()

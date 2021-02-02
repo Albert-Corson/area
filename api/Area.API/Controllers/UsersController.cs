@@ -16,8 +16,8 @@ namespace Area.API.Controllers
 {
     public class UsersController : ControllerBase
     {
-        private readonly UserRepository _userRepository;
         private readonly IConfiguration _configuration;
+        private readonly UserRepository _userRepository;
 
         public UsersController(UserRepository userRepository, IConfiguration configuration)
         {
@@ -63,7 +63,8 @@ namespace Area.API.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateModelState]
         public ResponseModel<UserModel> GetUser(
-            [FromRoute] [Required] [Range(1, 2147483647)] int? userId
+            [FromRoute] [Required] [Range(1, 2147483647)]
+            int? userId
         )
         {
             var user = _userRepository.GetUser(userId);
@@ -97,7 +98,8 @@ namespace Area.API.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateModelState]
         public StatusModel DeleteUser(
-            [FromRoute] [Required] [Range(1, 2147483647)] int? userId
+            [FromRoute] [Required] [Range(1, 2147483647)]
+            int? userId
         )
         {
             var currentUserId = AuthUtilities.GetUserIdFromPrincipal(User);
@@ -106,7 +108,8 @@ namespace Area.API.Controllers
                 throw new UnauthorizedHttpException("You can only delete your own account");
 
             if (!_userRepository.RemoveUser(userId!.Value))
-                throw new InternalServerErrorHttpException(); // this should never happen, but we still have to handle the error
+                throw
+                    new InternalServerErrorHttpException(); // this should never happen, but we still have to handle the error
 
             return StatusModel.Success();
         }

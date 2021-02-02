@@ -17,12 +17,13 @@ namespace Area.API.Controllers
 {
     public class WidgetsController : ControllerBase
     {
-        private readonly WidgetManagerService _widgetManager;
-        private readonly UserRepository _userRepository;
         private readonly ServiceRepository _serviceRepository;
+        private readonly UserRepository _userRepository;
+        private readonly WidgetManagerService _widgetManager;
         private readonly WidgetRepository _widgetRepository;
 
-        public WidgetsController(WidgetManagerService widgetManager, WidgetRepository widgetRepository, ServiceRepository serviceRepository, UserRepository userRepository)
+        public WidgetsController(WidgetManagerService widgetManager, WidgetRepository widgetRepository,
+            ServiceRepository serviceRepository, UserRepository userRepository)
         {
             _widgetManager = widgetManager;
             _widgetRepository = widgetRepository;
@@ -62,8 +63,8 @@ namespace Area.API.Controllers
         {
             var userId = AuthUtilities.GetUserIdFromPrincipal(User);
 
-            var widgets = serviceId != null ?
-                _widgetRepository.GetUserWidgetsByService(userId!.Value, serviceId.Value).ToList()
+            var widgets = serviceId != null
+                ? _widgetRepository.GetUserWidgetsByService(userId!.Value, serviceId.Value).ToList()
                 : _widgetRepository.GetUserWidgets(userId!.Value, true).ToList();
 
             var userWidgetParams = _userRepository.GetUserWidgetParams(userId.Value).ToList();
@@ -83,12 +84,13 @@ namespace Area.API.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateModelState]
         public ResponseModel<WidgetCallResponseModel> CallWidget(
-            [FromRoute] [Required] [Range(1, 2147483647)] int? widgetId
+            [FromRoute] [Required] [Range(1, 2147483647)]
+            int? widgetId
         )
         {
-             return new ResponseModel<WidgetCallResponseModel> {
-                 Data = _widgetManager.CallWidgetById(HttpContext, widgetId!.Value)
-             };
+            return new ResponseModel<WidgetCallResponseModel> {
+                Data = _widgetManager.CallWidgetById(HttpContext, widgetId!.Value)
+            };
         }
 
         [HttpDelete]
@@ -96,7 +98,8 @@ namespace Area.API.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateModelState]
         public StatusModel UnsubscribeWidget(
-            [FromRoute] [Required] [Range(1, 2147483647)] int? widgetId
+            [FromRoute] [Required] [Range(1, 2147483647)]
+            int? widgetId
         )
         {
             var userId = AuthUtilities.GetUserIdFromPrincipal(User);
@@ -111,7 +114,8 @@ namespace Area.API.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateModelState]
         public StatusModel SubscribeWidget(
-            [FromRoute] [Required] [Range(1, 2147483647)] int? widgetId
+            [FromRoute] [Required] [Range(1, 2147483647)]
+            int? widgetId
         )
         {
             var userId = AuthUtilities.GetUserIdFromPrincipal(User);

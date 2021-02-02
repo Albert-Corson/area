@@ -10,6 +10,12 @@ namespace Area.API.DbContexts
             : base(options)
         { }
 
+        public DbSet<UserModel> Users { get; set; } = null!;
+
+        public DbSet<ServiceModel> Services { get; set; } = null!;
+
+        public DbSet<WidgetModel> Widgets { get; set; } = null!;
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -49,11 +55,5 @@ namespace Area.API.DbContexts
                     .OwnsMany(model => model.Params);
             }
         }
-
-        public DbSet<UserModel> Users { get; set; } = null!;
-
-        public DbSet<ServiceModel> Services { get; set; } = null!;
-
-        public DbSet<WidgetModel> Widgets { get; set; } = null!;
     }
 }

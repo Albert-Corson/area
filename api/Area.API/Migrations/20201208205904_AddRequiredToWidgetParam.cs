@@ -7,39 +7,39 @@ namespace Area.API.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_WidgetHasDefaultParams_Widgets_WidgetModelId",
-                table: "WidgetHasDefaultParams");
+                "FK_WidgetHasDefaultParams_Widgets_WidgetModelId",
+                "WidgetHasDefaultParams");
 
             migrationBuilder.DropPrimaryKey(
-                name: "PK_WidgetHasDefaultParams",
-                table: "WidgetHasDefaultParams");
+                "PK_WidgetHasDefaultParams",
+                "WidgetHasDefaultParams");
 
             migrationBuilder.RenameTable(
-                name: "WidgetHasDefaultParams",
+                "WidgetHasDefaultParams",
                 newName: "WidgetHasParams");
 
             migrationBuilder.AddColumn<bool>(
-                name: "Required",
-                table: "UserHasWidgetParams",
-                type: "boolean",
+                "Required",
+                "UserHasWidgetParams",
+                "boolean",
                 nullable: true);
 
             migrationBuilder.AddColumn<bool>(
-                name: "Required",
-                table: "WidgetHasParams",
-                type: "boolean",
+                "Required",
+                "WidgetHasParams",
+                "boolean",
                 nullable: true);
 
             migrationBuilder.AddPrimaryKey(
-                name: "PK_WidgetHasParams",
-                table: "WidgetHasParams",
-                columns: new[] { "WidgetModelId", "Id" });
+                "PK_WidgetHasParams",
+                "WidgetHasParams",
+                new[] {"WidgetModelId", "Id"});
 
             migrationBuilder.AddForeignKey(
-                name: "FK_WidgetHasParams_Widgets_WidgetModelId",
-                table: "WidgetHasParams",
-                column: "WidgetModelId",
-                principalTable: "Widgets",
+                "FK_WidgetHasParams_Widgets_WidgetModelId",
+                "WidgetHasParams",
+                "WidgetModelId",
+                "Widgets",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
         }
@@ -47,35 +47,35 @@ namespace Area.API.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_WidgetHasParams_Widgets_WidgetModelId",
-                table: "WidgetHasParams");
+                "FK_WidgetHasParams_Widgets_WidgetModelId",
+                "WidgetHasParams");
 
             migrationBuilder.DropPrimaryKey(
-                name: "PK_WidgetHasParams",
-                table: "WidgetHasParams");
+                "PK_WidgetHasParams",
+                "WidgetHasParams");
 
             migrationBuilder.DropColumn(
-                name: "Required",
-                table: "UserHasWidgetParams");
+                "Required",
+                "UserHasWidgetParams");
 
             migrationBuilder.DropColumn(
-                name: "Required",
-                table: "WidgetHasParams");
+                "Required",
+                "WidgetHasParams");
 
             migrationBuilder.RenameTable(
-                name: "WidgetHasParams",
+                "WidgetHasParams",
                 newName: "WidgetHasDefaultParams");
 
             migrationBuilder.AddPrimaryKey(
-                name: "PK_WidgetHasDefaultParams",
-                table: "WidgetHasDefaultParams",
-                columns: new[] { "WidgetModelId", "Id" });
+                "PK_WidgetHasDefaultParams",
+                "WidgetHasDefaultParams",
+                new[] {"WidgetModelId", "Id"});
 
             migrationBuilder.AddForeignKey(
-                name: "FK_WidgetHasDefaultParams_Widgets_WidgetModelId",
-                table: "WidgetHasDefaultParams",
-                column: "WidgetModelId",
-                principalTable: "Widgets",
+                "FK_WidgetHasDefaultParams_Widgets_WidgetModelId",
+                "WidgetHasDefaultParams",
+                "WidgetModelId",
+                "Widgets",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
         }

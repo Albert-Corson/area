@@ -11,8 +11,8 @@ namespace Area.API.Services
 {
     public class ServiceManagerService
     {
-        private readonly IDictionary<string, IServiceService> _service;
         private readonly ILogger _logger;
+        private readonly IDictionary<string, IServiceService> _service;
         private readonly ServiceRepository _serviceRepository;
         private readonly UserRepository _userRepository;
 
@@ -27,7 +27,7 @@ namespace Area.API.Services
             _logger = loggerFactory.CreateLogger("Service manager");
             _service = new Dictionary<string, IServiceService> {
                 {imgur.Name, imgur},
-                {spotify.Name, spotify},
+                {spotify.Name, spotify}
             };
         }
 
@@ -44,7 +44,7 @@ namespace Area.API.Services
             if (userId == null)
                 return null;
 
-            var uri = service.SignIn(context, userId.Value);
+            var uri = service.SignIn(userId.Value);
             return uri;
         }
 

@@ -18,11 +18,12 @@ namespace Area.API.Controllers
 {
     public class ServicesController : ControllerBase
     {
+        private readonly ServiceManagerService _serviceManager;
         private readonly ServiceRepository _serviceRepository;
         private readonly UserRepository _userRepository;
-        private readonly ServiceManagerService _serviceManager;
 
-        public ServicesController(ServiceManagerService serviceManager, ServiceRepository serviceRepository, UserRepository userRepository)
+        public ServicesController(ServiceManagerService serviceManager, ServiceRepository serviceRepository,
+            UserRepository userRepository)
         {
             _serviceManager = serviceManager;
             _serviceRepository = serviceRepository;
@@ -58,7 +59,8 @@ namespace Area.API.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateModelState]
         public ResponseModel<ServiceModel> GetService(
-            [FromRoute] [Required] [Range(1, 2147483647)] int? serviceId
+            [FromRoute] [Required] [Range(1, 2147483647)]
+            int? serviceId
         )
         {
             var service = _serviceRepository.GetService(serviceId!.Value);
@@ -76,7 +78,8 @@ namespace Area.API.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateModelState]
         public ResponseModel<string?> SignInService(
-            [FromRoute] [Required] [Range(1, 2147483647)] int? serviceId
+            [FromRoute] [Required] [Range(1, 2147483647)]
+            int? serviceId
         )
         {
             var redirect = _serviceManager.SignInServiceById(HttpContext, serviceId!.Value);
@@ -96,7 +99,8 @@ namespace Area.API.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateModelState]
         public StatusModel SignOutService(
-            [FromRoute] [Required] [Range(1, 2147483647)] int? serviceId
+            [FromRoute] [Required] [Range(1, 2147483647)]
+            int? serviceId
         )
         {
             var userId = AuthUtilities.GetUserIdFromPrincipal(User);
@@ -109,12 +113,12 @@ namespace Area.API.Controllers
         [Route(RoutesConstants.Services.SignInServiceCallback)]
         [ValidateModelState]
         public ContentResult SignInServiceCallback(
-            [FromRoute] [Required] [Range(1, 2147483647)] int? serviceId
+            [FromRoute] [Required] [Range(1, 2147483647)]
+            int? serviceId
         )
         {
-            if (_serviceManager.HandleServiceSignInCallbackById(HttpContext, serviceId!.Value)) {
+            if (_serviceManager.HandleServiceSignInCallbackById(HttpContext, serviceId!.Value))
                 return Content("<h1>Success! You can now close this page!</h1>", "text/html");
-            }
 
             Response.StatusCode = (int) HttpStatusCode.InternalServerError;
             return Content("<h1>An error has occured, please try again</h1>", "text/html");

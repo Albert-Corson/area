@@ -1,12 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Area.API.Constants;
 using Area.API.Models;
 using Area.API.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
-using Newtonsoft.Json;
 
 namespace Area.API.Controllers
 {
@@ -36,16 +34,17 @@ namespace Area.API.Controllers
             var serviceModels = _serviceRepository.GetServices(true).ToList();
 
             var services = serviceModels.Select(service => new AboutDotJsonModel.ServiceModel {
-                Name = service.Name,
-                Widgets = service.Widgets.Select(widget =>  new AboutDotJsonModel.WidgetModel {
-                    Name = widget.Name,
-                    Description = widget.Description,
-                    Params = widget.Params.Select(model => new AboutDotJsonModel.WidgetParamModel {
-                        Name = model.Name,
-                        Type = model.Type
+                    Name = service.Name,
+                    Widgets = service.Widgets.Select(widget => new AboutDotJsonModel.WidgetModel {
+                        Name = widget.Name,
+                        Description = widget.Description,
+                        Params = widget.Params.Select(model => new AboutDotJsonModel.WidgetParamModel {
+                            Name = model.Name,
+                            Type = model.Type
+                        })
                     })
                 })
-            }).ToList();
+                .ToList();
 
             return new AboutDotJsonModel {
                 Client = new AboutDotJsonModel.ClientModel {
