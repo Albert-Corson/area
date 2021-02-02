@@ -8,12 +8,12 @@ namespace Area.API.Models.Table.Owned
     [Table("UserHasWidgetParams")]
     public class UserWidgetParamModel : WidgetParamModel
     {
-        public int? WidgetId { get; set; }
+        public int WidgetId { get; set; }
 
-        public WidgetModel? Widget { get; set; }
+        public WidgetModel Widget { get; set; } = null!;
 
         [NotMapped]
         [JsonProperty("required")]
-        public override bool? Required => false;
+        public override bool Required => false;
     }
 }

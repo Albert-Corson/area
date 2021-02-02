@@ -5,11 +5,6 @@ namespace Area.API.Models
 {
     public class StatusModel
     {
-        [JsonIgnore]
-        private static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings {
-            NullValueHandling = NullValueHandling.Ignore
-        };
-
         public StatusModel()
         { }
 
@@ -23,19 +18,7 @@ namespace Area.API.Models
         public string? Error { get; set; }
 
         [JsonProperty("successful")]
-        public bool? Successful { get; set; } = true;
-
-        public override string ToString()
-        {
-            return JsonConvert.SerializeObject(this, Formatting.None, SerializerSettings);
-        }
-
-        public JsonResult ToJsonResult()
-        {
-            return new JsonResult(this) {
-                SerializerSettings = SerializerSettings
-            };
-        }
+        public bool Successful { get; set; } = true;
 
         public static StatusModel Failed(string? error = null)
         {
@@ -45,11 +28,6 @@ namespace Area.API.Models
         public static StatusModel Success()
         {
             return new StatusModel(true);
-        }
-
-        public static implicit operator JsonResult(StatusModel self)
-        {
-            return self.ToJsonResult();
         }
     }
 }

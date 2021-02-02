@@ -374,7 +374,7 @@ paths:
           $ref: "#/components/responses/EmptyConfirmationResponse"
   /users:
     post:
-      operationId: SignUp
+      operationId: Register
       summary: Create an account
       tags:
         - user

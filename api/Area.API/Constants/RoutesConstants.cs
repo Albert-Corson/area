@@ -21,7 +21,7 @@ namespace Area.API.Constants
         {
             private const string Base = Api + "/users";
 
-            public const string SignUp = Base;
+            public const string Register = Base;
             public const string GetMyUser = Base + "/me";
             public const string GetUser = Base + "/{userId}";
             public const string DeleteUser = Base + "/{userId}";

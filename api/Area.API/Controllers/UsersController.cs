@@ -26,9 +26,9 @@ namespace Area.API.Controllers
         }
 
         [HttpPost]
-        [Route(RoutesConstants.Users.SignUp)]
+        [Route(RoutesConstants.Users.Register)]
         [ValidateModelState]
-        public JsonResult SignUp(
+        public StatusModel Register(
             [FromBody] RegisterModel body
         )
         {
@@ -62,7 +62,7 @@ namespace Area.API.Controllers
         [Route(RoutesConstants.Users.GetUser)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateModelState]
-        public JsonResult GetUser(
+        public ResponseModel<UserModel> GetUser(
             [FromRoute] [Required] [Range(1, 2147483647)] int? userId
         )
         {
@@ -72,24 +72,23 @@ namespace Area.API.Controllers
                 throw new NotFoundHttpException("This user does not exist");
 
             return new ResponseModel<UserModel> {
-                Data = new UserModel {
-                    Id = user.Id,
-                    Username = user.Username
-                }
+                Data = user
             };
         }
 
         [HttpGet]
         [Route(RoutesConstants.Users.GetMyUser)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public JsonResult GetMyUser()
+        public ResponseModel<UserModel> GetMyUser()
         {
             var userId = AuthUtilities.GetUserIdFromPrincipal(User);
-
             var user = _userRepository.GetUser(userId);
 
+            if (user == null)
+                throw new InternalServerErrorHttpException(); // should never happen
+
             return new ResponseModel<UserModel> {
-                Data = user!
+                Data = user
             };
         }
 
@@ -97,7 +96,7 @@ namespace Area.API.Controllers
         [Route(RoutesConstants.Users.DeleteUser)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateModelState]
-        public JsonResult DeleteUser(
+        public StatusModel DeleteUser(
             [FromRoute] [Required] [Range(1, 2147483647)] int? userId
         )
         {

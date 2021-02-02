@@ -5,29 +5,23 @@ namespace Area.API.Models.Services
 {
     public class ImgurAuthModel
     {
-        [Required]
-        [JsonProperty("access_token")]
-        public string? AccessToken { get; set; }
+        [JsonProperty("access_token", Required = Required.Always)]
+        public string AccessToken { get; set; } = null!;
 
-        [Required]
-        [JsonProperty("account_id")]
-        public string? AccountId { get; set; }
+        [JsonProperty("account_id", Required = Required.Always)]
+        public string AccountId { get; set; } = null!;
 
-        [Required]
-        [JsonProperty("account_username")]
-        public string? AccountUsername { get; set; }
+        [JsonProperty("account_username", Required = Required.Always)]
+        public string AccountUsername { get; set; } = null!;
 
-        [Required]
-        [JsonProperty("expires_in")]
-        public int? ExpiresIn { get; set; }
+        [JsonProperty("expires_in", Required = Required.Always)]
+        public int ExpiresIn { get; set; }
 
-        [Required]
-        [JsonProperty("refresh_token")]
-        public string? RefreshToken { get; set; }
+        [JsonProperty("refresh_token", Required = Required.Always)]
+        public string RefreshToken { get; set; } = null!;
 
-        [Required]
-        [JsonProperty("token_type")]
-        public string? TokenType { get; set; }
+        [JsonProperty("token_type", Required = Required.Always)]
+        public string TokenType { get; set; } = null!;
 
         public override string ToString()
         {

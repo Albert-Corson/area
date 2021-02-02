@@ -32,7 +32,7 @@ namespace Area.API.Controllers
         [HttpGet]
         [Route(RoutesConstants.Services.GetServices)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public JsonResult GetServices()
+        public ResponseModel<List<ServiceModel>> GetServices()
         {
             return new ResponseModel<List<ServiceModel>> {
                 Data = _serviceRepository.GetServices().ToList()
@@ -42,7 +42,7 @@ namespace Area.API.Controllers
         [HttpGet]
         [Route(RoutesConstants.Services.GetMyServices)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public JsonResult GetMyService()
+        public ResponseModel<List<ServiceModel>> GetMyService()
         {
             var userId = AuthUtilities.GetUserIdFromPrincipal(User);
 
@@ -57,7 +57,7 @@ namespace Area.API.Controllers
         [Route(RoutesConstants.Services.GetService)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateModelState]
-        public JsonResult GetService(
+        public ResponseModel<ServiceModel> GetService(
             [FromRoute] [Required] [Range(1, 2147483647)] int? serviceId
         )
         {
@@ -75,18 +75,18 @@ namespace Area.API.Controllers
         [Route(RoutesConstants.Services.SignInService)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateModelState]
-        public JsonResult SignInService(
+        public ResponseModel<string?> SignInService(
             [FromRoute] [Required] [Range(1, 2147483647)] int? serviceId
         )
         {
             var redirect = _serviceManager.SignInServiceById(HttpContext, serviceId!.Value);
 
             if (redirect == null)
-                return StatusModel.Success();
+                return new ResponseModel<string?>();
 
             Response.StatusCode = (int) HttpStatusCode.Accepted;
 
-            return new ResponseModel<string> {
+            return new ResponseModel<string?> {
                 Data = redirect.ToString()
             };
         }
@@ -95,7 +95,7 @@ namespace Area.API.Controllers
         [Route(RoutesConstants.Services.SignOutService)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateModelState]
-        public JsonResult SignOutService(
+        public StatusModel SignOutService(
             [FromRoute] [Required] [Range(1, 2147483647)] int? serviceId
         )
         {

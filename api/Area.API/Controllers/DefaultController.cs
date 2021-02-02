@@ -20,7 +20,7 @@ namespace Area.API.Controllers
         }
 
         [Route(RoutesConstants.Error)]
-        public JsonResult Error()
+        public StatusModel Error()
         {
             return new StatusModel {
                 Error = ReasonPhrases.GetReasonPhrase(Response.StatusCode),
@@ -29,31 +29,25 @@ namespace Area.API.Controllers
         }
 
         [Route(RoutesConstants.AboutDotJson)]
-        public JsonResult AboutDotJson()
+        public AboutDotJsonModel AboutDotJson()
         {
             var clientIp = HttpContext.Connection.RemoteIpAddress.MapToIPv4() + ":" + HttpContext.Connection.RemotePort;
 
             var serviceModels = _serviceRepository.GetServices(true).ToList();
 
-            foreach (var widget in serviceModels.Where(service => service.Widgets != null).SelectMany(service => service.Widgets)) {
-                widget.Id = null;
-                widget.RequiresAuth = null;
-                widget.Service = null;
-            }
-
             var services = serviceModels.Select(service => new AboutDotJsonModel.ServiceModel {
                 Name = service.Name,
-                Widgets = service.Widgets?.Select(widget =>  new AboutDotJsonModel.WidgetModel {
+                Widgets = service.Widgets.Select(widget =>  new AboutDotJsonModel.WidgetModel {
                     Name = widget.Name,
                     Description = widget.Description,
-                    Params = widget.Params?.Select(model => new AboutDotJsonModel.WidgetParamModel {
+                    Params = widget.Params.Select(model => new AboutDotJsonModel.WidgetParamModel {
                         Name = model.Name,
                         Type = model.Type
-                    }) ?? new List<AboutDotJsonModel.WidgetParamModel>()
-                }) ?? new List<AboutDotJsonModel.WidgetModel>()
+                    })
+                })
             }).ToList();
 
-            var aboutDotJson = new AboutDotJsonModel {
+            return new AboutDotJsonModel {
                 Client = new AboutDotJsonModel.ClientModel {
                     Host = clientIp
                 },
@@ -62,10 +56,6 @@ namespace Area.API.Controllers
                     Services = services
                 }
             };
-
-            return new JsonResult(aboutDotJson, new JsonSerializerSettings {
-                NullValueHandling = NullValueHandling.Ignore
-            });
         }
     }
 }

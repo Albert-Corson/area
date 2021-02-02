@@ -37,12 +37,12 @@ namespace Area.API.Models.Widgets
         }
 
         [JsonProperty("artists")]
-        public IEnumerable<string>? Artists { get; set; }
+        public IEnumerable<string> Artists { get; set; } = null!;
 
         [JsonProperty("popularity")]
-        public int? Popularity { get; set; }
+        public int Popularity { get; set; }
 
         [JsonProperty("preview")]
-        public string? Preview { get; set; }
+        public string Preview { get; set; } = null!;
     }
 }

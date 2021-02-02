@@ -34,7 +34,7 @@ namespace Area.API.Controllers
         [Route(RoutesConstants.Widgets.GetWidgets)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateModelState]
-        public JsonResult GetWidgets(
+        public ResponseModel<List<WidgetModel>> GetWidgets(
             [FromQuery] [Range(1, 2147483647)] int? serviceId
         )
         {
@@ -56,7 +56,7 @@ namespace Area.API.Controllers
         [HttpGet]
         [Route(RoutesConstants.Widgets.GetMyWidgets)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public JsonResult GetMyWidgets(
+        public ResponseModel<List<WidgetModel>> GetMyWidgets(
             [FromQuery] [Range(1, 2147483647)] int? serviceId
         )
         {
@@ -82,7 +82,7 @@ namespace Area.API.Controllers
         [Route(RoutesConstants.Widgets.CallWidget)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateModelState]
-        public JsonResult CallWidget(
+        public ResponseModel<WidgetCallResponseModel> CallWidget(
             [FromRoute] [Required] [Range(1, 2147483647)] int? widgetId
         )
         {
@@ -95,7 +95,7 @@ namespace Area.API.Controllers
         [Route(RoutesConstants.Widgets.UnsubscribeWidget)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateModelState]
-        public JsonResult UnsubscribeWidget(
+        public StatusModel UnsubscribeWidget(
             [FromRoute] [Required] [Range(1, 2147483647)] int? widgetId
         )
         {
@@ -110,7 +110,7 @@ namespace Area.API.Controllers
         [Route(RoutesConstants.Widgets.SubscribeWidget)]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateModelState]
-        public JsonResult SubscribeWidget(
+        public StatusModel SubscribeWidget(
             [FromRoute] [Required] [Range(1, 2147483647)] int? widgetId
         )
         {
