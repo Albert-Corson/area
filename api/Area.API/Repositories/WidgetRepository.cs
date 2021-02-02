@@ -61,8 +61,10 @@ namespace Area.API.Repositories
             queryable = queryable.Where(model => model.UserId == userId);
 
             queryable = includeChildren
-                ? queryable.Include(model => model.Widget).ThenInclude(model => model!.Service)
-                    .Include(model => model.Widget).ThenInclude(model => model!.Params)
+                ? queryable.Include(model => model.Widget)
+                    .ThenInclude(model => model!.Service)
+                    .Include(model => model.Widget)
+                    .ThenInclude(model => model!.Params)
                 : queryable;
 
 

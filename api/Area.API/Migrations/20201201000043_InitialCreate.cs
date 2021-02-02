@@ -8,202 +8,190 @@ namespace Area.API.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Services",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: true)
+                "Services",
+                table => new {
+                    Id = table.Column<int>("integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>("text", nullable: true)
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Services", x => x.Id);
-                });
+                constraints: table => { table.PrimaryKey("PK_Services", x => x.Id); });
 
             migrationBuilder.CreateTable(
-                name: "Users",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Username = table.Column<string>(type: "text", nullable: true),
-                    Email = table.Column<string>(type: "text", nullable: true),
-                    Password = table.Column<string>(type: "text", nullable: true)
+                "Users",
+                table => new {
+                    Id = table.Column<int>("integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Username = table.Column<string>("text", nullable: true),
+                    Email = table.Column<string>("text", nullable: true),
+                    Password = table.Column<string>("text", nullable: true)
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Users", x => x.Id);
-                });
+                constraints: table => { table.PrimaryKey("PK_Users", x => x.Id); });
 
             migrationBuilder.CreateTable(
-                name: "Widgets",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: true),
-                    Description = table.Column<string>(type: "text", nullable: true),
-                    RequiresAuth = table.Column<bool>(type: "boolean", nullable: true),
-                    ServiceId = table.Column<int>(type: "integer", nullable: true)
+                "Widgets",
+                table => new {
+                    Id = table.Column<int>("integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>("text", nullable: true),
+                    Description = table.Column<string>("text", nullable: true),
+                    RequiresAuth = table.Column<bool>("boolean", nullable: true),
+                    ServiceId = table.Column<int>("integer", nullable: true)
                 },
-                constraints: table =>
-                {
+                constraints: table => {
                     table.PrimaryKey("PK_Widgets", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Widgets_Services_ServiceId",
-                        column: x => x.ServiceId,
-                        principalTable: "Services",
-                        principalColumn: "Id",
+                        "FK_Widgets_Services_ServiceId",
+                        x => x.ServiceId,
+                        "Services",
+                        "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserHasServiceTokens",
-                columns: table => new
-                {
-                    UserModelId = table.Column<int>(type: "integer", nullable: false),
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Scheme = table.Column<string>(type: "text", nullable: true),
-                    AccessToken = table.Column<string>(type: "text", nullable: true),
-                    RefreshToken = table.Column<string>(type: "text", nullable: true),
-                    ServiceId = table.Column<int>(type: "integer", nullable: true)
+                "UserHasServiceTokens",
+                table => new {
+                    UserModelId = table.Column<int>("integer", nullable: false),
+                    Id = table.Column<int>("integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Scheme = table.Column<string>("text", nullable: true),
+                    AccessToken = table.Column<string>("text", nullable: true),
+                    RefreshToken = table.Column<string>("text", nullable: true),
+                    ServiceId = table.Column<int>("integer", nullable: true)
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserHasServiceTokens", x => new { x.UserModelId, x.Id });
+                constraints: table => {
+                    table.PrimaryKey("PK_UserHasServiceTokens", x => new {x.UserModelId, x.Id});
                     table.ForeignKey(
-                        name: "FK_UserHasServiceTokens_Services_ServiceId",
-                        column: x => x.ServiceId,
-                        principalTable: "Services",
-                        principalColumn: "Id",
+                        "FK_UserHasServiceTokens_Services_ServiceId",
+                        x => x.ServiceId,
+                        "Services",
+                        "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_UserHasServiceTokens_Users_UserModelId",
-                        column: x => x.UserModelId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
+                        "FK_UserHasServiceTokens_Users_UserModelId",
+                        x => x.UserModelId,
+                        "Users",
+                        "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserHasWidgetParams",
-                columns: table => new
-                {
-                    UserModelId = table.Column<int>(type: "integer", nullable: false),
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    WidgetId = table.Column<int>(type: "integer", nullable: true),
-                    Name = table.Column<string>(type: "text", nullable: true),
-                    Type = table.Column<string>(type: "text", nullable: true),
-                    Value = table.Column<string>(type: "text", nullable: true)
+                "UserHasWidgetParams",
+                table => new {
+                    UserModelId = table.Column<int>("integer", nullable: false),
+                    Id = table.Column<int>("integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    WidgetId = table.Column<int>("integer", nullable: true),
+                    Name = table.Column<string>("text", nullable: true),
+                    Type = table.Column<string>("text", nullable: true),
+                    Value = table.Column<string>("text", nullable: true)
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserHasWidgetParams", x => new { x.UserModelId, x.Id });
+                constraints: table => {
+                    table.PrimaryKey("PK_UserHasWidgetParams", x => new {x.UserModelId, x.Id});
                     table.ForeignKey(
-                        name: "FK_UserHasWidgetParams_Users_UserModelId",
-                        column: x => x.UserModelId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
+                        "FK_UserHasWidgetParams_Users_UserModelId",
+                        x => x.UserModelId,
+                        "Users",
+                        "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserHasWidgetParams_Widgets_WidgetId",
-                        column: x => x.WidgetId,
-                        principalTable: "Widgets",
-                        principalColumn: "Id",
+                        "FK_UserHasWidgetParams_Widgets_WidgetId",
+                        x => x.WidgetId,
+                        "Widgets",
+                        "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "UsersToWidgets",
-                columns: table => new
-                {
-                    UserId = table.Column<int>(type: "integer", nullable: false),
-                    WidgetId = table.Column<int>(type: "integer", nullable: false)
+                "UsersToWidgets",
+                table => new {
+                    UserId = table.Column<int>("integer", nullable: false),
+                    WidgetId = table.Column<int>("integer", nullable: false)
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UsersToWidgets", x => new { x.UserId, x.WidgetId });
+                constraints: table => {
+                    table.PrimaryKey("PK_UsersToWidgets", x => new {x.UserId, x.WidgetId});
                     table.ForeignKey(
-                        name: "FK_UsersToWidgets_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
+                        "FK_UsersToWidgets_Users_UserId",
+                        x => x.UserId,
+                        "Users",
+                        "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UsersToWidgets_Widgets_WidgetId",
-                        column: x => x.WidgetId,
-                        principalTable: "Widgets",
-                        principalColumn: "Id",
+                        "FK_UsersToWidgets_Widgets_WidgetId",
+                        x => x.WidgetId,
+                        "Widgets",
+                        "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "WidgetHasDefaultParams",
-                columns: table => new
-                {
-                    WidgetModelId = table.Column<int>(type: "integer", nullable: false),
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: true),
-                    Type = table.Column<string>(type: "text", nullable: true),
-                    Value = table.Column<string>(type: "text", nullable: true)
+                "WidgetHasDefaultParams",
+                table => new {
+                    WidgetModelId = table.Column<int>("integer", nullable: false),
+                    Id = table.Column<int>("integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>("text", nullable: true),
+                    Type = table.Column<string>("text", nullable: true),
+                    Value = table.Column<string>("text", nullable: true)
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_WidgetHasDefaultParams", x => new { x.WidgetModelId, x.Id });
+                constraints: table => {
+                    table.PrimaryKey("PK_WidgetHasDefaultParams", x => new {x.WidgetModelId, x.Id});
                     table.ForeignKey(
-                        name: "FK_WidgetHasDefaultParams_Widgets_WidgetModelId",
-                        column: x => x.WidgetModelId,
-                        principalTable: "Widgets",
-                        principalColumn: "Id",
+                        "FK_WidgetHasDefaultParams_Widgets_WidgetModelId",
+                        x => x.WidgetModelId,
+                        "Widgets",
+                        "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserHasServiceTokens_ServiceId",
-                table: "UserHasServiceTokens",
-                column: "ServiceId");
+                "IX_UserHasServiceTokens_ServiceId",
+                "UserHasServiceTokens",
+                "ServiceId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserHasWidgetParams_WidgetId",
-                table: "UserHasWidgetParams",
-                column: "WidgetId");
+                "IX_UserHasWidgetParams_WidgetId",
+                "UserHasWidgetParams",
+                "WidgetId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UsersToWidgets_WidgetId",
-                table: "UsersToWidgets",
-                column: "WidgetId");
+                "IX_UsersToWidgets_WidgetId",
+                "UsersToWidgets",
+                "WidgetId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Widgets_ServiceId",
-                table: "Widgets",
-                column: "ServiceId");
+                "IX_Widgets_ServiceId",
+                "Widgets",
+                "ServiceId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "UserHasServiceTokens");
+                "UserHasServiceTokens");
 
             migrationBuilder.DropTable(
-                name: "UserHasWidgetParams");
+                "UserHasWidgetParams");
 
             migrationBuilder.DropTable(
-                name: "UsersToWidgets");
+                "UsersToWidgets");
 
             migrationBuilder.DropTable(
-                name: "WidgetHasDefaultParams");
+                "WidgetHasDefaultParams");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                "Users");
 
             migrationBuilder.DropTable(
-                name: "Widgets");
+                "Widgets");
 
             migrationBuilder.DropTable(
-                name: "Services");
+                "Services");
         }
     }
 }

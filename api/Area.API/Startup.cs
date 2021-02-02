@@ -50,19 +50,17 @@ namespace Area.API
 
             services
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddScheme<JwtBearerOptions, JwtAuthentication>(JwtBearerDefaults.AuthenticationScheme, options => {
-                    options.TokenValidationParameters = tokenValidationParameters;
-                });
+                .AddScheme<JwtBearerOptions, JwtAuthentication>(JwtBearerDefaults.AuthenticationScheme,
+                    options => { options.TokenValidationParameters = tokenValidationParameters; });
 
             services.AddDbContext<AreaDbContext>(options => {
                 string connectionString = $"Host={_configuration[PostgresConstants.HostKeyName] ?? "localhost"};" +
-                                          $"Port={_configuration[PostgresConstants.PortKeyName] ?? "5432"};" +
-                                          $"Username={_configuration[PostgresConstants.UserKeyName] ?? "postgres"};" +
-                                          $"Password={_configuration[PostgresConstants.PasswdKeyName] ?? "postgres"};" +
-                                          $"Database={_configuration[PostgresConstants.DbKeyName] ?? "area"};";
-                options.UseNpgsql(connectionString, builder => {
-                    builder.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
-                });
+                    $"Port={_configuration[PostgresConstants.PortKeyName] ?? "5432"};" +
+                    $"Username={_configuration[PostgresConstants.UserKeyName] ?? "postgres"};" +
+                    $"Password={_configuration[PostgresConstants.PasswdKeyName] ?? "postgres"};" +
+                    $"Database={_configuration[PostgresConstants.DbKeyName] ?? "area"};";
+                options.UseNpgsql(connectionString,
+                    builder => { builder.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery); });
             });
 
             services.AddSingleton(_configuration);
@@ -71,7 +69,7 @@ namespace Area.API
 
             AddWidgetServices(services);
             AddServiceServices(services);
-            AddRepositoryServices(services);            
+            AddRepositoryServices(services);
 
             services
                 .AddControllers()

@@ -7,16 +7,16 @@ namespace Area.API.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "Required",
-                table: "UserHasWidgetParams");
+                "Required",
+                "UserHasWidgetParams");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<bool>(
-                name: "Required",
-                table: "UserHasWidgetParams",
-                type: "boolean",
+                "Required",
+                "UserHasWidgetParams",
+                "boolean",
                 nullable: true);
         }
     }

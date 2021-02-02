@@ -42,7 +42,7 @@ namespace Area.API.Services
             };
         }
 
-        public List<WidgetParamModel> MergeAll()
+        public IEnumerable<WidgetParamModel> MergeAll()
         {
             var list = new List<WidgetParamModel>();
 
@@ -62,9 +62,9 @@ namespace Area.API.Services
 
     public class WidgetManagerService
     {
-        private readonly IDictionary<string, IWidgetService> _widgets;
         private readonly UserRepository _userRepository;
         private readonly WidgetRepository _widgetRepository;
+        private readonly IDictionary<string, IWidgetService> _widgets;
 
         public WidgetManagerService(
             UserRepository userRepository,
@@ -112,22 +112,23 @@ namespace Area.API.Services
             if (widget == null || !_widgets.TryGetValue(widget.Name!, out var widgetService))
                 throw new NotFoundHttpException("This widget does not exist");
 
-            if (widget.RequiresAuth == true)
+            if (widget.RequiresAuth)
                 ValidateSignInState(widgetService, user, widget.ServiceId);
 
             var widgetCallParams = BuildWidgetCallParams(
                 widgetId,
-                widget.Params ?? new List<WidgetParamModel>(),
+                widget.Params,
                 _userRepository.GetUser(userId, asNoTracking: false)!.WidgetParams!,
                 context.Request.Query);
 
             var response = new WidgetCallResponseModel(widgetCallParams.MergeAll());
 
-            widgetService.CallWidgetApi(context, widgetCallParams, ref response);
+            widgetService.CallWidgetApi(widgetCallParams, ref response);
             return response;
         }
 
-        public static List<WidgetParamModel> BuildUserWidgetCallParams(IEnumerable<UserWidgetParamModel> userParams, IEnumerable<WidgetParamModel> widgetParams)
+        public static List<WidgetParamModel> BuildUserWidgetCallParams(IEnumerable<UserWidgetParamModel> userParams,
+            IEnumerable<WidgetParamModel> widgetParams)
         {
             List<WidgetParamModel> parameters = new List<WidgetParamModel>();
             parameters.AddRange(userParams.Select(model => new WidgetParamModel {
@@ -141,7 +142,8 @@ namespace Area.API.Services
             return parameters;
         }
 
-        private WidgetCallParameters BuildWidgetCallParams(int widgetId, ICollection<WidgetParamModel> defaultParams, ICollection<UserWidgetParamModel> userParams, IQueryCollection queryParams)
+        private static WidgetCallParameters BuildWidgetCallParams(int widgetId, ICollection<WidgetParamModel> defaultParams,
+            ICollection<UserWidgetParamModel> userParams, IQueryCollection queryParams)
         {
             var callParams = new WidgetCallParameters();
 
@@ -155,14 +157,13 @@ namespace Area.API.Services
                     var defaultParam = defaultParams.FirstOrDefault(model => model.Name == key);
                     if (defaultParam != null) {
                         type = defaultParam.Type!;
-                        if (defaultParam.Required != true) {
+                        if (defaultParam.Required != true)
                             userParams.Add(new UserWidgetParamModel {
                                 Name = defaultParam.Name,
                                 Type = type,
                                 Value = GetParamValueByType(value, type!),
                                 WidgetId = widgetId
                             });
-                        }
                     }
                 }
 
@@ -176,12 +177,12 @@ namespace Area.API.Services
                 callParams.TryAddAny(userParam.Name!, userParam.Value!, userParam.Type!);
             }
 
-            foreach (var defaultParam in defaultParams) {
+            foreach (var defaultParam in defaultParams)
                 if (defaultParam.Required != true)
                     callParams.TryAddAny(defaultParam.Name!, defaultParam.Value!, defaultParam.Type!);
                 else if (callParams.Contains(defaultParam.Name!, defaultParam.Type!) == false)
-                    throw new BadRequestHttpException($"Missing query parameter `{defaultParam.Name}` of type `{defaultParam.Type}`");
-            }
+                    throw new BadRequestHttpException(
+                        $"Missing query parameter `{defaultParam.Name}` of type `{defaultParam.Type}`");
 
             return callParams;
         }

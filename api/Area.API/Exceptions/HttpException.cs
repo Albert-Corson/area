@@ -7,8 +7,6 @@ namespace Area.API.Exceptions
 {
     public class HttpException : Exception
     {
-        public HttpStatusCode StatusCode { get; }
-
         public HttpException(HttpStatusCode code)
         {
             StatusCode = code;
@@ -43,6 +41,8 @@ namespace Area.API.Exceptions
         {
             StatusCode = HttpStatusCode.InternalServerError;
         }
+
+        public HttpStatusCode StatusCode { get; }
 
         public override string ToString()
         {

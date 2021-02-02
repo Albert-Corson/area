@@ -5,7 +5,6 @@ using Area.API.Models;
 using Area.API.Models.Table.Owned;
 using Area.API.Models.Widgets;
 using Area.API.Services.Services;
-using Microsoft.AspNetCore.Http;
 using SpotifyAPI.Web;
 
 namespace Area.API.Services.Widgets.Spotify
@@ -29,7 +28,8 @@ namespace Area.API.Services.Widgets.Spotify
             return SpotifyClient != null;
         }
 
-        public void CallWidgetApi(HttpContext context, WidgetCallParameters widgetCallParams, ref WidgetCallResponseModel response)
+        public void CallWidgetApi(WidgetCallParameters widgetCallParams,
+            ref WidgetCallResponseModel response)
         {
             var timeRangeStr = widgetCallParams.Strings["time_range"];
 
@@ -37,7 +37,8 @@ namespace Area.API.Services.Widgets.Spotify
                 "long_term" => PersonalizationTopRequest.TimeRange.LongTerm,
                 "medium_term" => PersonalizationTopRequest.TimeRange.MediumTerm,
                 "short_term" => PersonalizationTopRequest.TimeRange.ShortTerm,
-                _ => throw new BadRequestHttpException($"Query parameter `time_range` has an invalid value `{timeRangeStr}`. Expected long_term|medium_term|short_term")
+                _ => throw new BadRequestHttpException(
+                    $"Query parameter `time_range` has an invalid value `{timeRangeStr}`. Expected long_term|medium_term|short_term")
             };
 
             var task = SpotifyClient!.Personalization.GetTopTracks(new PersonalizationTopRequest {
@@ -48,7 +49,8 @@ namespace Area.API.Services.Widgets.Spotify
             if (!task.IsCompletedSuccessfully)
                 throw new InternalServerErrorHttpException("Couldn't reach Spotify");
 
-            response.Items = task.Result.Items?.Select(track => new SpotifyTrackModel(track)) ?? new List<SpotifyTrackModel>();
+            response.Items = task.Result.Items?.Select(track => new SpotifyTrackModel(track)) ??
+                new List<SpotifyTrackModel>();
         }
     }
 }

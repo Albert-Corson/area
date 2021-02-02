@@ -7,36 +7,36 @@ namespace Area.API.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "AccessToken",
-                table: "UserHasServiceTokens");
+                "AccessToken",
+                "UserHasServiceTokens");
 
             migrationBuilder.DropColumn(
-                name: "RefreshToken",
-                table: "UserHasServiceTokens");
+                "RefreshToken",
+                "UserHasServiceTokens");
 
             migrationBuilder.RenameColumn(
-                name: "Scheme",
-                table: "UserHasServiceTokens",
-                newName: "Json");
+                "Scheme",
+                "UserHasServiceTokens",
+                "Json");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.RenameColumn(
-                name: "Json",
-                table: "UserHasServiceTokens",
-                newName: "Scheme");
+                "Json",
+                "UserHasServiceTokens",
+                "Scheme");
 
             migrationBuilder.AddColumn<string>(
-                name: "AccessToken",
-                table: "UserHasServiceTokens",
-                type: "text",
+                "AccessToken",
+                "UserHasServiceTokens",
+                "text",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
-                name: "RefreshToken",
-                table: "UserHasServiceTokens",
-                type: "text",
+                "RefreshToken",
+                "UserHasServiceTokens",
+                "text",
                 nullable: true);
         }
     }

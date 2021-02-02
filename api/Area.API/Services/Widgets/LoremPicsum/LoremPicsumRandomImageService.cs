@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using Area.API.Exceptions.Http;
 using Area.API.Models;
-using Microsoft.AspNetCore.Http;
 using RestSharp;
 
 namespace Area.API.Services.Widgets.LoremPicsum
@@ -11,7 +10,8 @@ namespace Area.API.Services.Widgets.LoremPicsum
     {
         public string Name { get; } = "Lorem Picsum random Image";
 
-        public void CallWidgetApi(HttpContext context, WidgetCallParameters widgetCallParams, ref WidgetCallResponseModel response)
+        public void CallWidgetApi(WidgetCallParameters widgetCallParams,
+            ref WidgetCallResponseModel response)
         {
             var width = widgetCallParams.Integers["width"];
             var height = widgetCallParams.Integers["height"];
@@ -34,8 +34,9 @@ namespace Area.API.Services.Widgets.LoremPicsum
                 throw new InternalServerErrorHttpException();
 
             var locationHeaderParameter = restResponse.Headers
-                .FirstOrDefault(parameter => string.Compare(parameter.Name, "Location", StringComparison.OrdinalIgnoreCase) == 0
-                                             && parameter.Type == ParameterType.HttpHeader);
+                .FirstOrDefault(parameter =>
+                    string.Compare(parameter.Name, "Location", StringComparison.OrdinalIgnoreCase) == 0
+                    && parameter.Type == ParameterType.HttpHeader);
 
             if (locationHeaderParameter == null || !(locationHeaderParameter.Value is string location))
                 throw new InternalServerErrorHttpException();

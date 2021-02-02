@@ -5,9 +5,7 @@ namespace Area.API.Services.Services
 {
     public interface IServiceService
     {
-        public string Name { get; }
-
-        public Uri? SignIn(HttpContext context, int userId);
+        public Uri? SignIn(int userId);
 
         public int? GetUserIdFromCallbackContext(HttpContext context);
 

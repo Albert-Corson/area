@@ -32,15 +32,15 @@ namespace Area.API.Repositories
             var services = Database.Set<UserWidgetModel>()
                 .AsNoTracking()
                 .Where(model => model.UserId == userId)
-                .Include(model => model.Widget).ThenInclude(model => model!.Service)
+                .Include(model => model.Widget)
+                .ThenInclude(model => model!.Service)
                 .Select(model => model.Widget!)
                 .Select(model => model.Service);
 
             List<ServiceModel> filteredServices = new List<ServiceModel>();
-            foreach (var service in services) {
+            foreach (var service in services)
                 if (!filteredServices.Exists(model => model.Id == service!.Id))
                     filteredServices.Add(service!);
-            }
 
             return filteredServices;
         }

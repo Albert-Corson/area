@@ -3,7 +3,6 @@ using System.Linq;
 using Area.API.Exceptions.Http;
 using Area.API.Models;
 using Area.API.Models.Widgets;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using NewsAPI;
 using NewsAPI.Constants;
@@ -26,7 +25,8 @@ namespace Area.API.Services.Widgets.NewsApi
 
         public string Name { get; } = "Top headlines";
 
-        public void CallWidgetApi(HttpContext context, WidgetCallParameters widgetCallParams, ref WidgetCallResponseModel response)
+        public void CallWidgetApi(WidgetCallParameters widgetCallParams,
+            ref WidgetCallResponseModel response)
         {
             var countryStr = widgetCallParams.Strings["country"];
             var categoryStr = widgetCallParams.Strings["category"];
@@ -37,10 +37,12 @@ namespace Area.API.Services.Widgets.NewsApi
             if (!string.IsNullOrWhiteSpace(countryStr) && Enum.TryParse<Countries>(countryStr, true, out var country))
                 topHeadlinesRequest.Country = country;
 
-            if (!string.IsNullOrWhiteSpace(categoryStr) && Enum.TryParse<Categories>(categoryStr, true, out var category))
+            if (!string.IsNullOrWhiteSpace(categoryStr) &&
+                Enum.TryParse<Categories>(categoryStr, true, out var category))
                 topHeadlinesRequest.Category = category;
 
-            if (!string.IsNullOrWhiteSpace(languageStr) && Enum.TryParse<Languages>(languageStr, true, out var language))
+            if (!string.IsNullOrWhiteSpace(languageStr) &&
+                Enum.TryParse<Languages>(languageStr, true, out var language))
                 topHeadlinesRequest.Language = language;
             else
                 topHeadlinesRequest.Language = Languages.EN;

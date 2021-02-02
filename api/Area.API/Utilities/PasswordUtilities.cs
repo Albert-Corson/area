@@ -47,30 +47,30 @@ namespace Area.API.Utilities
 
             return false;
         }
- 
+
         public static bool HasMinimumLength(string password, int minLength)
         {
             return password.Length >= minLength;
         }
- 
+
         public static bool HasDigit(string password)
         {
-            return password.Any(c => char.IsDigit(c));
+            return password.Any(char.IsDigit);
         }
- 
+
         public static bool HasSpecialChar(string password)
         {
             return password.IndexOfAny("!@#$%^&*?_~-£().,".ToCharArray()) != -1;
         }
- 
+
         public static bool HasUpperCaseLetter(string password)
         {
-            return password.Any(c => char.IsUpper(c));
+            return password.Any(char.IsUpper);
         }
- 
+
         public static bool HasLowerCaseLetter(string password)
         {
-            return password.Any(c => char.IsLower(c));
+            return password.Any(char.IsLower);
         }
     }
 }

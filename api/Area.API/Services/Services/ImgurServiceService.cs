@@ -5,6 +5,7 @@ using Area.API.Exceptions.Http;
 using Area.API.Models;
 using Area.API.Models.Services;
 using Imgur.API.Authentication.Impl;
+using Imgur.API.Endpoints.Impl;
 using Imgur.API.Enums;
 using Imgur.API.Models;
 using Imgur.API.Models.Impl;
@@ -30,11 +31,11 @@ namespace Area.API.Services.Services
 
         public string Name { get; } = "Imgur";
 
-        public Uri? SignIn(HttpContext context, int userId)
+        public Uri? SignIn(int userId)
         {
             if (Client == null)
                 throw new InternalServerErrorHttpException();
-            var oAuth2Endpoint = new Imgur.API.Endpoints.Impl.OAuth2Endpoint(Client);
+            var oAuth2Endpoint = new OAuth2Endpoint(Client);
             return new Uri(oAuth2Endpoint.GetAuthorizationUrl(OAuth2ResponseType.Code, userId.ToString()));
         }
 
@@ -51,7 +52,7 @@ namespace Area.API.Services.Services
                 return null;
 
             try {
-                var task = new Imgur.API.Endpoints.Impl.OAuth2Endpoint(Client).GetTokenByCodeAsync(code);
+                var task = new OAuth2Endpoint(Client).GetTokenByCodeAsync(code);
                 task.Wait();
                 if (!task.IsCompletedSuccessfully || task.Result == null)
                     return null;
@@ -85,7 +86,8 @@ namespace Area.API.Services.Services
             }
         }
 
-        public static List<WidgetCallResponseItemModel> WidgetResponseItemsFromGallery(IEnumerable<IGalleryItem> gallery)
+        public static List<WidgetCallResponseItemModel> WidgetResponseItemsFromGallery(
+            IEnumerable<IGalleryItem> gallery)
         {
             List<WidgetCallResponseItemModel> imageList = new List<WidgetCallResponseItemModel>();
 

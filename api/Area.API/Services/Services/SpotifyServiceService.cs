@@ -34,7 +34,7 @@ namespace Area.API.Services.Services
             return userId;
         }
 
-        public Uri? SignIn(HttpContext context, int userId)
+        public Uri? SignIn(int userId)
         {
             if (_redirectUri == null || _clientId == null)
                 return null;

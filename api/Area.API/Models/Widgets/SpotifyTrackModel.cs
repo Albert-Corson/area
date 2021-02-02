@@ -8,7 +8,7 @@ namespace Area.API.Models.Widgets
     public class SpotifyTrackModel : WidgetCallResponseItemModel
     {
         public SpotifyTrackModel()
-        {}
+        { }
 
         public SpotifyTrackModel(FullTrack track)
         {
