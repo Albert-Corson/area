@@ -4,6 +4,7 @@ using Area.API.Authentication;
 using Area.API.Constants;
 using Area.API.DbContexts;
 using Area.API.Middlewares;
+using Area.API.Models;
 using Area.API.OperationFilters;
 using Area.API.Repositories;
 using Area.API.Services;
@@ -110,6 +111,7 @@ namespace Area.API
                     Type = SecuritySchemeType.Http
                 });
                 options.OperationFilter<BearerAuthOperationFilter>();
+                options.CustomSchemaIds(SchemaIdSelector);
             });
         }
 
@@ -184,6 +186,38 @@ namespace Area.API
             services.AddTransient<UserRepository>();
             services.AddTransient<ServiceRepository>();
             services.AddTransient<WidgetRepository>();
+        }
+
+        private static string SchemaIdSelector(Type type)
+        {
+            if (type.FullName?.StartsWith(typeof(AboutDotJsonModel).FullName!) == true)
+                return type.FullName!
+                    .Substring(typeof(AboutDotJsonModel).Namespace!.Length + 1)
+                    .Replace('+', '.');
+
+            return BuildReadableTypeName(type).Replace("`1", "");
+        }
+
+        private static string BuildReadableTypeName(Type type)
+        {
+            string? genericTypeNames = null;
+            var typeName = type.Name;
+
+            if (typeName.EndsWith("Model", StringComparison.OrdinalIgnoreCase)) {
+                typeName = typeName.Substring(0, type.Name.Length - 5);
+            }
+
+            foreach (var genericType in type.GenericTypeArguments) {
+                var genericTypeName = BuildReadableTypeName(genericType);
+                if (genericTypeNames == null)
+                    genericTypeNames = genericTypeName;
+                else
+                    genericTypeNames += ", " + genericTypeName;
+            }
+
+            if (genericTypeNames != null)
+                return typeName + "<" + genericTypeNames + ">";
+            return typeName;
         }
     }
 }
