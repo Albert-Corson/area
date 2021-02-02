@@ -10,12 +10,12 @@ using Area.API.Models.Table;
 using Area.API.Repositories;
 using Area.API.Services;
 using Area.API.Utilities;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Area.API.Controllers
 {
+    [Authorize]
     public class ServicesController : ControllerBase
     {
         private readonly ServiceManagerService _serviceManager;
@@ -32,7 +32,6 @@ namespace Area.API.Controllers
 
         [HttpGet]
         [Route(RoutesConstants.Services.GetServices)]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public ResponseModel<List<ServiceModel>> GetServices()
         {
             return new ResponseModel<List<ServiceModel>> {
@@ -42,7 +41,6 @@ namespace Area.API.Controllers
 
         [HttpGet]
         [Route(RoutesConstants.Services.GetMyServices)]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public ResponseModel<List<ServiceModel>> GetMyService()
         {
             var userId = AuthUtilities.GetUserIdFromPrincipal(User);
@@ -56,7 +54,6 @@ namespace Area.API.Controllers
 
         [HttpGet]
         [Route(RoutesConstants.Services.GetService)]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateModelState]
         public ResponseModel<ServiceModel> GetService(
             [FromRoute] [Required] [Range(1, 2147483647)]
@@ -75,7 +72,6 @@ namespace Area.API.Controllers
 
         [HttpPost]
         [Route(RoutesConstants.Services.SignInService)]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateModelState]
         public ResponseModel<string?> SignInService(
             [FromRoute] [Required] [Range(1, 2147483647)]
@@ -96,7 +92,6 @@ namespace Area.API.Controllers
 
         [HttpDelete]
         [Route(RoutesConstants.Services.SignOutService)]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateModelState]
         public StatusModel SignOutService(
             [FromRoute] [Required] [Range(1, 2147483647)]
@@ -112,6 +107,8 @@ namespace Area.API.Controllers
         [HttpGet]
         [Route(RoutesConstants.Services.SignInServiceCallback)]
         [ValidateModelState]
+        [AllowAnonymous]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public ContentResult SignInServiceCallback(
             [FromRoute] [Required] [Range(1, 2147483647)]
             int? serviceId

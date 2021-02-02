@@ -4,6 +4,7 @@ using Area.API.Authentication;
 using Area.API.Constants;
 using Area.API.DbContexts;
 using Area.API.Middlewares;
+using Area.API.OperationFilters;
 using Area.API.Repositories;
 using Area.API.Services;
 using Area.API.Services.Services;
@@ -100,6 +101,15 @@ namespace Area.API
                     Description = "This the documentation of the Area dashboard API",
                 });
                 options.EnableAnnotations(true, true);
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme {
+                    Description = "JWT Authorization header using the Bearer scheme",
+                    Name = "Authorization",
+                    Scheme = "Bearer",
+                    BearerFormat = "Jwt",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http
+                });
+                options.OperationFilter<BearerAuthOperationFilter>();
             });
         }
 
@@ -160,8 +170,10 @@ namespace Area.API
 
         private static void InitDbContext(IApplicationBuilder app)
         {
-            var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();
-            var dbContext = serviceScope.ServiceProvider.GetService<AreaDbContext>();
+            using var serviceScope = app.ApplicationServices
+                .GetRequiredService<IServiceScopeFactory>()
+                .CreateScope();
+            using var dbContext = serviceScope.ServiceProvider.GetService<AreaDbContext>();
             if (dbContext == null)
                 throw new NullReferenceException("Can't obtain the DbContext");
             dbContext.Database.Migrate();

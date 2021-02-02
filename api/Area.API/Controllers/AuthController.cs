@@ -5,13 +5,13 @@ using Area.API.Models;
 using Area.API.Models.Request;
 using Area.API.Repositories;
 using Area.API.Utilities;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 
 namespace Area.API.Controllers
 {
+    [Authorize]
     public class AuthController : ControllerBase
     {
         private readonly AuthUtilities _authUtilities;
@@ -28,6 +28,7 @@ namespace Area.API.Controllers
         [HttpPost]
         [Route(RoutesConstants.Auth.SignIn)]
         [ValidateModelState]
+        [AllowAnonymous]
         public ResponseModel<UserTokenModel> SignIn(
             [FromBody] SignInModel body
         )
@@ -52,6 +53,7 @@ namespace Area.API.Controllers
         [HttpPost]
         [Route(RoutesConstants.Auth.RefreshAccessToken)]
         [ValidateModelState]
+        [AllowAnonymous]
         public ResponseModel<UserTokenModel> RefreshAccessToken(
             [FromBody] RefreshTokenModel body
         )
@@ -71,7 +73,6 @@ namespace Area.API.Controllers
 
         [HttpDelete]
         [Route(RoutesConstants.Auth.RevokeUserTokens)]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public StatusModel RevokeUserTokens()
         {
             // TODO: (optional) revoke the credentials

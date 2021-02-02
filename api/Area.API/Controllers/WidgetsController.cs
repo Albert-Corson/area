@@ -9,12 +9,12 @@ using Area.API.Models.Table;
 using Area.API.Repositories;
 using Area.API.Services;
 using Area.API.Utilities;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Area.API.Controllers
 {
+    [Authorize]
     public class WidgetsController : ControllerBase
     {
         private readonly ServiceRepository _serviceRepository;
@@ -33,7 +33,6 @@ namespace Area.API.Controllers
 
         [HttpGet]
         [Route(RoutesConstants.Widgets.GetWidgets)]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateModelState]
         public ResponseModel<List<WidgetModel>> GetWidgets(
             [FromQuery] [Range(1, 2147483647)] int? serviceId
@@ -56,7 +55,6 @@ namespace Area.API.Controllers
 
         [HttpGet]
         [Route(RoutesConstants.Widgets.GetMyWidgets)]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public ResponseModel<List<WidgetModel>> GetMyWidgets(
             [FromQuery] [Range(1, 2147483647)] int? serviceId
         )
@@ -83,7 +81,6 @@ namespace Area.API.Controllers
 
         [HttpGet]
         [Route(RoutesConstants.Widgets.CallWidget)]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateModelState]
         public ResponseModel<WidgetCallResponseModel> CallWidget(
             [FromRoute] [Required] [Range(1, 2147483647)]
@@ -97,7 +94,6 @@ namespace Area.API.Controllers
 
         [HttpDelete]
         [Route(RoutesConstants.Widgets.UnsubscribeWidget)]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateModelState]
         public StatusModel UnsubscribeWidget(
             [FromRoute] [Required] [Range(1, 2147483647)]
@@ -113,7 +109,6 @@ namespace Area.API.Controllers
 
         [HttpPost]
         [Route(RoutesConstants.Widgets.SubscribeWidget)]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateModelState]
         public StatusModel SubscribeWidget(
             [FromRoute] [Required] [Range(1, 2147483647)]

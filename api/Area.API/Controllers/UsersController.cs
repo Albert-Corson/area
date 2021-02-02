@@ -7,13 +7,13 @@ using Area.API.Models.Request;
 using Area.API.Models.Table;
 using Area.API.Repositories;
 using Area.API.Utilities;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 
 namespace Area.API.Controllers
 {
+    [Authorize]
     public class UsersController : ControllerBase
     {
         private readonly IConfiguration _configuration;
@@ -28,6 +28,7 @@ namespace Area.API.Controllers
         [HttpPost]
         [Route(RoutesConstants.Users.Register)]
         [ValidateModelState]
+        [AllowAnonymous]
         public StatusModel Register(
             [FromBody] RegisterModel body
         )
@@ -60,7 +61,6 @@ namespace Area.API.Controllers
 
         [HttpGet]
         [Route(RoutesConstants.Users.GetUser)]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateModelState]
         public ResponseModel<UserModel> GetUser(
             [FromRoute] [Required] [Range(1, 2147483647)]
@@ -79,7 +79,6 @@ namespace Area.API.Controllers
 
         [HttpGet]
         [Route(RoutesConstants.Users.GetMyUser)]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public ResponseModel<UserModel> GetMyUser()
         {
             var userId = AuthUtilities.GetUserIdFromPrincipal(User);
@@ -95,7 +94,6 @@ namespace Area.API.Controllers
 
         [HttpDelete]
         [Route(RoutesConstants.Users.DeleteUser)]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ValidateModelState]
         public StatusModel DeleteUser(
             [FromRoute] [Required] [Range(1, 2147483647)]

@@ -27,8 +27,8 @@ namespace Area.API.Controllers
             };
         }
 
-        [Route(RoutesConstants.AboutDotJson)]
         [HttpGet]
+        [Route(RoutesConstants.AboutDotJson)]
         public AboutDotJsonModel AboutDotJson()
         {
             var clientIp = HttpContext.Connection.RemoteIpAddress.MapToIPv4() + ":" + HttpContext.Connection.RemotePort;
