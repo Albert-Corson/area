@@ -3,24 +3,22 @@ import {View, Text, StyleSheet} from 'react-native';
 import {Widget as WidgetType} from '../Types/Widgets';
 
 interface Props {
-    item: WidgetType;
+  item: WidgetType;
 }
 
-const Widget = ({item}: Props) => {
-  return (
-    <View style={styles.widget}>
-      <Text style={[styles.text, styles.title]}>{item.name}</Text>
-      <Text style={styles.text}>{item.description}</Text>
-      {item.requires_auth ? (
-        <View style={styles.badge}>
-          <Text style={[styles.text, styles.badgeText]}>{'auth'}</Text>
-        </View>
-      ) : (
-        <View></View>
-      )}
-    </View>
-  );
-};
+const Widget = ({item}: Props) => (
+  <View style={styles.widget}>
+    <Text style={[styles.text, styles.title]}>{item.name}</Text>
+    <Text style={styles.text}>{item.description}</Text>
+    {item.requires_auth ? (
+      <View style={styles.badge}>
+        <Text style={[styles.text, styles.badgeText]}>auth</Text>
+      </View>
+    ) : (
+      <View />
+    )}
+  </View>
+);
 
 export default Widget;
 
@@ -44,7 +42,7 @@ const styles = StyleSheet.create({
   badgeText: {
     fontFamily: 'LouisGeorgeCafeBold',
     color: 'white',
-    fontSize: 13
+    fontSize: 13,
   },
   widget: {
     width: '100%',

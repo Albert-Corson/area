@@ -1,14 +1,14 @@
 import React, {useRef, useContext, useEffect} from 'react';
 import {SafeAreaView, StyleSheet, View} from 'react-native';
-import DraggableContainer from '../Components/DraggableContainer';
 import {FontAwesome} from '@expo/vector-icons';
 import BottomSheet from 'reanimated-bottom-sheet';
+import {observer} from 'mobx-react-lite';
+import {StackNavigationProp} from '@react-navigation/stack';
+import DraggableContainer from '../Components/DraggableContainer';
 import {WidgetSelector, WidgetSelectorHeader} from '../Components/WidgetSelector';
 import RootStoreContext from '../Stores/RootStore';
-import {observer} from 'mobx-react-lite';
 import FlatButton from '../Components/FlatButton';
 import {RootStackParamList} from '../Navigation/StackNavigator';
-import {StackNavigationProp} from '@react-navigation/stack';
 import WidgetListContainer from '../Components/WidgetListContainer';
 import Widget from '../Components/Widget';
 import GradientFlatButton from '../Components/GradientFlatButton';
@@ -30,10 +30,10 @@ const WidgetsScreen = observer(({navigation}: Props): JSX.Element => {
       <SafeAreaView style={styles.safeView}>
         <View style={styles.modifier}>
           <FlatButton
-            height={'100%'}
+            height="100%"
             width={60}
             value={() => (
-              <FontAwesome name="plus" size={17} color={'#666666'} />
+              <FontAwesome name="plus" size={17} color="#666666" />
             )}
             onPress={() => {
               if (store.grid.modifying) {
@@ -47,17 +47,17 @@ const WidgetsScreen = observer(({navigation}: Props): JSX.Element => {
           />
 
           <GradientFlatButton
-            height={'100%'}
+            height="100%"
             width={120}
             value={store.user.userJWT?.username ?? 'Profile'}
             onPress={() => navigation.navigate('Profile')}
           />
 
           <FlatButton
-            height={'100%'}
+            height="100%"
             width={60}
             value={() => (
-              <FontAwesome name="pencil-square-o" size={17} color={'#666666'} />
+              <FontAwesome name="pencil-square-o" size={17} color="#666666" />
             )}
             onPress={() => {
               store.grid.toggleEditionMode();
@@ -114,9 +114,9 @@ const styles = StyleSheet.create({
   modifier: {
     height: 30,
     justifyContent: 'space-between',
-    
+
     flexDirection: 'row',
     marginHorizontal: 30,
-    marginVertical: 15
+    marginVertical: 15,
   },
 });

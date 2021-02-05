@@ -3,8 +3,8 @@ import {View, ViewStyle} from 'react-native';
 import Shadow from '../StyleSheets/Shadow';
 
 interface Props {
-    children: React.ReactNode;
-    style?: ViewStyle;
+  children: React.ReactNode;
+  style?: ViewStyle;
 }
 
 const DropShadowContainer = ({children, style = {}}: Props) => (

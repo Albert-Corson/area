@@ -1,8 +1,7 @@
-import React from 'react';
 import {StyleSheet} from 'react-native';
 import windowPadding from './WindowPadding';
 
-export const Selector = StyleSheet.create({
+const Selector = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
@@ -46,3 +45,5 @@ export const Selector = StyleSheet.create({
     borderRadius: 20,
   },
 });
+
+export default Selector;

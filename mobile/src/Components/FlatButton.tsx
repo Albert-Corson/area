@@ -1,6 +1,7 @@
 import React from 'react';
-import {TouchableOpacity, Text, View, StyleSheet, GestureResponderEvent} from 'react-native';
-import Shadow from '../StyleSheets/Shadow';
+import {
+  TouchableOpacity, Text, View, StyleSheet, GestureResponderEvent,
+} from 'react-native';
 import DropShadowContainer from './DropShadowContainer';
 import InsetShadowContainer from './InsetShadowContainer';
 
@@ -13,17 +14,20 @@ interface Props {
   containerStyle?: Record<string, number | string>;
 }
 
-const FlatButton = ({width = 200, height = 50, onPress, value, containerStyle = {}, active = false}: Props): JSX.Element => (
+const FlatButton = ({
+  width = 200, height = 50, onPress, value, containerStyle = {}, active = false,
+}: Props): JSX.Element => (
   <View style={containerStyle}>
     {active ? (
       <InsetShadowContainer>
         <TouchableOpacity
-          activeOpacity={.4}
+          activeOpacity={0.4}
           style={[
             styles.button,
-            {width, height}
+            {width, height},
           ]}
-          onPress={onPress}>
+          onPress={onPress}
+        >
           {typeof value === 'string' ? (
             <Text style={styles.text}>{value}</Text>
           ) : (
@@ -34,12 +38,13 @@ const FlatButton = ({width = 200, height = 50, onPress, value, containerStyle = 
     ) : (
       <DropShadowContainer>
         <TouchableOpacity
-          activeOpacity={.4}
+          activeOpacity={0.4}
           style={[
             styles.button,
-            {width, height}
+            {width, height},
           ]}
-          onPress={onPress}>
+          onPress={onPress}
+        >
           {typeof value === 'string' ? (
             <Text style={styles.text}>{value}</Text>
           ) : (

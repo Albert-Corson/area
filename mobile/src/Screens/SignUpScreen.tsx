@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext} from 'react';
 import {
   Text,
   KeyboardAvoidingView,
@@ -7,15 +7,15 @@ import {
   View,
   Platform,
 } from 'react-native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {observer} from 'mobx-react-lite';
 import TextInput from '../Components/TextInput';
 import GradientFlatButton from '../Components/GradientFlatButton';
 import TextButton from '../Components/TextButton';
 import {Form as styles} from '../StyleSheets/Form';
 import windowPadding from '../StyleSheets/WindowPadding';
-import {StackNavigationProp} from '@react-navigation/stack';
 import {RootStackParamList} from '../Navigation/StackNavigator';
 import RootStoreContext from '../Stores/RootStore';
-import {observer} from 'mobx-react-lite';
 
 interface Props {
   navigation: StackNavigationProp<RootStackParamList>;
@@ -35,32 +35,32 @@ const SignUpScreen = observer(({navigation}: Props) => {
           <Text style={styles.error}>{store.error}</Text>
           <TextInput
             value={store.email}
-            placeholder={'Email...'}
+            placeholder="Email..."
             onChange={(val) => store.email = val}
             containerStyle={styles.input}
           />
           <TextInput
             value={store.username}
-            placeholder={'Username...'}
+            placeholder="Username..."
             onChange={(val) => store.username = val}
             containerStyle={styles.input}
           />
           <TextInput
             value={store.password}
-            placeholder={'Password...'}
+            placeholder="Password..."
             onChange={(val) => store.password = val}
             containerStyle={styles.input}
-            secure={true}
+            secure
           />
           <TextInput
             value={store.confirm}
-            placeholder={'Confirm password...'}
+            placeholder="Confirm password..."
             onChange={(val) => store.confirm = val}
             containerStyle={styles.input}
-            secure={true}
+            secure
           />
           <GradientFlatButton
-            value={'Sign up'}
+            value="Sign up"
             width={325}
             onPress={async () => {
               if (await store.signUp()) {
@@ -71,11 +71,11 @@ const SignUpScreen = observer(({navigation}: Props) => {
           />
           <View style={{flexDirection: 'row'}}>
             <TextButton
-              value={'Already registered ?'}
+              value="Already registered ?"
               containerStyle={{
                 ...styles.textButton,
                 marginHorizontal: windowPadding,
-                alignItems: 'flex-end'
+                alignItems: 'flex-end',
               }}
               onPress={() => navigation.navigate('Login')}
             />

@@ -1,5 +1,7 @@
-import React, { useContext, useRef } from 'react';
-import { Dimensions, StyleSheet, View, TouchableOpacity } from 'react-native';
+import React, {useContext, useRef} from 'react';
+import {
+  Dimensions, StyleSheet, View, TouchableOpacity,
+} from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -12,13 +14,17 @@ import {
   TapGestureHandler,
   State,
   TapGestureHandlerGestureEvent,
+  GestureHandlerGestureEventNativeEvent,
+  PanGestureHandlerEventExtra,
 } from 'react-native-gesture-handler';
-import { Size } from '../Types/Block';
+import {observer} from 'mobx-react-lite';
+import {Entypo} from '@expo/vector-icons';
+import {Size} from '../Types/Block';
 import RootStoreContext from '../Stores/RootStore';
 import Grid from '../Tools/Grid';
-import { observer } from 'mobx-react-lite';
 import DropShadowContainer from './DropShadowContainer';
-import { Entypo } from '@expo/vector-icons';
+
+type Event = GestureHandlerGestureEventNativeEvent & PanGestureHandlerEventExtra;
 
 interface Props {
   index: number;
@@ -30,7 +36,7 @@ const DraggableContainer = observer(({
   renderItem = () => <></>,
 }: Props): JSX.Element => {
   const store = useContext(RootStoreContext);
-  //drag
+  // drag
   const translateY = useSharedValue<number>(0);
   const translateX = useSharedValue<number>(0);
   const elevation = useSharedValue<number>(1);
@@ -50,30 +56,33 @@ const DraggableContainer = observer(({
     const hoveredBlockIndex: number = Grid.getHoveredBlockIndex(x, y, offsetX, offsetY);
 
     if (
-      index != hoveredBlockIndex &&
-      hoveredBlockIndex >= 0 &&
-      hoveredBlockIndex < store.grid.blocks.length
+      index != hoveredBlockIndex
+      && hoveredBlockIndex >= 0
+      && hoveredBlockIndex < store.grid.blocks.length
     ) {
       store.grid.swithAtIndexes(index, hoveredBlockIndex);
     }
   };
 
-  const onStartDrag = (_: any, ctx: any) => {
+  const onStartDrag = (_: Event, ctx: any) => {
     'worklet';
+
     elevation.value = gridSize + 1;
 
     ctx.offsetX = translateX.value;
     ctx.offsetY = translateY.value;
   };
 
-  const onActiveDrag = (event: any, ctx: any) => {
+  const onActiveDrag = (event: Event, ctx: any) => {
     'worklet';
+
     translateX.value = event.translationX + ctx.offsetX;
     translateY.value = event.translationY + ctx.offsetY;
   };
 
-  const onEndDrag = (_: any, ctx: any) => {
+  const onEndDrag = () => {
     'worklet';
+
     runOnJS(onDrop)(index, translateX.value, translateY.value);
 
     translateY.value = withSpring(0, {
@@ -103,21 +112,17 @@ const DraggableContainer = observer(({
     store.widget.unsubscribeToWidget(store.grid.blocks[index].id);
   };
 
-  const dragStyle = useAnimatedStyle(() => {
-    return {
-      transform: [
-        { translateX: translateX.value },
-        { translateY: translateY.value },
-      ]
-    };
-  });
+  const dragStyle = useAnimatedStyle(() => ({
+    transform: [
+      {translateX: translateX.value},
+      {translateY: translateY.value},
+    ],
+  }));
 
-  const boxStyle = useAnimatedStyle(() => {
-    return {
-      zIndex: elevation.value,
-      elevation: elevation.value,
-    };
-  });
+  const boxStyle = useAnimatedStyle(() => ({
+    zIndex: elevation.value,
+    elevation: elevation.value,
+  }));
 
   const widgetStyle = {
     ...styles.box,
@@ -132,21 +137,22 @@ const DraggableContainer = observer(({
         {
           backgroundColor: 'transparent',
           margin: MARGIN,
-        }
+        },
       ]}
-      ></View>
+      />
     );
   }
 
   return (
-    <Animated.View style={[{ margin: MARGIN }, boxStyle]}>
+    <Animated.View style={[{margin: MARGIN}, boxStyle]}>
       <DropShadowContainer>
         {modifying ? (
           <TapGestureHandler
             onHandlerStateChange={onTap}
             numberOfTaps={2}
             ref={tapRef}
-            simultaneousHandlers={panRef}>
+            simultaneousHandlers={panRef}
+          >
             <Animated.View>
               <PanGestureHandler
                 ref={panRef}
@@ -160,7 +166,7 @@ const DraggableContainer = observer(({
                 ]}
                 >
                   <TouchableOpacity style={styles.deleteBtn} onPress={deleteWidget}>
-                    <Entypo name={'cross'} size={15} color={'#e6e6e9'} />
+                    <Entypo name="cross" size={15} color="#e6e6e9" />
                   </TouchableOpacity>
 
                   {renderItem()}
@@ -186,7 +192,7 @@ const styles = StyleSheet.create({
     height: 175,
     width: 175,
     borderRadius: 25,
-    backgroundColor: '#e6e6e9'
+    backgroundColor: '#e6e6e9',
   },
   container: {
     margin: 15,

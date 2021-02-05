@@ -14,15 +14,15 @@ interface Props {
   containerStyle?: Record<string, number| string>;
 }
 
-const TextButton = ({value, onPress, style = {}, containerStyle = {}}: Props): JSX.Element => {
-  return (
-    <View style={containerStyle}>
-      <TouchableOpacity onPress={onPress}>
-        <Text style={[styles.text, style]}>{value}</Text>
-      </TouchableOpacity>
-    </View>
-  );
-};
+const TextButton = ({
+  value, onPress, style = {}, containerStyle = {},
+}: Props): JSX.Element => (
+  <View style={containerStyle}>
+    <TouchableOpacity onPress={onPress}>
+      <Text style={[styles.text, style]}>{value}</Text>
+    </TouchableOpacity>
+  </View>
+);
 
 const styles = StyleSheet.create({
   text: {

@@ -1,5 +1,7 @@
 import React from 'react';
-import {TouchableOpacity, Text, View, StyleSheet, GestureResponderEvent} from 'react-native';
+import {
+  TouchableOpacity, Text, View, StyleSheet, GestureResponderEvent,
+} from 'react-native';
 import {LinearGradient} from 'expo-linear-gradient';
 
 interface Props {
@@ -10,19 +12,23 @@ interface Props {
   containerStyle?: Record<string, number| string>;
 }
 
-const GradientFlatButton = ({width = 200, height = 50, onPress, value, containerStyle = {}}: Props): JSX.Element => (
+const GradientFlatButton = ({
+  width = 200, height = 50, onPress, value, containerStyle = {},
+}: Props): JSX.Element => (
   <View style={containerStyle}>
     <View style={styles.upShadow}>
       <View style={styles.downShadow}>
         <TouchableOpacity
-          activeOpacity={.4}
+          activeOpacity={0.4}
           style={{width, height}}
-          onPress={onPress}>
+          onPress={onPress}
+        >
           <LinearGradient
             colors={['#d564a8', '#5469ca']}
             start={[0, 1]}
             end={[1, 1]}
-            style={styles.button}>
+            style={styles.button}
+          >
             <Text style={styles.text}>{value}</Text>
           </LinearGradient>
         </TouchableOpacity>
@@ -61,7 +67,7 @@ const styles = StyleSheet.create({
   text: {
     fontFamily: 'DosisSemiBold',
     fontSize: 20,
-    color: 'white'
+    color: 'white',
   },
 });
 

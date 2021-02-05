@@ -25,11 +25,11 @@ const StackNavigator = (): JSX.Element => {
       screenOptions={{headerShown: false}}
       initialRouteName={store.user.userJWT?.accessToken ? 'Dashboard' : 'Login'}
     >
-      <Stack.Screen name={'Login'} component={SignInScreen} />
-      <Stack.Screen name={'SignUp'} component={SignUpScreen} />
-      <Stack.Screen name={'Help'} component={HelpScreen} />
-      <Stack.Screen name={'Profile'} component={ProfileScreen} />
-      <Stack.Screen name={'Dashboard'} component={DashboardScreen} />
+      <Stack.Screen name="Login" component={SignInScreen} />
+      <Stack.Screen name="SignUp" component={SignUpScreen} />
+      <Stack.Screen name="Help" component={HelpScreen} />
+      <Stack.Screen name="Profile" component={ProfileScreen} />
+      <Stack.Screen name="Dashboard" component={DashboardScreen} />
     </Stack.Navigator>
   );
 };

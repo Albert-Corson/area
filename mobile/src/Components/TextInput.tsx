@@ -10,23 +10,23 @@ interface Props {
   secure?: boolean;
 }
 
-const TextInput = ({value, onChange, placeholder, containerStyle = {}, secure = false}: Props): JSX.Element => {
-  return (
-    <View style={[styles.container, containerStyle]}>
-      <InsetShadowContainer>
-        <RNTextInput
-          value={value}
-          onChangeText={(text) => onChange(text)}
-          placeholder={placeholder}
-          style={styles.input}
-          secureTextEntry={secure}
-          placeholderStyle={styles.placeholder}
-          placeholderTextColor={'#545454'}
-        />
-      </InsetShadowContainer>
-    </View>
-  );
-};
+const TextInput = ({
+  value, onChange, placeholder, containerStyle = {}, secure = false,
+}: Props): JSX.Element => (
+  <View style={[styles.container, containerStyle]}>
+    <InsetShadowContainer>
+      <RNTextInput
+        value={value}
+        onChangeText={(text) => onChange(text)}
+        placeholder={placeholder}
+        style={styles.input}
+        secureTextEntry={secure}
+        placeholderStyle={styles.placeholder}
+        placeholderTextColor="#545454"
+      />
+    </InsetShadowContainer>
+  </View>
+);
 
 const styles = StyleSheet.create({
   container: {
@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
   },
   placeholder: {
     fontFamily: 'Dosis',
-    color: 'black'
+    color: 'black',
   },
 });
 

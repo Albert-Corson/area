@@ -5,15 +5,15 @@ import Animated from 'react-native-reanimated';
 import DropShadowContainer from './DropShadowContainer';
 
 interface Props {
-    index: number;
-    onTap: (e: TapGestureHandlerGestureEvent, index: number) => void;
-    renderItem: () => React.ReactNode;
+  index: number;
+  onTap: (e: TapGestureHandlerGestureEvent, index: number) => void;
+  renderItem: () => React.ReactNode;
 }
 
 const StaticContainer = ({
   index,
   onTap,
-  renderItem
+  renderItem,
 }: Props) => {
   const tapRef = useRef(null);
 
@@ -26,7 +26,8 @@ const StaticContainer = ({
         <TapGestureHandler
           onHandlerStateChange={(e) => onTap(e, index)}
           numberOfTaps={1}
-          ref={tapRef}>
+          ref={tapRef}
+        >
           <Animated.View style={[styles.box, {width: SIZE, height: SIZE}]}>
 
             {renderItem()}
@@ -43,6 +44,6 @@ export default StaticContainer;
 const styles = StyleSheet.create({
   box: {
     borderRadius: 25,
-    backgroundColor: '#e6e6e9'
+    backgroundColor: '#e6e6e9',
   },
 });

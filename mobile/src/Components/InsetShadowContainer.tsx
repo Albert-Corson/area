@@ -3,7 +3,7 @@ import {StyleSheet} from 'react-native';
 import InsetShadow from 'react-native-inset-shadow';
 
 interface Props {
-    children: React.ReactNode
+  children: React.ReactNode
 }
 
 const InsetShadowContainer = ({children}: Props) => (
@@ -11,17 +11,19 @@ const InsetShadowContainer = ({children}: Props) => (
     shadowRadius={7}
     top={false}
     left={false}
-    shadowColor={'#ffffff'}
-    containerStyle={styles.shadowStyle}>
+    shadowColor="#ffffff"
+    containerStyle={styles.shadowStyle}
+  >
     <InsetShadow
       shadowRadius={7}
       bottom={false}
       right={false}
-      shadowColor={'#A6ABBD'}
-      containerStyle={styles.shadowStyle}>
+      shadowColor="#A6ABBD"
+      containerStyle={styles.shadowStyle}
+    >
 
       {children}
-        
+
     </InsetShadow>
   </InsetShadow>
 );

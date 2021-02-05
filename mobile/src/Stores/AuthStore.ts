@@ -1,8 +1,6 @@
-import {resolvePlugin} from '@babel/core';
 import {makeAutoObservable, observable, action} from 'mobx';
 import {RootStore} from './RootStore';
 import absFetch from '../Tools/Network';
-import {UserJWT} from './UserStore';
 
 export class AuthStore {
   @observable private _email = '';
@@ -15,48 +13,48 @@ export class AuthStore {
     makeAutoObservable(this);
   }
 
-  public get email() {
+  public get email(): string {
     return this._email.toLowerCase();
   }
 
   @action
-  public set email(value) {
+  public set email(value: string) {
     this._email = value;
   }
 
-  public get username() {
+  public get username(): string {
     return this._username;
   }
 
   @action
-  public set username(value) {
+  public set username(value: string) {
     this._username = value;
   }
 
-  public get password() {
+  public get password(): string {
     return this._password;
   }
 
   @action
-  public set password(value) {
+  public set password(value: string) {
     this._password = value;
   }
 
-  public get confirm() {
+  public get confirm(): string {
     return this._confirm;
   }
 
   @action
-  public set confirm(value) {
+  public set confirm(value: string) {
     this._confirm = value;
   }
 
-  public get error() {
+  public get error(): string {
     return this._error;
   }
 
   @action
-  public set error(value) {
+  public set error(value: string) {
     this._error = value;
   }
 
@@ -65,7 +63,7 @@ export class AuthStore {
     if (this._password !== this._confirm) {
       this._error = 'Passwords must be equals';
       return false;
-    } else if (!this._email.length || !this._username.length || !this._password.length) {
+    } if (!this._email.length || !this._username.length || !this._password.length) {
       this._error = 'All entry are required';
       return false;
     }
@@ -95,7 +93,7 @@ export class AuthStore {
       console.warn('error while parsing json');
     }
     return false;
-  }
+  };
 
   @action
   public signIn = async (): Promise<boolean> => {
@@ -125,9 +123,9 @@ export class AuthStore {
         body.data.refresh_token,
         body.data.access_token,
         body.data.expires_in,
-        this.username
+        this.username,
       );
-    } catch(e) {
+    } catch (e) {
       console.warn(e);
       this.error = 'Error occured';
     }
@@ -136,8 +134,7 @@ export class AuthStore {
   };
 
   @action
-  public resetPassword = () => {
+  public resetPassword = (): void => {
     console.warn('Not implemented yet');
-  }
-
+  };
 }

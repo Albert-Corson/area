@@ -1,110 +1,115 @@
-import {observable, action, makeAutoObservable, runInAction} from 'mobx';
+import {
+  observable, action, makeAutoObservable, runInAction,
+} from 'mobx';
 import {Widget} from '../Types/Widgets';
 import {Response} from '../Types/API';
 import {RootStore} from './RootStore';
 import absFetch from '../Tools/Network';
 
 enum Action {
-    add,
-    remove
-} 
+  add,
+  remove,
+}
 
 export class WidgetStore {
-    @observable private _widgets: Widget[] = [];
-    @observable private _subscribedWidgets: Widget[] = [];
+  @observable private _widgets: Widget[] = [];
 
-    constructor(private _rootStore: RootStore) {
-      makeAutoObservable(this);
-    }
+  @observable private _subscribedWidgets: Widget[] = [];
 
-    public get widgets(): Widget[] {
-      return this._widgets;
-    }
+  constructor(private _rootStore: RootStore) {
+    makeAutoObservable(this);
+  }
 
-    public get availableWidgets(): Widget[] {
-      return this.processAvailableWidgets();
-    }
+  public get widgets(): Widget[] {
+    return this._widgets;
+  }
 
-    public updateWidgets = async (): Promise<boolean> => {
-      const values: boolean[] = await Promise.all([this.fetchSubscribedWidgets(), this.fetchWidgets()]);
+  public get availableWidgets(): Widget[] {
+    return this.processAvailableWidgets();
+  }
 
-      return !values.includes(false);
-    }
+  public updateWidgets = async (): Promise<boolean> => {
+    const values: boolean[] = await Promise.all([this.fetchSubscribedWidgets(), this.fetchWidgets()]);
 
-    private processAvailableWidgets = (): Widget[] => {
-      const subscribedIds: number[] = this._subscribedWidgets.map((obj: Widget) => obj.id);
+    return !values.includes(false);
+  };
 
-      return this._widgets.filter((widget: Widget) => !subscribedIds.includes(widget.id));
-    }
+  private processAvailableWidgets = (): Widget[] => {
+    const subscribedIds: number[] = this._subscribedWidgets.map((obj: Widget) => obj.id);
 
-    @action
-    private fetchWidgets = async (): Promise<boolean> => {
-      try {
-        const res = await absFetch({
-          route: '/widgets', headers: {
-            'Authorization': `Bearer ${this._rootStore.user.userJWT?.accessToken}`
-          }
-        });
-        const json: Response<Widget[]> = await res.json();
+    return this._widgets.filter((widget: Widget) => !subscribedIds.includes(widget.id));
+  };
 
-        if (json.successful) {
-          runInAction(() => this._widgets = json.data);
+  @action
+  private fetchWidgets = async (): Promise<boolean> => {
+    try {
+      const res = await absFetch({
+        route: '/widgets',
+        headers: {
+          Authorization: `Bearer ${this._rootStore.user.userJWT?.accessToken}`,
+        },
+      });
+      const json: Response<Widget[]> = await res.json();
 
-          return true;
-        }
-      } catch (e) {
-        console.warn('Error occurred while fetching API: ');
-        console.warn(e);
+      if (json.successful) {
+        runInAction(() => this._widgets = json.data);
+
+        return true;
       }
-
-      return false;
+    } catch (e) {
+      console.warn('Error occurred while fetching API: ');
+      console.warn(e);
     }
 
-    @action
-    private fetchSubscribedWidgets = async (): Promise<boolean> => {
-      try {
-        const res = await absFetch({
-          route: '/widgets/me', headers: {
-            'Authorization': `Bearer ${this._rootStore.user.userJWT?.accessToken}`
-          }
+    return false;
+  };
+
+  @action
+  private fetchSubscribedWidgets = async (): Promise<boolean> => {
+    try {
+      const res = await absFetch({
+        route: '/widgets/me',
+        headers: {
+          Authorization: `Bearer ${this._rootStore.user.userJWT?.accessToken}`,
+        },
+      });
+      const json: Response<Widget[]> = await res.json();
+
+      if (json.successful) {
+        runInAction(() => {
+          this._subscribedWidgets = json.data;
+          this._rootStore.grid.setBlocks(json.data);
         });
-        const json: Response<Widget[]> = await res.json();
 
-        if (json.successful) {
-          runInAction(() => {
-            this._subscribedWidgets = json.data;
-            this._rootStore.grid.setBlocks(json.data);
-          });
-
-          return true;
-        }
-      } catch (e) {
-        console.warn('Error occurred while fetching API: ');
-        console.warn(e);
+        return true;
       }
-
-      return false;
+    } catch (e) {
+      console.warn('Error occurred while fetching API: ');
+      console.warn(e);
     }
 
-    @action
-    private widgetSubscribtion = async (widgetId: number, action: Action): Promise<void> => {
-        const res = await absFetch({
-            route: `/widgets/${widgetId}`,
-            method: action === Action.add ? 'post' : 'delete',
-            headers: {
-              'Authorization': `Bearer ${this._rootStore.user.userJWT?.accessToken}`
-            }
-          });
-          const json: Response = await res.json();
-    
-          if (json.successful) {
-            this.updateWidgets();
-          }
+    return false;
+  };
+
+  @action
+  private widgetSubscribtion = async (widgetId: number, action: Action): Promise<void> => {
+    const res = await absFetch({
+      route: `/widgets/${widgetId}`,
+      method: action === Action.add ? 'post' : 'delete',
+      headers: {
+        Authorization: `Bearer ${this._rootStore.user.userJWT?.accessToken}`,
+      },
+    });
+    const json: Response = await res.json();
+
+    if (json.successful) {
+      this.updateWidgets();
     }
+  };
 
-    @action
-    public subscribeToWidget = async (widgetId: number): Promise<void> => this.widgetSubscribtion(widgetId, Action.add);
+  @action
+  public subscribeToWidget = async (widgetId: number): Promise<void> => this.widgetSubscribtion(widgetId, Action.add);
 
-    @action
-    public unsubscribeToWidget = async (widgetId: number): Promise<void> => this.widgetSubscribtion(widgetId, Action.remove);
+  @action
+  public unsubscribeToWidget = async (widgetId: number): Promise<void> => this.widgetSubscribtion(widgetId, Action.remove);
 }

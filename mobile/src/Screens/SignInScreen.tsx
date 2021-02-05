@@ -7,14 +7,14 @@ import {
   TouchableWithoutFeedback,
   Platform,
 } from 'react-native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {observer} from 'mobx-react-lite';
 import TextInput from '../Components/TextInput';
 import TextButton from '../Components/TextButton';
 import GradientFlatButton from '../Components/GradientFlatButton';
 import {Form as styles} from '../StyleSheets/Form';
 import {RootStackParamList} from '../Navigation/StackNavigator';
-import {StackNavigationProp} from '@react-navigation/stack';
 import RootStoreContext from '../Stores/RootStore';
-import {observer} from 'mobx-react-lite';
 
 interface Props {
   navigation: StackNavigationProp<RootStackParamList>;
@@ -35,19 +35,19 @@ const SignInScreen = observer(({navigation}: Props): JSX.Element => {
             <Text style={styles.error}>{store.auth.error}</Text>
             <TextInput
               value={store.auth.username}
-              placeholder={'Email or username...'}
+              placeholder="Email or username..."
               onChange={(val) => store.auth.username = val}
               containerStyle={styles.input}
             />
             <TextInput
               value={store.auth.password}
-              placeholder={'Password...'}
+              placeholder="Password..."
               onChange={(val) => store.auth.password = val}
               containerStyle={styles.input}
-              secure={true}
+              secure
             />
             <GradientFlatButton
-              value={'Sign in'}
+              value="Sign in"
               width={325}
               containerStyle={{margin: 10}}
               onPress={async () => {
@@ -59,7 +59,7 @@ const SignInScreen = observer(({navigation}: Props): JSX.Element => {
               }}
             />
             <TextButton
-              value={'Register'}
+              value="Register"
               style={{fontSize: 19}}
               containerStyle={styles.textButton}
               onPress={() => navigation.navigate('SignUp')}
@@ -67,7 +67,7 @@ const SignInScreen = observer(({navigation}: Props): JSX.Element => {
           </View>
           <View>
             <TextButton
-              value={'Forgot password ?'}
+              value="Forgot password ?"
               style={{fontSize: 15}}
               containerStyle={{...styles.textButton, marginBottom: 25}}
               onPress={() => navigation.navigate('Help')}

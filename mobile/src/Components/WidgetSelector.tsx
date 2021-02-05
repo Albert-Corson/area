@@ -1,12 +1,10 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {observer} from 'mobx-react-lite';
-import {View, Text, StyleSheet, Dimensions} from 'react-native';
-import RootStoreContext, {RootStore} from '../Stores/RootStore';
-import {WidgetStore} from '../Stores/WidgetStore';
-import DraggableContainer from './DraggableContainer';
+import {View, Text, StyleSheet,} from 'react-native';
+import {State, TapGestureHandlerGestureEvent} from 'react-native-gesture-handler';
+import {RootStore} from '../Stores/RootStore';
 import WidgetListContainer from './WidgetListContainer';
 import Widget from './Widget';
-import {State, TapGestureHandlerGestureEvent} from 'react-native-gesture-handler';
 import StaticContainer from './StaticContainer';
 
 interface WidgetSelectorProps {
@@ -16,20 +14,20 @@ interface WidgetSelectorProps {
 const WidgetSelector = observer(({store}: WidgetSelectorProps): JSX.Element => {
   const onTap = (e: TapGestureHandlerGestureEvent, index: number): void => {
     if (e.nativeEvent.state !== State.ACTIVE) return;
-    
-    const availableWidgets = store.widget.availableWidgets;
-    
+
+    const {availableWidgets} = store.widget;
+
     if (index < 0 || index >= availableWidgets.length) return;
 
     store.widget.subscribeToWidget(availableWidgets[index].id);
   };
 
-  const availableWidgets = store.widget.availableWidgets;
+  const {availableWidgets} = store.widget;
 
   return (
     <WidgetListContainer containerStyle={[styles.container, styles.selector]} bounce={false}>
       {!availableWidgets.length && (
-        <Text style={styles.title}>No new widget available, you got'em all!</Text>
+        <Text style={styles.title}>{'No new widget available, you got\'em all!'}</Text>
       )}
       {availableWidgets.map((widget, index) => (
         <StaticContainer
@@ -45,9 +43,7 @@ const WidgetSelector = observer(({store}: WidgetSelectorProps): JSX.Element => {
 
 const WidgetSelectorHeader = (): JSX.Element => (
   <View style={[styles.header]}>
-    <View style={styles.handle}>
-
-    </View>
+    <View style={styles.handle} />
   </View>
 );
 
@@ -70,7 +66,6 @@ const styles = StyleSheet.create({
 
     justifyContent: 'center',
     alignItems: 'center',
-
 
     shadowColor: '#666',
     shadowOffset: {
@@ -102,9 +97,9 @@ const styles = StyleSheet.create({
     paddingBottom: 50,
   },
   title: {
-    width: '100%', 
+    width: '100%',
     textAlign: 'center',
     fontSize: 20,
-    fontFamily: 'DosisBold'
-  }
+    fontFamily: 'DosisBold',
+  },
 });

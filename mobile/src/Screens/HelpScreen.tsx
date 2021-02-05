@@ -7,15 +7,15 @@ import {
   TouchableWithoutFeedback,
   Platform,
 } from 'react-native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {observer} from 'mobx-react-lite';
 import TextInput from '../Components/TextInput';
 import TextButton from '../Components/TextButton';
 import GradientFlatButton from '../Components/GradientFlatButton';
 import {Form as styles} from '../StyleSheets/Form';
 import windowPadding from '../StyleSheets/WindowPadding';
 import {RootStackParamList} from '../Navigation/StackNavigator';
-import {StackNavigationProp} from '@react-navigation/stack';
 import RootStoreContext from '../Stores/RootStore';
-import {observer} from 'mobx-react-lite';
 
 interface Props {
   navigation: StackNavigationProp<RootStackParamList>
@@ -23,7 +23,7 @@ interface Props {
 
 const HelpScreen = observer(({navigation}: Props): JSX.Element => {
   const store = useContext(RootStoreContext).auth;
-  
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -36,23 +36,23 @@ const HelpScreen = observer(({navigation}: Props): JSX.Element => {
           </View>
           <TextInput
             value={store.email}
-            placeholder={'Email...'}
+            placeholder="Email..."
             onChange={(val) => store.email = val}
             containerStyle={styles.input}
           />
           <GradientFlatButton
-            value={'Envoyer un mail'}
+            value="Envoyer un mail"
             width={325}
             containerStyle={{margin: 10}}
             onPress={store.resetPassword}
           />
           <View style={{flexDirection: 'row'}}>
             <TextButton
-              value={'Connexion'}
+              value="Connexion"
               containerStyle={{
                 ...styles.textButton,
                 marginHorizontal: windowPadding,
-                alignItems: 'flex-end'
+                alignItems: 'flex-end',
               }}
               onPress={() => navigation.navigate('Login')}
             />
