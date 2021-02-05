@@ -1,56 +1,92 @@
-import React, {useRef, useContext} from 'react';
-import {SafeAreaView, StyleSheet, View, ScrollView} from 'react-native';
-import BadgeButton from '../Components/BadgeButton';
+import React, {useRef, useContext, useEffect} from 'react';
+import {SafeAreaView, StyleSheet, View} from 'react-native';
 import DraggableContainer from '../Components/DraggableContainer';
 import {FontAwesome} from '@expo/vector-icons';
 import BottomSheet from 'reanimated-bottom-sheet';
 import {WidgetSelector, WidgetSelectorHeader} from '../Components/WidgetSelector';
-//@ts-ignore
-import InsetShadow from 'react-native-inset-shadow';
 import RootStoreContext from '../Stores/RootStore';
 import {observer} from 'mobx-react-lite';
+import FlatButton from '../Components/FlatButton';
+import {RootStackParamList} from '../Navigation/StackNavigator';
+import {StackNavigationProp} from '@react-navigation/stack';
+import WidgetListContainer from '../Components/WidgetListContainer';
+import Widget from '../Components/Widget';
+import GradientFlatButton from '../Components/GradientFlatButton';
 
-const WidgetsScreen = observer((): JSX.Element => {
-  const store = useContext(RootStoreContext).grid;
+interface Props {
+  navigation: StackNavigationProp<RootStackParamList>;
+}
+
+const WidgetsScreen = observer(({navigation}: Props): JSX.Element => {
+  const store = useContext(RootStoreContext);
   const sheetRef = useRef<BottomSheet>(null);
-  
+
+  useEffect(() => {
+    store.widget.updateWidgets();
+  }, []);
+
   return (
     <>
       <SafeAreaView style={styles.safeView}>
         <View style={styles.modifier}>
-          <BadgeButton
-            onPress={() => sheetRef.current!.snapTo(0)}
-            icon={() => (
+          <FlatButton
+            height={'100%'}
+            width={60}
+            value={() => (
               <FontAwesome name="plus" size={17} color={'#666666'} />
-            )} />
-          <BadgeButton
-            onPress={store.toggleEditionMode}
-            active={store.modifying}
-            icon={() => (
+            )}
+            onPress={() => {
+              if (store.grid.modifying) {
+                store.grid.toggleEditionMode();
+              }
+              sheetRef.current!.snapTo(store.grid.adding ? 2 : 0);
+
+              store.grid.toggleAdditionMode();
+            }}
+            active={store.grid.adding}
+          />
+
+          <GradientFlatButton
+            height={'100%'}
+            width={120}
+            value={store.user.userJWT?.username ?? 'Profile'}
+            onPress={() => navigation.navigate('Profile')}
+          />
+
+          <FlatButton
+            height={'100%'}
+            width={60}
+            value={() => (
               <FontAwesome name="pencil-square-o" size={17} color={'#666666'} />
-            )} />
+            )}
+            onPress={() => {
+              store.grid.toggleEditionMode();
+              if (store.grid.adding) {
+                sheetRef.current!.snapTo(2);
+                store.grid.toggleAdditionMode();
+              }
+            }}
+            active={store.grid.modifying}
+          />
         </View>
-        <InsetShadow>
-          <ScrollView showsVerticalScrollIndicator={false}>
-            <View style={styles.container}>
-              {store.blocks.map((widget, index) => (
-                <DraggableContainer
-                  key={index}
-                  backgroundColor={widget.color}
-                  index={index}
-                  containerStyle={styles.draggable}
-                />
-              ))}
-            </View>
-          </ScrollView>
-        </InsetShadow>
+        <WidgetListContainer containerStyle={styles.container}>
+          {store.grid.blocks.map((widget, index) => (
+            <DraggableContainer
+              key={index}
+              index={index}
+              renderItem={() => <Widget item={widget} />}
+            />
+          ))}
+        </WidgetListContainer>
       </SafeAreaView>
       <BottomSheet
         ref={sheetRef}
         snapPoints={['80%', '50%', '0%']}
         initialSnap={2}
-        renderContent={WidgetSelector}
+        renderContent={() => (<WidgetSelector store={store} />)}
         renderHeader={WidgetSelectorHeader}
+        onOpenStart={store.grid.toggleAdditionMode}
+        onCloseStart={store.grid.toggleAdditionMode}
       />
     </>
   );
@@ -68,19 +104,17 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
 
-    marginHorizontal: 7.5,
+    marginHorizontal: 8,
 
     flexDirection: 'row',
     flexWrap: 'wrap',
 
     paddingBottom: 50,
   },
-  draggable: {
-    margin: 15,
-  },
   modifier: {
     height: 30,
     justifyContent: 'space-between',
+    
     flexDirection: 'row',
     marginHorizontal: 30,
     marginVertical: 15

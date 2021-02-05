@@ -15,7 +15,7 @@ import windowPadding from '../StyleSheets/WindowPadding';
 import {RootStackParamList} from '../Navigation/StackNavigator';
 import {StackNavigationProp} from '@react-navigation/stack';
 import RootStoreContext from '../Stores/RootStore';
-import { observer } from 'mobx-react-lite';
+import {observer} from 'mobx-react-lite';
 
 interface Props {
   navigation: StackNavigationProp<RootStackParamList>

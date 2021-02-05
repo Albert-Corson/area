@@ -3,8 +3,8 @@ import {TouchableOpacity, Text, View, StyleSheet, GestureResponderEvent} from 'r
 import {LinearGradient} from 'expo-linear-gradient';
 
 interface Props {
-  width?: number;
-  height?: number;
+  width?: number | string;
+  height?: number | string;
   onPress: (event: GestureResponderEvent | undefined) => void;
   value: string;
   containerStyle?: Record<string, number| string>;
@@ -36,8 +36,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#e6e6e9',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 25,
-    paddingHorizontal: 30,
+    borderRadius: 15,
+    paddingHorizontal: 5,
     height: '100%',
   },
   upShadow: {

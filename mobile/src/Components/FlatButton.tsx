@@ -1,27 +1,53 @@
 import React from 'react';
 import {TouchableOpacity, Text, View, StyleSheet, GestureResponderEvent} from 'react-native';
 import Shadow from '../StyleSheets/Shadow';
+import DropShadowContainer from './DropShadowContainer';
+import InsetShadowContainer from './InsetShadowContainer';
 
 interface Props {
-  width: number;
-  height: number;
+  width?: number;
+  height?: number | string;
+  active?: boolean;
   onPress: (event: GestureResponderEvent) => void;
-  value: string;
-  containerStyle: Record<string, number| string>;
+  value: string | (() => JSX.Element);
+  containerStyle?: Record<string, number | string>;
 }
 
-const FlatButton = ({width = 200, height = 50, onPress, value, containerStyle = {}}: Props): JSX.Element => (
+const FlatButton = ({width = 200, height = 50, onPress, value, containerStyle = {}, active = false}: Props): JSX.Element => (
   <View style={containerStyle}>
-    <View style={Shadow.upShadow}>
-      <View style={Shadow.downShadow}>
+    {active ? (
+      <InsetShadowContainer>
         <TouchableOpacity
           activeOpacity={.4}
-          style={{...styles.button, width, height}}
+          style={[
+            styles.button,
+            {width, height}
+          ]}
           onPress={onPress}>
-          <Text style={styles.text}>{value}</Text>
+          {typeof value === 'string' ? (
+            <Text style={styles.text}>{value}</Text>
+          ) : (
+            value()
+          )}
         </TouchableOpacity>
-      </View>
-    </View>
+      </InsetShadowContainer>
+    ) : (
+      <DropShadowContainer>
+        <TouchableOpacity
+          activeOpacity={.4}
+          style={[
+            styles.button,
+            {width, height}
+          ]}
+          onPress={onPress}>
+          {typeof value === 'string' ? (
+            <Text style={styles.text}>{value}</Text>
+          ) : (
+            value()
+          )}
+        </TouchableOpacity>
+      </DropShadowContainer>
+    )}
   </View>
 );
 
@@ -31,12 +57,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 25,
-    paddingHorizontal: 30,
   },
   text: {
-    fontFamily: 'DosisSemiBold',
-    fontSize: 20,
+    fontFamily: 'LouisGeorgeCafe',
+    fontSize: 18,
     color: '#545454',
+  },
+  shadowStyle: {
+    borderRadius: 25,
   },
 });
 

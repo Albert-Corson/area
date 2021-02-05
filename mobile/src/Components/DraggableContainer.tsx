@@ -1,5 +1,5 @@
-import React, {useContext, useRef} from 'react';
-import {StyleSheet} from 'react-native';
+import React, { useContext, useRef } from 'react';
+import { Dimensions, StyleSheet, View, TouchableOpacity } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -7,24 +7,29 @@ import Animated, {
   withSpring,
   runOnJS,
 } from 'react-native-reanimated';
-import {PanGestureHandler, TapGestureHandler, State, TapGestureHandlerGestureEvent} from 'react-native-gesture-handler';
-import {Size} from '../Types/Block';
+import {
+  PanGestureHandler,
+  TapGestureHandler,
+  State,
+  TapGestureHandlerGestureEvent,
+} from 'react-native-gesture-handler';
+import { Size } from '../Types/Block';
 import RootStoreContext from '../Stores/RootStore';
 import Grid from '../Tools/Grid';
-
+import { observer } from 'mobx-react-lite';
+import DropShadowContainer from './DropShadowContainer';
+import { Entypo } from '@expo/vector-icons';
 
 interface Props {
   index: number;
-  backgroundColor: string;
-  containerStyle: Record<string, number | string>;
+  renderItem?: () => JSX.Element;
 }
 
-const DraggableContainer = ({
+const DraggableContainer = observer(({
   index,
-  backgroundColor,
-  containerStyle,
+  renderItem = () => <></>,
 }: Props): JSX.Element => {
-  const store = useContext(RootStoreContext).grid;
+  const store = useContext(RootStoreContext);
   //drag
   const translateY = useSharedValue<number>(0);
   const translateX = useSharedValue<number>(0);
@@ -33,9 +38,12 @@ const DraggableContainer = ({
   const panRef = useRef(null);
   const tapRef = useRef(null);
   // block info
-  const size = store.getBlockSize(index);
-  const modifying = store.isBlockMutable(index);
-  const gridSize = store.blocks.length;
+  const size = store.grid.getBlockSize(index);
+  const gridSize = store.grid.blocks.length;
+  const modifying = store.grid.isBlockMutable(index);
+
+  const SIZE = Dimensions.get('window').width / 2.5;
+  const MARGIN = (SIZE * (2.5 - 2.14)) / 4;
 
   const onDrop = (index: number, offsetX: number, offsetY: number): void => {
     const [x, y]: number[] = [index % 2, Math.floor(index / 2)];
@@ -44,9 +52,9 @@ const DraggableContainer = ({
     if (
       index != hoveredBlockIndex &&
       hoveredBlockIndex >= 0 &&
-      hoveredBlockIndex < store.blocks.length
+      hoveredBlockIndex < store.grid.blocks.length
     ) {
-      store.swithAtIndexes(index, hoveredBlockIndex);
+      store.grid.swithAtIndexes(index, hoveredBlockIndex);
     }
   };
 
@@ -79,24 +87,27 @@ const DraggableContainer = ({
     elevation.value = gridSize;
   };
 
-  const onTap = (e: TapGestureHandlerGestureEvent) => {
-    if (e.nativeEvent.state !== State.ACTIVE) {
-      return;
-    }
-    store.setBlockSize(index, size != Size.full ? size << 1 : Size.normal);
-  };
-
   const onDragEvent = useAnimatedGestureHandler({
     onStart: onStartDrag,
     onActive: onActiveDrag,
     onEnd: onEndDrag,
   });
 
+  const onTap = (e: TapGestureHandlerGestureEvent): void => {
+    if (e.nativeEvent.state !== State.ACTIVE) return;
+
+    store.grid.setBlockSize(index, size != Size.full ? size << 1 : Size.normal);
+  };
+
+  const deleteWidget = () => {
+    store.widget.unsubscribeToWidget(store.grid.blocks[index].id);
+  };
+
   const dragStyle = useAnimatedStyle(() => {
     return {
       transform: [
-        {translateX: translateX.value},
-        {translateY: translateY.value},
+        { translateX: translateX.value },
+        { translateY: translateY.value },
       ]
     };
   });
@@ -108,47 +119,65 @@ const DraggableContainer = ({
     };
   });
 
-  const widgetStyle = {...styles.box, backgroundColor};
+  const widgetStyle = {
+    ...styles.box,
+    width: size !== Size.normal ? SIZE * 2.14 : SIZE,
+    height: size === Size.full ? SIZE * 2.14 : SIZE,
+  };
 
-  if (size !== Size.normal) {
-    widgetStyle.width = 375;
-  }
-  if (size === Size.full) {
-    widgetStyle.height = 375;
+  if (store.grid.blocks[index].unactive) {
+    return (
+      <View style={[
+        widgetStyle,
+        {
+          backgroundColor: 'transparent',
+          margin: MARGIN,
+        }
+      ]}
+      ></View>
+    );
   }
 
   return (
-    <Animated.View style={[containerStyle, boxStyle]}>
-      {modifying ? (
-        <TapGestureHandler
-          onHandlerStateChange={onTap}
-          numberOfTaps={2}
-          ref={tapRef}
-          simultaneousHandlers={panRef}>
-          <Animated.View>
-            <PanGestureHandler
-              ref={panRef}
-              simultaneousHandlers={tapRef}
-              maxPointers={1}
-              onGestureEvent={onDragEvent}
-            >
-              <Animated.View style={[
-                widgetStyle,
-                dragStyle,
-              ]}
+    <Animated.View style={[{ margin: MARGIN }, boxStyle]}>
+      <DropShadowContainer>
+        {modifying ? (
+          <TapGestureHandler
+            onHandlerStateChange={onTap}
+            numberOfTaps={2}
+            ref={tapRef}
+            simultaneousHandlers={panRef}>
+            <Animated.View>
+              <PanGestureHandler
+                ref={panRef}
+                simultaneousHandlers={tapRef}
+                maxPointers={1}
+                onGestureEvent={onDragEvent}
               >
-              </Animated.View>
-            </PanGestureHandler>
+                <Animated.View style={[
+                  widgetStyle,
+                  dragStyle,
+                ]}
+                >
+                  <TouchableOpacity style={styles.deleteBtn} onPress={deleteWidget}>
+                    <Entypo name={'cross'} size={15} color={'#e6e6e9'} />
+                  </TouchableOpacity>
+
+                  {renderItem()}
+
+                </Animated.View>
+              </PanGestureHandler>
+            </Animated.View>
+          </TapGestureHandler>
+        ) : (
+          <Animated.View style={widgetStyle}>
+            {renderItem()}
           </Animated.View>
-        </TapGestureHandler>
-      ) : (
-        <Animated.View style={[widgetStyle]}
-        >
-        </Animated.View>
-      )}
+        )}
+      </DropShadowContainer>
     </Animated.View>
   );
-};
+});
 
 export default DraggableContainer;
 
@@ -157,6 +186,27 @@ const styles = StyleSheet.create({
     height: 175,
     width: 175,
     borderRadius: 25,
-    backgroundColor: 'black'
-  }
+    backgroundColor: '#e6e6e9'
+  },
+  container: {
+    margin: 15,
+  },
+  deleteBtn: {
+    width: 20,
+    height: 20,
+    borderRadius: 20,
+
+    zIndex: 1000,
+
+    position: 'absolute',
+
+    right: -10,
+    top: -10,
+    margin: 5,
+
+    backgroundColor: '#f04e4677',
+
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });

@@ -1,19 +1,17 @@
-import { resolvePlugin } from "@babel/core";
-import { makeAutoObservable, observable, action } from "mobx";
-import { RootStore } from "./RootStore";
+import {resolvePlugin} from '@babel/core';
+import {makeAutoObservable, observable, action} from 'mobx';
+import {RootStore} from './RootStore';
 import absFetch from '../Tools/Network';
-import { UserJWT } from "./UserStore";
+import {UserJWT} from './UserStore';
 
 export class AuthStore {
-  private _rootStore: RootStore;
-  @observable private _email: string = '';
-  @observable private _username: string = '';
-  @observable private _password: string = '';
-  @observable private _confirm: string = '';
-  @observable private _error: string = '';
+  @observable private _email = '';
+  @observable private _username = '';
+  @observable private _password = '';
+  @observable private _confirm = '';
+  @observable private _error = '';
 
-  constructor(rootStore: RootStore) {
-    this._rootStore = rootStore;
+  constructor(private _rootStore: RootStore) {
     makeAutoObservable(this);
   }
 
@@ -27,7 +25,7 @@ export class AuthStore {
   }
 
   public get username() {
-    return this._username.toLowerCase();
+    return this._username;
   }
 
   @action
@@ -36,7 +34,7 @@ export class AuthStore {
   }
 
   public get password() {
-    return this._password.toLowerCase();
+    return this._password;
   }
 
   @action
@@ -45,7 +43,7 @@ export class AuthStore {
   }
 
   public get confirm() {
-    return this._confirm.toLowerCase();
+    return this._confirm;
   }
 
   @action
@@ -72,7 +70,6 @@ export class AuthStore {
       return false;
     }
 
-
     const res = await absFetch({
       route: '/users',
       method: 'post',
@@ -84,7 +81,15 @@ export class AuthStore {
     });
 
     try {
-      const json = await res.json();
+      const body = await res.json();
+
+      if (!body.successful) {
+        this.error = body.error ?? 'An error occurred';
+        return false;
+      }
+
+      this.password = '';
+      this.error = '';
       return true;
     } catch {
       console.warn('error while parsing json');
@@ -94,7 +99,7 @@ export class AuthStore {
 
   @action
   public signIn = async (): Promise<boolean> => {
-    if (!this._email.length || !this._password.length) {
+    if (!this._username.length || !this._password.length) {
       this._error = 'All entries are required';
       return false;
     }
@@ -103,7 +108,7 @@ export class AuthStore {
       route: '/auth/token',
       method: 'post',
       body: JSON.stringify({
-        username: this._username,
+        identifier: this._username,
         password: this._password,
       }),
     });
@@ -112,17 +117,19 @@ export class AuthStore {
       const body = await res.json();
 
       if (!body.successful) {
-        this.error = body.error ?? "Error occured";
+        this.error = body.error ?? 'Error occured';
         return false;
       }
 
       return await this._rootStore.user.storeUser(
-        body.refresh_token,
-        body.access_token,
-        body.expires_in
+        body.data.refresh_token,
+        body.data.access_token,
+        body.data.expires_in,
+        this.username
       );
-    } catch {
-      this.error = "Error occured";
+    } catch(e) {
+      console.warn(e);
+      this.error = 'Error occured';
     }
 
     return false;
@@ -133,4 +140,4 @@ export class AuthStore {
     console.warn('Not implemented yet');
   }
 
-};
+}

@@ -30,13 +30,13 @@ export default class Grid {
       return xHovered + yHovered * 2;
     };
 
-    static fillGrid = <T>(array: T[], fill: T, to: number): T[] => {
+    static fillGrid = (array: any[], fill: any, to: number): any[] => {
       const offset: number = to - array.length;
 
       if (offset <= 0) {
         return array;
       }
-      return array.concat(Array<T>(offset).fill(fill));
+      return array.concat(Array(offset).fill(fill));
     };
 
     static indexToPosition = (array: readonly Block[], index: number): number => {

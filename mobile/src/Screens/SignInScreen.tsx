@@ -1,4 +1,4 @@
-import React, {useContext,} from 'react';
+import React, {useContext} from 'react';
 import {
   View,
   Text,
@@ -14,14 +14,14 @@ import {Form as styles} from '../StyleSheets/Form';
 import {RootStackParamList} from '../Navigation/StackNavigator';
 import {StackNavigationProp} from '@react-navigation/stack';
 import RootStoreContext from '../Stores/RootStore';
-import { observer } from 'mobx-react-lite';
+import {observer} from 'mobx-react-lite';
 
 interface Props {
   navigation: StackNavigationProp<RootStackParamList>;
 }
 
 const SignInScreen = observer(({navigation}: Props): JSX.Element => {
-  const store = useContext(RootStoreContext).auth;
+  const store = useContext(RootStoreContext);
 
   return (
     <KeyboardAvoidingView
@@ -32,17 +32,17 @@ const SignInScreen = observer(({navigation}: Props): JSX.Element => {
         <View style={{flex: 1, justifyContent: 'space-between'}}>
           <View style={styles.inner}>
             <Text style={styles.title}>Area</Text>
-            <Text style={styles.error}>{store.error}</Text>
+            <Text style={styles.error}>{store.auth.error}</Text>
             <TextInput
-              value={store.email}
-              placeholder={'Email...'}
-              onChange={(val) => store.email = val}
+              value={store.auth.username}
+              placeholder={'Email or username...'}
+              onChange={(val) => store.auth.username = val}
               containerStyle={styles.input}
             />
             <TextInput
-              value={store.password}
+              value={store.auth.password}
               placeholder={'Password...'}
-              onChange={(val) => store.password = val}
+              onChange={(val) => store.auth.password = val}
               containerStyle={styles.input}
               secure={true}
             />
@@ -50,7 +50,13 @@ const SignInScreen = observer(({navigation}: Props): JSX.Element => {
               value={'Sign in'}
               width={325}
               containerStyle={{margin: 10}}
-              onPress={async () => await store.signIn()}
+              onPress={async () => {
+                // navigation.navigate('Dashboard');
+                // return;
+                if (await store.auth.signIn()) {
+                  navigation.navigate('Dashboard');
+                }
+              }}
             />
             <TextButton
               value={'Register'}

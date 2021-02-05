@@ -1,7 +1,6 @@
-// @ts-ignore
 import {API_HOST, API_PORT} from '@env';
 
-type Method = 'get' | 'post' | 'put' | 'del';
+type Method = 'get' | 'post' | 'put' | 'delete';
 
 interface RequestProps {
     route: string;
@@ -11,9 +10,9 @@ interface RequestProps {
 }
 
 export default ({route, method = 'get', body, headers}: RequestProps): Promise<Response> => {
-    return fetch(`http://${API_HOST}:${API_PORT}${route}`, {
-        method,
-        body,
-        headers: {...headers, 'Content-Type': 'application/json'}
-    });
+  return fetch(`http://${API_HOST}:${API_PORT}/api${route}`, {
+    method,
+    body,
+    headers: {...headers, 'Content-Type': 'application/json'}
+  });
 };
