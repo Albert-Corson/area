@@ -121,14 +121,13 @@ namespace Area.API.Repositories
         public void RemoveServiceCredentials(int userId, int serviceId)
         {
             var user = Database.Users
-                .AsNoTracking()
                 .Include(model => model.ServiceTokens)
                 .FirstOrDefault(model => model.Id == userId);
 
             var serviceToken = user?.ServiceTokens.FirstOrDefault(model => model.ServiceId == serviceId);
 
             if (serviceToken != null)
-                Database.Set<UserServiceTokensModel>().Remove(serviceToken);
+                user!.ServiceTokens.Remove(serviceToken);
         }
     }
 }

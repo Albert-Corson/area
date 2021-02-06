@@ -117,11 +117,15 @@ namespace Area.API.Controllers
             int? serviceId
         )
         {
-            if (_serviceManager.HandleServiceSignInCallbackById(HttpContext, serviceId!.Value))
-                return Content("<h1>Success! You can now close this page!</h1>", "text/html");
+            try {
+                if (_serviceManager.HandleServiceSignInCallbackById(HttpContext, serviceId!.Value))
+                    return Content("<h1>Success! You can now close this page!</h1>", "text/html");
+            } catch {
+                // ignore
+            }
 
             Response.StatusCode = (int) HttpStatusCode.InternalServerError;
-            return Content("<h1>An error has occured, please try again</h1>", "text/html");
+            return Content("<h1>An error has occured, please try again later</h1>", "text/html");
         }
     }
 }
