@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using Area.API.Attributes;
+using System.Net;
 using Area.API.Constants;
 using Area.API.Exceptions.Http;
 using Area.API.Models;
@@ -11,10 +11,12 @@ using Area.API.Services;
 using Area.API.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Area.API.Controllers
 {
     [Authorize]
+    [SwaggerTag("Widget-related endpoints")]
     public class WidgetsController : ControllerBase
     {
         private readonly ServiceRepository _serviceRepository;
@@ -33,9 +35,15 @@ namespace Area.API.Controllers
 
         [HttpGet]
         [Route(RoutesConstants.Widgets.GetWidgets)]
-        [ValidateModelState]
+        [SwaggerOperation(
+            Summary = "List all widgets",
+            Description =
+                "List all widgets. Optionally, you can get the widgets from one particular service. **The values of the parameters (`params`) are the widgets' default ones**"
+        )]
+        [SwaggerResponse((int) HttpStatusCode.NotFound, "The `serviceId` doesn't have a correspond service")]
         public ResponseModel<List<WidgetModel>> GetWidgets(
-            [FromQuery] [Range(1, 2147483647)] int? serviceId
+            [FromQuery] [Range(1, 2147483647)] [SwaggerParameter("A service's ID, to filter the results by.")]
+            int? serviceId
         )
         {
             IEnumerable<WidgetModel> widgets;
@@ -55,15 +63,28 @@ namespace Area.API.Controllers
 
         [HttpGet]
         [Route(RoutesConstants.Widgets.GetMyWidgets)]
+        [SwaggerOperation(
+            Summary = "List a user's widgets",
+            Description =
+                "List the user's widgets. Optionally, you can get the widgets from one particular service. **The values of the parameters (`params`) are the ones the user has previously used in call to `"
+                + RoutesConstants.Widgets.CallWidget + "`**"
+        )]
+        [SwaggerResponse((int) HttpStatusCode.NotFound, "The `serviceId` doesn't have a correspond service")]
         public ResponseModel<List<WidgetModel>> GetMyWidgets(
-            [FromQuery] [Range(1, 2147483647)] int? serviceId
+            [FromQuery] [Range(1, 2147483647)] [SwaggerParameter("A service's ID, to filter the results by.")]
+            int? serviceId
         )
         {
             var userId = AuthUtilities.GetUserIdFromPrincipal(User);
 
-            var widgets = serviceId != null
-                ? _widgetRepository.GetUserWidgetsByService(userId!.Value, serviceId.Value).ToList()
-                : _widgetRepository.GetUserWidgets(userId!.Value, true).ToList();
+            List<WidgetModel> widgets;
+            if (serviceId != null) {
+                if (!_serviceRepository.ServiceExists(serviceId.Value))
+                    throw new NotFoundHttpException("This service does not exist");
+                widgets = _widgetRepository.GetUserWidgetsByService(userId!.Value, serviceId.Value).ToList();
+            } else {
+                widgets =  _widgetRepository.GetUserWidgets(userId!.Value, true).ToList();
+            }
 
             var user = _userRepository.GetUser(userId);
             var widgetParams = user!.WidgetParams.ToList();
@@ -81,9 +102,16 @@ namespace Area.API.Controllers
 
         [HttpGet]
         [Route(RoutesConstants.Widgets.CallWidget)]
-        [ValidateModelState]
+        [SwaggerOperation(
+            Summary = "Call a widget",
+            Description =
+                "Call the widget's corresponding API." +
+                "The query parameters will be used to override/complete the widget's `params` values, i.e.:**`paramName`=`value`**." +
+                "The API's request result is interpolated into a its corresponding data scheme (inheriting from `WidgetCallResponse`) and returned"
+        )]
+        [SwaggerResponse((int) HttpStatusCode.NotFound, "The widget doesn't exist")]
         public ResponseModel<WidgetCallResponseModel> CallWidget(
-            [FromRoute] [Required] [Range(1, 2147483647)]
+            [FromRoute] [Required] [Range(1, 2147483647)] [SwaggerParameter("The widget's ID")]
             int? widgetId
         )
         {
@@ -94,33 +122,40 @@ namespace Area.API.Controllers
 
         [HttpDelete]
         [Route(RoutesConstants.Widgets.UnsubscribeWidget)]
-        [ValidateModelState]
+        [SwaggerOperation(
+            Summary = "Unsubscribe the user to a widget",
+            Description = "Remove a widget to the user's subscriptions"
+        )]
+        [SwaggerResponse((int) HttpStatusCode.NotFound, "The widget doesn't exist or the user isn't subscribed to it")]
         public StatusModel UnsubscribeWidget(
-            [FromRoute] [Required] [Range(1, 2147483647)]
+            [FromRoute] [Required] [Range(1, 2147483647)] [SwaggerParameter("The widget's ID")]
             int? widgetId
         )
         {
             var userId = AuthUtilities.GetUserIdFromPrincipal(User);
 
             if (!_userRepository.RemoveWidgetSubscription(userId!.Value, widgetId!.Value))
-                throw new NotFoundHttpException("The user is not subscribed to this widget");
+                throw new NotFoundHttpException("The widget doesn't exist or the user is not subscribed");
             return StatusModel.Success();
         }
 
         [HttpPost]
         [Route(RoutesConstants.Widgets.SubscribeWidget)]
-        [ValidateModelState]
+        [SwaggerOperation(
+            Summary = "Subscribe the user to a widget",
+            Description = "Add a widget to the user's subscriptions"
+        )]
+        [SwaggerResponse((int) HttpStatusCode.NotFound, "The widget doesn't exist")]
         public StatusModel SubscribeWidget(
-            [FromRoute] [Required] [Range(1, 2147483647)]
+            [FromRoute] [Required] [Range(1, 2147483647)] [SwaggerParameter("The widget's ID")]
             int? widgetId
         )
         {
             var userId = AuthUtilities.GetUserIdFromPrincipal(User);
 
-            if (!_widgetRepository.WidgetExists(widgetId!.Value))
+            if (!_userRepository.AddWidgetSubscription(userId!.Value, widgetId!.Value))
                 throw new NotFoundHttpException("This widget does not exist");
 
-            _userRepository.AddWidgetSubscription(userId!.Value, widgetId!.Value);
             return StatusModel.Success();
         }
     }

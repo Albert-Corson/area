@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using SpotifyAPI.Web;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Area.API.Models.Widgets
 {
@@ -24,13 +25,16 @@ namespace Area.API.Models.Widgets
             Popularity = artist.Popularity;
         }
 
-        [JsonProperty("followers")]
+        [JsonProperty("followers", Required = Required.Always)]
+        [SwaggerSchema("The amount of followers the artist has")]
         public int Followers { get; set; }
 
-        [JsonProperty("genres")]
+        [JsonProperty("genres", Required = Required.Always)]
+        [SwaggerSchema("The genres of music the artist makes")]
         public IEnumerable<string> Genres { get; set; } = null!;
 
-        [JsonProperty("popularity")]
+        [JsonProperty("popularity", Required = Required.Always)]
+        [SwaggerSchema("The popularity rank of the artist")]
         public int Popularity { get; set; }
     }
 }

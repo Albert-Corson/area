@@ -37,7 +37,7 @@ namespace Area.API.Utilities
 
         public string GenerateAccessToken(int userId)
         {
-            return GenerateToken(DateTime.Now.AddTicks(JwtConstants.AccessTokenLifespan), new[] {
+            return GenerateToken(DateTime.Now.AddTicks(JwtConstants.AccessTokenLifespanTicks), new[] {
                 new Claim(ClaimTypeUserId, userId.ToString()),
                 new Claim(JwtRegisteredClaimNames.AuthTime, DateTime.Now.Ticks.ToString()),
                 new Claim(JwtRegisteredClaimNames.Typ, "access_token")
@@ -46,7 +46,7 @@ namespace Area.API.Utilities
 
         public string GenerateRefreshToken(int userId)
         {
-            return GenerateToken(DateTime.Now.AddTicks(JwtConstants.RefreshTokenLifespan), new[] {
+            return GenerateToken(DateTime.Now.AddTicks(JwtConstants.RefreshTokenLifespanTicks), new[] {
                 new Claim(ClaimTypeUserId, userId.ToString()),
                 new Claim(JwtRegisteredClaimNames.AuthTime, DateTime.Now.Ticks.ToString()),
                 new Claim(JwtRegisteredClaimNames.Typ, "refresh_token")

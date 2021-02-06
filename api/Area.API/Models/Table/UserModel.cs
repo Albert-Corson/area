@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Area.API.Models.Table.ManyToMany;
 using Area.API.Models.Table.Owned;
 using Newtonsoft.Json;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Area.API.Models.Table
 {
@@ -10,13 +11,16 @@ namespace Area.API.Models.Table
     {
         [ForeignKey("UserId")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [JsonProperty("id")]
+        [JsonProperty("id", Required = Required.Always)]
+        [SwaggerSchema("The user's ID")]
         public int Id { get; set; }
 
-        [JsonProperty("username")]
+        [JsonProperty("username", Required = Required.Always)]
+        [SwaggerSchema("The user's username")]
         public string Username { get; set; } = null!;
 
-        [JsonProperty("email")]
+        [JsonProperty("email", Required = Required.Always)]
+        [SwaggerSchema("The user's email")]
         public string Email { get; set; } = null!;
 
         [JsonIgnore]

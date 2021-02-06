@@ -9,7 +9,7 @@ namespace Area.API.Attributes
         {
             if (context.ModelState.IsValid)
                 return;
-            throw new BadRequestHttpException("Invalid request body");
+            throw new BadRequestHttpException("Malformed body or query parameter(s).");
         }
     }
 }

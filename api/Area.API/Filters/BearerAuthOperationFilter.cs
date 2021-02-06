@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Area.API.OperationFilters
+namespace Area.API.Filters
 {
     public class BearerAuthOperationFilter : IOperationFilter
     {
@@ -16,7 +16,7 @@ namespace Area.API.OperationFilters
 
             if (noAuthRequired || !authRequired)
                 return;
-            
+
             operation.Security = new List<OpenApiSecurityRequirement> {
                 new OpenApiSecurityRequirement {
                     {
