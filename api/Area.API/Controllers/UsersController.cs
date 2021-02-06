@@ -7,6 +7,7 @@ using Area.API.Models.Request;
 using Area.API.Models.Table;
 using Area.API.Repositories;
 using Area.API.Utilities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -14,7 +15,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace Area.API.Controllers
 {
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [SwaggerTag("User-related endpoints")]
     public class UsersController : ControllerBase
     {

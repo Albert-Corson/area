@@ -5,6 +5,7 @@ using Area.API.Models;
 using Area.API.Models.Request;
 using Area.API.Repositories;
 using Area.API.Utilities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -12,7 +13,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace Area.API.Controllers
 {
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [SwaggerTag("Authentication-related endpoints")]
     public class AuthController : ControllerBase
     {

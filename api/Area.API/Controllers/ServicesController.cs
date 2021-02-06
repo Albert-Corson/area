@@ -9,13 +9,14 @@ using Area.API.Models.Table;
 using Area.API.Repositories;
 using Area.API.Services;
 using Area.API.Utilities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Area.API.Controllers
 {
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [SwaggerTag("Service-related endpoints")]
     public class ServicesController : ControllerBase
     {
