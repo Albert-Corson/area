@@ -59,16 +59,6 @@ namespace Area.API.Repositories
             return true;
         }
 
-        public IEnumerable<UserWidgetParamModel> GetUserWidgetParams(int userId, int? widgetId = null)
-        {
-            var widgetParams = Database.Users.AsNoTracking()
-                    .FirstOrDefault(model => model.Id == userId)
-                    ?.WidgetParams.ToList()
-                ?? new List<UserWidgetParamModel>();
-
-            return widgetId != null ? widgetParams.Where(model => model.WidgetId == widgetId) : widgetParams;
-        }
-
         public void AddWidgetSubscription(int userId, int widgetId)
         {
             var dbSet = Database.Set<UserWidgetModel>();
