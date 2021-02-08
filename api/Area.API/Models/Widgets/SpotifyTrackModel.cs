@@ -6,6 +6,9 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace Area.API.Models.Widgets
 {
+    [SwaggerSchema(@"## This is the response model for the following widgets of the Spotify service:
+- Favorite tracks
+- History")]
     public class SpotifyTrackModel : WidgetCallResponseItemModel
     {
         public SpotifyTrackModel()

@@ -33,7 +33,7 @@ namespace Area.API.Controllers
         [AllowAnonymous]
         [SwaggerOperation(
             Summary = "Sign-in to a user's account",
-            Description = "Get a pair of access and refresh tokens, allowing access a user's account"
+            Description = "## Get a pair of access and refresh tokens, allowing access a user's account"
         )]
         [SwaggerResponse((int) HttpStatusCode.Unauthorized, "Invalid Bearer token, identifier or password")]
         public ResponseModel<UserTokenModel> SignIn(
@@ -63,7 +63,7 @@ namespace Area.API.Controllers
         [AllowAnonymous]
         [SwaggerOperation(
             Summary = "Refresh access tokens",
-            Description = "Get a new pair of access and refresh tokens from a previous refresh token"
+            Description = "## Get a new pair of access and refresh tokens from a previous refresh token"
         )]
         public ResponseModel<UserTokenModel> RefreshAccessToken(
             [FromBody]

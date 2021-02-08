@@ -1,11 +1,15 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using Area.API.Models.Table.Owned;
+using Area.API.Models.Widgets;
 using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Area.API.Models
 {
+    [SwaggerSubType(typeof(NewsApiArticleModel))]
+    [SwaggerSubType(typeof(SpotifyTrackModel))]
+    [SwaggerSubType(typeof(SpotifyArtistModel))]
     [SwaggerSchema("Base (generic) interpolation scheme for a widget's invocation result item. At least one of the field must be defined. This scheme can be extended depending on the widget")]
     public class WidgetCallResponseItemModel
     {

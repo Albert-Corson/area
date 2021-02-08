@@ -34,7 +34,7 @@ namespace Area.API.Controllers
         [SwaggerOperation(
             Summary = "Register a user",
             Description =
-                "Create a new user account"
+                "## Create a new user account"
         )]
         [SwaggerResponse((int) HttpStatusCode.BadRequest,
             "Malformed body, incorrect username/email format, password too weak")]
@@ -78,7 +78,7 @@ namespace Area.API.Controllers
         [SwaggerOperation(
             Summary = "Get a user's information",
             Description =
-                "Get information about a user"
+                "## Get information about a user"
         )]
         [SwaggerResponse((int) HttpStatusCode.NotFound, "Desired user doesn't exist")]
         public ResponseModel<UserModel> GetUser(
@@ -101,7 +101,7 @@ namespace Area.API.Controllers
         [SwaggerOperation(
             Summary = "Get the current user's information",
             Description =
-                "Get information about the current user associated to the bearer token used for the request"
+                "## Get information about the current user associated to the bearer token used for the request"
         )]
         public ResponseModel<UserModel> GetMyUser()
         {
@@ -120,7 +120,7 @@ namespace Area.API.Controllers
         [Route(RoutesConstants.Users.DeleteUser)]
         [SwaggerOperation(
             Summary = "Delete a user",
-            Description = "Delete a user's account"
+            Description = "## Delete a user's account"
         )]
         [SwaggerResponse((int) HttpStatusCode.Unauthorized, "Not allowed to delete the desired user")]
         public StatusModel DeleteUser(

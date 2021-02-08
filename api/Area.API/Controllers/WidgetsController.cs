@@ -39,7 +39,7 @@ namespace Area.API.Controllers
         [SwaggerOperation(
             Summary = "List all widgets",
             Description =
-                "List all widgets. Optionally, you can get the widgets from one particular service. **The values of the parameters (`params`) are the widgets' default ones**"
+                "## List all widgets. Optionally, you can get the widgets from one particular service. **The values of the parameters (`params`) are the widgets' default ones**"
         )]
         [SwaggerResponse((int) HttpStatusCode.NotFound, "The `serviceId` doesn't have a correspond service")]
         public ResponseModel<List<WidgetModel>> GetWidgets(
@@ -105,10 +105,9 @@ namespace Area.API.Controllers
         [Route(RoutesConstants.Widgets.CallWidget)]
         [SwaggerOperation(
             Summary = "Call a widget",
-            Description =
-                "Call the widget's corresponding API." +
-                "The query parameters will be used to override/complete the widget's `params` values, i.e.:**`paramName`=`value`**." +
-                "The API's request result is interpolated into a its corresponding data scheme (inheriting from `WidgetCallResponse`) and returned"
+            Description = @"## Call the widget's corresponding API.
+## The query parameters will be used to override/complete the widget's `params` values, i.e.:**`paramName`=`value`**.
+## The API's request result is interpolated into a its corresponding data scheme (inheriting from `WidgetCallResponse`) and returned"
         )]
         [SwaggerResponse((int) HttpStatusCode.NotFound, "The widget doesn't exist")]
         public ResponseModel<WidgetCallResponseModel> CallWidget(
@@ -125,7 +124,7 @@ namespace Area.API.Controllers
         [Route(RoutesConstants.Widgets.UnsubscribeWidget)]
         [SwaggerOperation(
             Summary = "Unsubscribe the user to a widget",
-            Description = "Remove a widget to the user's subscriptions"
+            Description = "## Remove a widget to the user's subscriptions"
         )]
         [SwaggerResponse((int) HttpStatusCode.NotFound, "The widget doesn't exist or the user isn't subscribed to it")]
         public StatusModel UnsubscribeWidget(
@@ -144,7 +143,7 @@ namespace Area.API.Controllers
         [Route(RoutesConstants.Widgets.SubscribeWidget)]
         [SwaggerOperation(
             Summary = "Subscribe the user to a widget",
-            Description = "Add a widget to the user's subscriptions"
+            Description = "## Add a widget to the user's subscriptions"
         )]
         [SwaggerResponse((int) HttpStatusCode.NotFound, "The widget doesn't exist")]
         public StatusModel SubscribeWidget(

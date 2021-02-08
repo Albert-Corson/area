@@ -111,8 +111,8 @@ namespace Area.API
                 options.SwaggerDoc("v1", new OpenApiInfo {
                     Title = "Area API documentation",
                     Version = "1.0.0",
-                    Description =
-                        "This the documentation of the Area dashboard API. All endpoints use the same base data scheme as response, **even for non-successful HTTP status codes** (see `Status`)."
+                    Description = @"## This is the documentation of the Area dashboard API.
+### All endpoints use the same base data scheme as response, **even for non-successful HTTP status codes** (see `Status`)."
                 });
                 options.EnableAnnotations(true, true);
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme {

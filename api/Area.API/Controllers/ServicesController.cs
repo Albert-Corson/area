@@ -36,7 +36,7 @@ namespace Area.API.Controllers
         [Route(RoutesConstants.Services.GetServices)]
         [SwaggerOperation(
             Summary = "List all services",
-            Description = "Get a list of all services available"
+            Description = "## Get a list of all services available"
         )]
         public ResponseModel<List<ServiceModel>> GetServices()
         {
@@ -49,7 +49,7 @@ namespace Area.API.Controllers
         [Route(RoutesConstants.Services.GetMyServices)]
         [SwaggerOperation(
             Summary = "List a user's services",
-            Description = "Get a list of all services where a user is subscribed to the its widget(s)"
+            Description = "## Get a list of all services where a user is subscribed to the its widget(s)"
         )]
         public ResponseModel<List<ServiceModel>> GetMyService()
         {
@@ -66,7 +66,7 @@ namespace Area.API.Controllers
         [Route(RoutesConstants.Services.GetService)]
         [SwaggerOperation(
             Summary = "Get a service",
-            Description = "Get a information about a service in particular"
+            Description = "## Get a information about a service in particular"
         )]
         [SwaggerResponse((int) HttpStatusCode.NotFound, "The service does not exist")]
         public ResponseModel<ServiceModel> GetService(
@@ -89,7 +89,9 @@ namespace Area.API.Controllers
         [SwaggerOperation(
             Summary = "Sign-in a user to a service",
             Description =
-                "Sign-in the user to a service. If the service doesn't have sign-in capabilities, an empty success response is returned (a.k.a without `data`). Otherwise an authentication URL is returned as `data` to redirect the user to"
+                @"## Sign-in the user to a service.
+## If the service doesn't have sign-in capabilities, an empty success response is returned (a.k.a without `data`).
+## Otherwise an authentication URL is returned as `data` to redirect the user to"
         )]
         public ResponseModel<string?> SignInService(
             [FromRoute] [Required] [Range(1, 2147483647)] [SwaggerParameter("Service's ID")]
@@ -113,7 +115,7 @@ namespace Area.API.Controllers
         [SwaggerOperation(
             Summary = "Sign-out a user from a service",
             Description =
-                "Sign-out the user from a service. If the service doesn't have sign-in capabilities, an empty success response is returned (a.k.a. without `data`)"
+                "## Sign-out the user from a service. If the service doesn't have sign-in capabilities, an empty success response is returned (a.k.a. without `data`)"
         )]
         public StatusModel SignOutService(
             [FromRoute] [Required] [Range(1, 2147483647)] [SwaggerParameter("Service's ID")]

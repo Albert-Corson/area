@@ -1,9 +1,11 @@
+using System.Runtime.Serialization;
 using NewsAPI.Models;
 using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Area.API.Models.Widgets
 {
+    [SwaggerSchema("## This is the response model for all the widgets of the NewsApi service")]
     public class NewsApiArticleModel : WidgetCallResponseItemModel
     {
         public NewsApiArticleModel()

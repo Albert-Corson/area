@@ -33,7 +33,7 @@ namespace Area.API.Controllers
         [Route(RoutesConstants.AboutDotJson)]
         [SwaggerOperation(
             Summary = "General information about the API's content",
-            Description = "Get general information about the API's content such as the list of all services and widgets (and more TO BE DEFINED)"
+            Description = "## Get general information about the API's content such as the list of all services and widgets (and more TO BE DEFINED)"
         )]
         public AboutDotJsonModel AboutDotJson()
         {
