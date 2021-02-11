@@ -5,19 +5,22 @@ using Area.API.Models;
 using Area.API.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Area.API.Controllers
 {
-    public class DefaultController : ControllerBase
+    [SwaggerTag("Other informational endpoints")]
+    public class OthersController : ControllerBase
     {
         private readonly ServiceRepository _serviceRepository;
 
-        public DefaultController(ServiceRepository serviceRepository)
+        public OthersController(ServiceRepository serviceRepository)
         {
             _serviceRepository = serviceRepository;
         }
 
         [Route(RoutesConstants.Error)]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public StatusModel Error()
         {
             return new StatusModel {
@@ -26,9 +29,15 @@ namespace Area.API.Controllers
             };
         }
 
+        [HttpGet]
         [Route(RoutesConstants.AboutDotJson)]
+        [SwaggerOperation(
+            Summary = "General information about the API's content",
+            Description = "## Get general information about the API's content such as the list of all services and widgets (and more TO BE DEFINED)"
+        )]
         public AboutDotJsonModel AboutDotJson()
         {
+            // TODO: rework this endpoint to return useful information
             var clientIp = HttpContext.Connection.RemoteIpAddress.MapToIPv4() + ":" + HttpContext.Connection.RemotePort;
 
             var serviceModels = _serviceRepository.GetServices(true).ToList();

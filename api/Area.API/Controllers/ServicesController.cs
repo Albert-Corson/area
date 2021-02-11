@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
-using Area.API.Attributes;
 using Area.API.Constants;
 using Area.API.Exceptions.Http;
 using Area.API.Models;
@@ -13,9 +12,12 @@ using Area.API.Utilities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Area.API.Controllers
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [SwaggerTag("Service-related endpoints")]
     public class ServicesController : ControllerBase
     {
         private readonly ServiceManagerService _serviceManager;
@@ -32,7 +34,10 @@ namespace Area.API.Controllers
 
         [HttpGet]
         [Route(RoutesConstants.Services.GetServices)]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [SwaggerOperation(
+            Summary = "List all services",
+            Description = "## Get a list of all services available"
+        )]
         public ResponseModel<List<ServiceModel>> GetServices()
         {
             return new ResponseModel<List<ServiceModel>> {
@@ -42,7 +47,10 @@ namespace Area.API.Controllers
 
         [HttpGet]
         [Route(RoutesConstants.Services.GetMyServices)]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [SwaggerOperation(
+            Summary = "List a user's services",
+            Description = "## Get a list of all services where a user is subscribed to the its widget(s)"
+        )]
         public ResponseModel<List<ServiceModel>> GetMyService()
         {
             var userId = AuthUtilities.GetUserIdFromPrincipal(User);
@@ -56,8 +64,11 @@ namespace Area.API.Controllers
 
         [HttpGet]
         [Route(RoutesConstants.Services.GetService)]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [ValidateModelState]
+        [SwaggerOperation(
+            Summary = "Get a service",
+            Description = "## Get a information about a service in particular"
+        )]
+        [SwaggerResponse((int) HttpStatusCode.NotFound, "The service does not exist")]
         public ResponseModel<ServiceModel> GetService(
             [FromRoute] [Required] [Range(1, 2147483647)]
             int? serviceId
@@ -75,10 +86,15 @@ namespace Area.API.Controllers
 
         [HttpPost]
         [Route(RoutesConstants.Services.SignInService)]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [ValidateModelState]
+        [SwaggerOperation(
+            Summary = "Sign-in a user to a service",
+            Description =
+                @"## Sign-in the user to a service.
+## If the service doesn't have sign-in capabilities, an empty success response is returned (a.k.a without `data`).
+## Otherwise an authentication URL is returned as `data` to redirect the user to"
+        )]
         public ResponseModel<string?> SignInService(
-            [FromRoute] [Required] [Range(1, 2147483647)]
+            [FromRoute] [Required] [Range(1, 2147483647)] [SwaggerParameter("Service's ID")]
             int? serviceId
         )
         {
@@ -96,10 +112,13 @@ namespace Area.API.Controllers
 
         [HttpDelete]
         [Route(RoutesConstants.Services.SignOutService)]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [ValidateModelState]
+        [SwaggerOperation(
+            Summary = "Sign-out a user from a service",
+            Description =
+                "## Sign-out the user from a service. If the service doesn't have sign-in capabilities, an empty success response is returned (a.k.a. without `data`)"
+        )]
         public StatusModel SignOutService(
-            [FromRoute] [Required] [Range(1, 2147483647)]
+            [FromRoute] [Required] [Range(1, 2147483647)] [SwaggerParameter("Service's ID")]
             int? serviceId
         )
         {
@@ -111,7 +130,9 @@ namespace Area.API.Controllers
 
         [HttpGet]
         [Route(RoutesConstants.Services.SignInServiceCallback)]
-        [ValidateModelState]
+        [AllowAnonymous]
+        [ApiExplorerSettings(IgnoreApi = true)]
+        [Produces("text/html")]
         public ContentResult SignInServiceCallback(
             [FromRoute] [Required] [Range(1, 2147483647)]
             int? serviceId

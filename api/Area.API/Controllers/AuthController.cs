@@ -1,4 +1,4 @@
-using Area.API.Attributes;
+using System.Net;
 using Area.API.Constants;
 using Area.API.Exceptions.Http;
 using Area.API.Models;
@@ -9,9 +9,12 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Area.API.Controllers
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [SwaggerTag("Authentication-related endpoints")]
     public class AuthController : ControllerBase
     {
         private readonly AuthUtilities _authUtilities;
@@ -27,9 +30,15 @@ namespace Area.API.Controllers
 
         [HttpPost]
         [Route(RoutesConstants.Auth.SignIn)]
-        [ValidateModelState]
+        [AllowAnonymous]
+        [SwaggerOperation(
+            Summary = "Sign-in to a user's account",
+            Description = "## Get a pair of access and refresh tokens, allowing access a user's account"
+        )]
+        [SwaggerResponse((int) HttpStatusCode.Unauthorized, "Invalid Bearer token, identifier or password")]
         public ResponseModel<UserTokenModel> SignIn(
-            [FromBody] SignInModel body
+            [FromBody] [SwaggerRequestBody("The user's credentials", Required = true)]
+            SignInModel body
         )
         {
             var encryptedPasswd = PasswordUtilities.Encrypt(_configuration[JwtConstants.SecretKeyName], body.Password!);
@@ -39,7 +48,7 @@ namespace Area.API.Controllers
             var user = _userRepository.GetUser(email: body.Identifier, passwd: encryptedPasswd)
                 ?? _userRepository.GetUser(username: body.Identifier, passwd: encryptedPasswd);
             if (user == null)
-                throw new UnauthorizedHttpException("Invalid username/password");
+                throw new UnauthorizedHttpException("Invalid identifier/password");
 
             return new ResponseModel<UserTokenModel> {
                 Data = new UserTokenModel {
@@ -51,9 +60,17 @@ namespace Area.API.Controllers
 
         [HttpPost]
         [Route(RoutesConstants.Auth.RefreshAccessToken)]
-        [ValidateModelState]
+        [AllowAnonymous]
+        [SwaggerOperation(
+            Summary = "Refresh access tokens",
+            Description = "## Get a new pair of access and refresh tokens from a previous refresh token"
+        )]
         public ResponseModel<UserTokenModel> RefreshAccessToken(
-            [FromBody] RefreshTokenModel body
+            [FromBody]
+            [SwaggerRequestBody(
+                "The refresh_token obtained from a previous call to `" + RoutesConstants.Auth.SignIn + "` or `" +
+                RoutesConstants.Auth.RefreshAccessToken + "`", Required = true)]
+            RefreshTokenModel body
         )
         {
             var userId = _authUtilities.GetUserIdFromRefreshToken(body.RefreshToken!);
@@ -71,7 +88,7 @@ namespace Area.API.Controllers
 
         [HttpDelete]
         [Route(RoutesConstants.Auth.RevokeUserTokens)]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public StatusModel RevokeUserTokens()
         {
             // TODO: (optional) revoke the credentials

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Area.API.Models.Table
 {
@@ -8,10 +9,12 @@ namespace Area.API.Models.Table
     {
         [ForeignKey("ServiceId")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [JsonProperty("id")]
+        [JsonProperty("id", Required = Required.Always)]
+        [SwaggerSchema("Service's ID")]
         public int Id { get; set; }
 
-        [JsonProperty("name")]
+        [JsonProperty("name", Required = Required.Always)]
+        [SwaggerSchema("Service's name")]
         public string Name { get; set; } = null!;
 
         [JsonIgnore]

@@ -11,8 +11,12 @@ namespace Area.API.Repositories
 {
     public class UserRepository : ARepository
     {
-        public UserRepository(AreaDbContext database) : base(database)
-        { }
+        private readonly WidgetRepository _widgetRepository;
+
+        public UserRepository(AreaDbContext database, WidgetRepository widgetRepository) : base(database)
+        {
+            _widgetRepository = widgetRepository;
+        }
 
         public bool UserExists(int? userId = null, string? username = null, string? email = null)
         {
@@ -59,18 +63,22 @@ namespace Area.API.Repositories
             return true;
         }
 
-        public void AddWidgetSubscription(int userId, int widgetId)
+        public bool AddWidgetSubscription(int userId, int widgetId)
         {
             var dbSet = Database.Set<UserWidgetModel>();
             var existingSub = dbSet.SingleOrDefault(model => model.UserId == userId && model.WidgetId == widgetId);
 
             if (existingSub != null)
-                return;
+                return true;
+
+            if (!_widgetRepository.WidgetExists(widgetId))
+                return false;
 
             dbSet.Add(new UserWidgetModel {
                 UserId = userId,
                 WidgetId = widgetId
             });
+            return true;
         }
 
         public bool RemoveWidgetSubscription(int userId, int widgetId)

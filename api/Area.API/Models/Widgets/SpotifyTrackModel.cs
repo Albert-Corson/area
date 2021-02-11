@@ -2,9 +2,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using SpotifyAPI.Web;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Area.API.Models.Widgets
 {
+    [SwaggerSchema(@"## This is the response model for the following widgets of the Spotify service:
+- Favorite tracks
+- History")]
     public class SpotifyTrackModel : WidgetCallResponseItemModel
     {
         public SpotifyTrackModel()
@@ -36,13 +40,16 @@ namespace Area.API.Models.Widgets
             Preview = track.PreviewUrl;
         }
 
-        [JsonProperty("artists")]
+        [JsonProperty("artists", Required = Required.Always)]
+        [SwaggerSchema("The artists who collaborated on making the track")]
         public IEnumerable<string> Artists { get; set; } = null!;
 
-        [JsonProperty("popularity")]
+        [JsonProperty("popularity", Required = Required.Always)]
+        [SwaggerSchema("The popularity rank of the song")]
         public int Popularity { get; set; }
 
-        [JsonProperty("preview")]
+        [JsonProperty("preview", Required = Required.Always)]
+        [SwaggerSchema("A link to a preview of the track")]
         public string Preview { get; set; } = null!;
     }
 }

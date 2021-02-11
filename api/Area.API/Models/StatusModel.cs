@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Area.API.Models
 {
@@ -13,10 +14,12 @@ namespace Area.API.Models
             Error = error;
         }
 
-        [JsonProperty("error")]
+        [JsonProperty("error", Required = Required.DisallowNull)]
+        [SwaggerSchema("Message describing the error if any")]
         public string? Error { get; set; }
 
-        [JsonProperty("successful")]
+        [JsonProperty("successful", Required = Required.Always)]
+        [SwaggerSchema("State of the request (failed or successful)")]
         public bool Successful { get; set; } = true;
 
         public static StatusModel Failed(string? error = null)

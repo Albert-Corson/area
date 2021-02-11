@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using Area.API.Attributes;
+using System.Net;
 using Area.API.Constants;
 using Area.API.Exceptions.Http;
 using Area.API.Models;
@@ -11,9 +11,12 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Area.API.Controllers
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [SwaggerTag("User-related endpoints")]
     public class UsersController : ControllerBase
     {
         private readonly IConfiguration _configuration;
@@ -27,9 +30,20 @@ namespace Area.API.Controllers
 
         [HttpPost]
         [Route(RoutesConstants.Users.Register)]
-        [ValidateModelState]
+        [AllowAnonymous]
+        [SwaggerOperation(
+            Summary = "Register a user",
+            Description =
+                "## Create a new user account"
+        )]
+        [SwaggerResponse((int) HttpStatusCode.BadRequest,
+            "Malformed body, incorrect username/email format, password too weak")]
+        [SwaggerResponse((int) HttpStatusCode.Conflict, "Username or email already in use")]
         public StatusModel Register(
-            [FromBody] RegisterModel body
+            [FromBody]
+            [SwaggerSchema(
+                "The user's information. The password must be at least 8 characters long, with and without capitals, with numerical and special characters. The username must start with a letter, numeric characters and some special characters (._-) are accepted")]
+            RegisterModel body
         )
         {
             if (!AuthUtilities.IsValidEmail(body.Email!))
@@ -40,7 +54,8 @@ namespace Area.API.Controllers
                     "Password too weak. At least 8 characters, with and without capitals, with numerical and special characters required.");
 
             if (!UsernameUtilities.IsUsernameValid(body.Username!))
-                throw new BadRequestHttpException("Invalid username");
+                throw new BadRequestHttpException(
+                    "Invalid username. Must start with a letter, numeric characters and some special characters (._-) are accepted");
 
             if (_userRepository.UserExists(email: body.Email, username: body.Username))
                 throw new ConflictHttpException("Username or email already in use");
@@ -60,10 +75,14 @@ namespace Area.API.Controllers
 
         [HttpGet]
         [Route(RoutesConstants.Users.GetUser)]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [ValidateModelState]
+        [SwaggerOperation(
+            Summary = "Get a user's information",
+            Description =
+                "## Get information about a user"
+        )]
+        [SwaggerResponse((int) HttpStatusCode.NotFound, "Desired user doesn't exist")]
         public ResponseModel<UserModel> GetUser(
-            [FromRoute] [Required] [Range(1, 2147483647)]
+            [FromRoute] [Required] [Range(1, 2147483647)] [SwaggerParameter("The ID of the desired user")]
             int? userId
         )
         {
@@ -79,7 +98,11 @@ namespace Area.API.Controllers
 
         [HttpGet]
         [Route(RoutesConstants.Users.GetMyUser)]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [SwaggerOperation(
+            Summary = "Get the current user's information",
+            Description =
+                "## Get information about the current user associated to the bearer token used for the request"
+        )]
         public ResponseModel<UserModel> GetMyUser()
         {
             var userId = AuthUtilities.GetUserIdFromPrincipal(User);
@@ -95,10 +118,13 @@ namespace Area.API.Controllers
 
         [HttpDelete]
         [Route(RoutesConstants.Users.DeleteUser)]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [ValidateModelState]
+        [SwaggerOperation(
+            Summary = "Delete a user",
+            Description = "## Delete a user's account"
+        )]
+        [SwaggerResponse((int) HttpStatusCode.Unauthorized, "Not allowed to delete the desired user")]
         public StatusModel DeleteUser(
-            [FromRoute] [Required] [Range(1, 2147483647)]
+            [FromRoute] [Required] [Range(1, 2147483647)] [SwaggerParameter("The ID of the desired user")]
             int? userId
         )
         {
@@ -108,8 +134,7 @@ namespace Area.API.Controllers
                 throw new UnauthorizedHttpException("You can only delete your own account");
 
             if (!_userRepository.RemoveUser(userId!.Value))
-                throw
-                    new InternalServerErrorHttpException(); // this should never happen, but we still have to handle the error
+                throw new InternalServerErrorHttpException(); // this should never happen, but we still have to handle the error
 
             return StatusModel.Success();
         }

@@ -1,8 +1,11 @@
+using System.Runtime.Serialization;
 using NewsAPI.Models;
 using Newtonsoft.Json;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Area.API.Models.Widgets
 {
+    [SwaggerSchema("## This is the response model for all the widgets of the NewsApi service")]
     public class NewsApiArticleModel : WidgetCallResponseItemModel
     {
         public NewsApiArticleModel()
@@ -21,16 +24,20 @@ namespace Area.API.Models.Widgets
             PublishedAt = article.PublishedAt?.Ticks;
         }
 
-        [JsonProperty("source")]
+        [JsonProperty("source", Required = Required.Always)]
+        [SwaggerSchema("The source of the article")]
         public string Source { get; set; } = null!;
 
-        [JsonProperty("author")]
+        [JsonProperty("author", Required = Required.Always)]
+        [SwaggerSchema("The author of the article")]
         public string Author { get; set; } = null!;
 
-        [JsonProperty("description")]
+        [JsonProperty("description", Required = Required.Always)]
+        [SwaggerSchema("The description of the content")]
         public string Description { get; set; } = null!;
 
-        [JsonProperty("published_at")]
+        [JsonProperty("published_at", Required = Required.DisallowNull)]
+        [SwaggerSchema("The date publishing (epoch) of the article")]
         public long? PublishedAt { get; set; }
     }
 }
