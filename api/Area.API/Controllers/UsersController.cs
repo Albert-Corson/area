@@ -74,29 +74,6 @@ namespace Area.API.Controllers
         }
 
         [HttpGet]
-        [Route(RoutesConstants.Users.GetUser)]
-        [SwaggerOperation(
-            Summary = "Get a user's information",
-            Description =
-                "## Get information about a user"
-        )]
-        [SwaggerResponse((int) HttpStatusCode.NotFound, "Desired user doesn't exist")]
-        public ResponseModel<UserModel> GetUser(
-            [FromRoute] [Required] [Range(1, 2147483647)] [SwaggerParameter("The ID of the desired user")]
-            int? userId
-        )
-        {
-            var user = _userRepository.GetUser(userId);
-
-            if (user == null)
-                throw new NotFoundHttpException("This user does not exist");
-
-            return new ResponseModel<UserModel> {
-                Data = user
-            };
-        }
-
-        [HttpGet]
         [Route(RoutesConstants.Users.GetMyUser)]
         [SwaggerOperation(
             Summary = "Get the current user's information",
@@ -117,23 +94,17 @@ namespace Area.API.Controllers
         }
 
         [HttpDelete]
-        [Route(RoutesConstants.Users.DeleteUser)]
+        [Route(RoutesConstants.Users.DeleteMyUser)]
         [SwaggerOperation(
             Summary = "Delete a user",
             Description = "## Delete a user's account"
         )]
         [SwaggerResponse((int) HttpStatusCode.Unauthorized, "Not allowed to delete the desired user")]
-        public StatusModel DeleteUser(
-            [FromRoute] [Required] [Range(1, 2147483647)] [SwaggerParameter("The ID of the desired user")]
-            int? userId
-        )
+        public StatusModel DeleteUser()
         {
-            var currentUserId = AuthUtilities.GetUserIdFromPrincipal(User);
+            var userId = AuthUtilities.GetUserIdFromPrincipal(User);
 
-            if (currentUserId != userId)
-                throw new UnauthorizedHttpException("You can only delete your own account");
-
-            if (!_userRepository.RemoveUser(userId!.Value))
+            if (userId == null || !_userRepository.RemoveUser(userId!.Value))
                 throw new InternalServerErrorHttpException(); // this should never happen, but we still have to handle the error
 
             return StatusModel.Success();
