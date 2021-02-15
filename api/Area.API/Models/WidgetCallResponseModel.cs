@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
-using Area.API.Models.Table.Owned;
+using Area.API.Models.Table;
 using Area.API.Models.Widgets;
 using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Annotations;
@@ -32,14 +32,14 @@ namespace Area.API.Models
 
     public class WidgetCallResponseModel
     {
-        public WidgetCallResponseModel(IEnumerable<WidgetParamModel> callParams)
+        public WidgetCallResponseModel(IEnumerable<ParamModel> callParams)
         {
             CallParams = callParams;
         }
 
         [JsonProperty("params", Required = Required.Always)]
         [SwaggerSchema("List of parameters used for the request", ReadOnly = false)]
-        public IEnumerable<WidgetParamModel> CallParams { get; }
+        public IEnumerable<ParamModel> CallParams { get; }
 
         [JsonProperty("items", Required = Required.DisallowNull)]
         [SwaggerSchema("The result of the widget's invocation, if enumerable", ReadOnly = false)]

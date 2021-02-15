@@ -33,9 +33,13 @@ namespace Area.API.Repositories
         }
 
         public UserModel? GetUser(int? userId = null, string? username = null, string? email = null,
-            string? passwd = null, bool asNoTracking = true)
+            string? passwd = null, bool includeChildren = false, bool asNoTracking = true)
         {
             var queryable = asNoTracking ? Database.Users.AsNoTracking() : Database.Users.AsQueryable();
+            queryable = includeChildren
+                ? queryable
+                    .Include(model => model.WidgetParams).ThenInclude(model => model.Param)
+                : queryable;
 
             if (userId == null && username == null && email == null && passwd == null)
                 throw new ArgumentException("At least one non-null argument expected");
@@ -66,7 +70,7 @@ namespace Area.API.Repositories
         public bool AddWidgetSubscription(int userId, int widgetId)
         {
             var dbSet = Database.Set<UserWidgetModel>();
-            var existingSub = dbSet.SingleOrDefault(model => model.UserId == userId && model.WidgetId == widgetId);
+            var existingSub = dbSet.FirstOrDefault(model => model.UserId == userId && model.WidgetId == widgetId);
 
             if (existingSub != null)
                 return true;
@@ -85,11 +89,10 @@ namespace Area.API.Repositories
         {
             var dbSet = Database.Set<UserWidgetModel>();
 
-            var subscription = dbSet.SingleOrDefault(model => model.UserId == userId && model.WidgetId == widgetId);
-            var userParams = Database.Users
-                .SingleOrDefault(model => model.Id == userId)
+            var subscription = dbSet.FirstOrDefault(model => model.UserId == userId && model.WidgetId == widgetId);
+            var userParams = GetUser(userId, includeChildren: true, asNoTracking: false)
                 ?.WidgetParams
-                .Where(model => model.WidgetId == widgetId);
+                .Where(model => model.Param.WidgetId == widgetId);
 
             if (userParams != null)
                 Database.RemoveRange(userParams);
@@ -102,7 +105,7 @@ namespace Area.API.Repositories
         public bool AddServiceCredentials(int userId, int serviceId, string jsonTokens)
         {
             var user = Database.Users
-                .SingleOrDefault(model => model.Id == userId);
+                .FirstOrDefault(model => model.Id == userId);
 
             if (user == null)
                 return false;

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Area.API.Exceptions.Http;
 using Area.API.Models;
+using Area.API.Models.Table;
 using Area.API.Models.Table.Owned;
 using Area.API.Models.Widgets;
 using Area.API.Services.Services;
@@ -28,7 +29,7 @@ namespace Area.API.Services.Widgets.Spotify
             return SpotifyClient != null;
         }
 
-        public void CallWidgetApi(WidgetCallParameters widgetCallParams,
+        public void CallWidgetApi(IEnumerable<ParamModel> widgetCallParams,
             ref WidgetCallResponseModel response)
         {
             var task = SpotifyClient!.Player.GetRecentlyPlayed();

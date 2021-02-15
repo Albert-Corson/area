@@ -14,52 +14,13 @@ using Area.API.Services.Widgets.NewsApi;
 using Area.API.Services.Widgets.Spotify;
 using Area.API.Utilities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Primitives;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 
 namespace Area.API.Services
 {
-    public class WidgetCallParameters
-    {
-        public IDictionary<string, int?> Integers { get; } = new Dictionary<string, int?>();
-
-        public IDictionary<string, string?> Strings { get; } = new Dictionary<string, string?>();
-
-        public bool TryAddAny(string name, string? value, string type)
-        {
-            return type switch {
-                "string" => Strings.TryAdd(name, value),
-                "integer" when value == null => Integers.TryAdd(name, null),
-                _ => int.TryParse(value, out var integerValue) && Integers.TryAdd(name, integerValue)
-            };
-        }
-
-        public bool Contains(string key, string type)
-        {
-            return type switch {
-                "string" => Strings.ContainsKey(key),
-                "integer" => Integers.ContainsKey(key),
-                _ => false
-            };
-        }
-
-        public IEnumerable<WidgetParamModel> MergeAll()
-        {
-            var list = new List<WidgetParamModel>();
-
-            list.AddRange(Strings.Select(pair => new WidgetParamModel {
-                Name = pair.Key,
-                Type = "string",
-                Value = pair.Value
-            }));
-            list.AddRange(Integers.Select(pair => new WidgetParamModel {
-                Name = pair.Key,
-                Type = "integer",
-                Value = pair.Value?.ToString()
-            }));
-            return list;
-        }
-    }
-
     public class WidgetManagerService
     {
         private readonly UserRepository _userRepository;
@@ -118,23 +79,23 @@ namespace Area.API.Services
             var widgetCallParams = BuildWidgetCallParams(
                 widgetId,
                 widget.Params,
-                _userRepository.GetUser(userId, asNoTracking: false)!.WidgetParams!,
+                _userRepository.GetUser(userId, includeChildren: true, asNoTracking: false)!.WidgetParams,
                 context.Request.Query);
 
-            var response = new WidgetCallResponseModel(widgetCallParams.MergeAll());
+            var response = new WidgetCallResponseModel(widgetCallParams);
 
             widgetService.CallWidgetApi(widgetCallParams, ref response);
             return response;
         }
 
-        public static List<WidgetParamModel> BuildUserWidgetCallParams(IEnumerable<UserWidgetParamModel> userParams,
-            IEnumerable<WidgetParamModel> widgetParams)
+        public static List<ParamModel> BuildUserWidgetCallParams(IEnumerable<UserParamModel> userParams,
+            IEnumerable<ParamModel> widgetParams)
         {
-            List<WidgetParamModel> parameters = new List<WidgetParamModel>();
-            parameters.AddRange(userParams.Select(model => new WidgetParamModel {
-                Name = model.Name,
-                Required = model.Required,
-                Type = model.Type,
+            List<ParamModel> parameters = new List<ParamModel>();
+            parameters.AddRange(userParams.Select(model => new ParamModel {
+                Name = model.Param.Name,
+                Required = model.Param.Required,
+                Type = model.Param.Type,
                 Value = model.Value
             }));
             parameters.AddRange(widgetParams
@@ -142,57 +103,43 @@ namespace Area.API.Services
             return parameters;
         }
 
-        private static WidgetCallParameters BuildWidgetCallParams(int widgetId, ICollection<WidgetParamModel> defaultParams,
-            ICollection<UserWidgetParamModel> userParams, IQueryCollection queryParams)
+        private static List<ParamModel> BuildWidgetCallParams(int widgetId, ICollection<ParamModel> defaultParams,
+            ICollection<UserParamModel> userParams, IQueryCollection queryParams)
         {
-            var callParams = new WidgetCallParameters();
-
+            List<ParamModel> callParams = new List<ParamModel>();
+            
             foreach (var (key, value) in queryParams) {
-                string? type = null;
-                var userParam = userParams.FirstOrDefault(model => model.WidgetId == widgetId && model.Name == key);
+                var userParam = userParams.FirstOrDefault(model => model.Param.WidgetId == widgetId && model.Param.Name == key);
                 if (userParam != null) {
-                    userParam.Value = GetParamValueByType(value, userParam.Type!);
-                    type = userParam.Type!;
+                    userParam.Value = value;
                 } else {
                     var defaultParam = defaultParams.FirstOrDefault(model => model.Name == key);
-                    if (defaultParam != null) {
-                        type = defaultParam.Type!;
-                        if (defaultParam.Required != true)
-                            userParams.Add(new UserWidgetParamModel {
-                                Name = defaultParam.Name,
-                                Type = type,
-                                Value = GetParamValueByType(value, type!),
-                                WidgetId = widgetId
-                            });
+                    if (defaultParam?.Required == false) {
+                        userParams.Add(new UserParamModel {
+                            Value = value,
+                            ParamId = defaultParam.Id,
+                            Param = defaultParam
+                        });
+                    } else if (defaultParam?.Required == true) {
+                        callParams.Add(defaultParam);
                     }
                 }
-
-                if (type != null)
-                    callParams.TryAddAny(key, value, type);
             }
 
-            foreach (var userParam in userParams) {
-                if (userParam.WidgetId != widgetId)
-                    continue;
-                callParams.TryAddAny(userParam.Name!, userParam.Value!, userParam.Type!);
-            }
+            callParams.AddRange(from userParam in userParams
+                where userParam.Param == null || userParam.Param.WidgetId == widgetId
+                select new ParamModel(userParam));
 
-            foreach (var defaultParam in defaultParams)
-                if (defaultParam.Required != true)
-                    callParams.TryAddAny(defaultParam.Name!, defaultParam.Value!, defaultParam.Type!);
-                else if (callParams.Contains(defaultParam.Name!, defaultParam.Type!) == false)
+            foreach (var defaultParam in defaultParams) {
+                var contains = callParams.FirstOrDefault(model => model.Id == defaultParam.Id) != null;
+                if (defaultParam.Required != true && !contains)
+                    callParams.Add(defaultParam);
+                else if (!contains)
                     throw new BadRequestHttpException(
                         $"Missing query parameter `{defaultParam.Name}` of type `{defaultParam.Type}`");
+            }
 
             return callParams;
-        }
-
-        private static string GetParamValueByType(StringValues value, string paramType)
-        {
-            if (paramType == "string")
-                return value;
-            int.TryParse(value, out var integerValue);
-            return integerValue.ToString();
         }
 
         private void ValidateSignInState(IWidgetService widgetService, UserModel user, int serviceId)

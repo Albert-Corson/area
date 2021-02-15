@@ -1,0 +1,13 @@
+INSERT INTO public."Params" ("Id", "Name", "Type", "Value", "Required", "WidgetId") VALUES (4, 'width', 1, '500', false, 4);
+INSERT INTO public."Params" ("Id", "Name", "Type", "Value", "Required", "WidgetId") VALUES (9, 'language', 0, 'EN', false, 9);
+INSERT INTO public."Params" ("Id", "Name", "Type", "Value", "Required", "WidgetId") VALUES (8, 'country', 0, null, false, 9);
+INSERT INTO public."Params" ("Id", "Name", "Type", "Value", "Required", "WidgetId") VALUES (3, 'height', 1, '500', false, 4);
+INSERT INTO public."Params" ("Id", "Name", "Type", "Value", "Required", "WidgetId") VALUES (6, 'time_range', 0, 'medium_term', false, 6);
+INSERT INTO public."Params" ("Id", "Name", "Type", "Value", "Required", "WidgetId") VALUES (11, 'language', 0, 'EN', false, 10);
+INSERT INTO public."Params" ("Id", "Name", "Type", "Value", "Required", "WidgetId") VALUES (13, 'query', 0, null, true, 5);
+INSERT INTO public."Params" ("Id", "Name", "Type", "Value", "Required", "WidgetId") VALUES (7, 'time_range', 0, 'medium_term', false, 7);
+INSERT INTO public."Params" ("Id", "Name", "Type", "Value", "Required", "WidgetId") VALUES (1, 'section', 0, 'hot', false, 1);
+INSERT INTO public."Params" ("Id", "Name", "Type", "Value", "Required", "WidgetId") VALUES (5, 'sort', 0, 'time', false, 5);
+INSERT INTO public."Params" ("Id", "Name", "Type", "Value", "Required", "WidgetId") VALUES (12, 'query', 0, null, true, 10);
+INSERT INTO public."Params" ("Id", "Name", "Type", "Value", "Required", "WidgetId") VALUES (10, 'category', 0, null, false, 9);
+INSERT INTO public."Params" ("Id", "Name", "Type", "Value", "Required", "WidgetId") VALUES (2, 'sort', 0, 'newest', false, 2);

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Area.API.Exceptions.Http;
 using Area.API.Models;
+using Area.API.Models.Table;
 using Area.API.Models.Table.Owned;
 using Area.API.Services.Services;
 using Imgur.API.Endpoints.Impl;
@@ -28,7 +29,7 @@ namespace Area.API.Services.Widgets.Imgur
 
         public string Name { get; } = "Imgur uploads";
 
-        public void CallWidgetApi(WidgetCallParameters widgetCallParams,
+        public void CallWidgetApi(IEnumerable<ParamModel> widgetCallParams,
             ref WidgetCallResponseModel response)
         {
             if (Imgur.Client == null || _oAuth2Token == null)

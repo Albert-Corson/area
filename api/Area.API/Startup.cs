@@ -118,13 +118,14 @@ namespace Area.API
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme {
                     Description = "JWT Authorization header using the Bearer scheme",
                     Name = "Authorization",
-                    Scheme = "Bearer",
+                    Scheme = "bearer",
                     BearerFormat = "Jwt",
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.Http
                 });
                 options.OperationFilter<BearerAuthOperationFilter>();
                 options.CustomSchemaIds(BuildReadableTypeName);
+                options.DescribeAllEnumsAsStrings();
             });
         }
 

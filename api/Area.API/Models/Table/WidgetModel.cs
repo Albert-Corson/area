@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using Area.API.Models.Table.ManyToMany;
-using Area.API.Models.Table.Owned;
 using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -40,6 +39,6 @@ namespace Area.API.Models.Table
 
         [JsonProperty("params", Required = Required.Always)]
         [SwaggerSchema("Widget's call parameters")]
-        public ICollection<WidgetParamModel> Params { get; set; } = null!;
+        public ICollection<ParamModel> Params { get; set; } = null!;
     }
 }

@@ -1,0 +1,1412 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Area API documentation",
+    "description": "## This is the documentation of the Area dashboard API.\n### All endpoints use the same base data scheme as response, **even for non-successful HTTP status codes** (see `Status`).",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/auth/token": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Sign-in to a user's account",
+        "description": "## Get a pair of access and refresh tokens, allowing access a user's account",
+        "requestBody": {
+          "description": "The user's credentials",
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignIn"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignIn"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignIn"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response<UserToken>"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid Bearer token, identifier or password"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/api/auth/refresh": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Refresh access tokens",
+        "description": "## Get a new pair of access and refresh tokens from a previous refresh token",
+        "requestBody": {
+          "description": "The refresh_token obtained from a previous call to `/api/auth/token` or `/api/auth/refresh`",
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshToken"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshToken"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshToken"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshToken"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response<UserToken>"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/api/about": {
+      "get": {
+        "tags": [
+          "Others"
+        ],
+        "summary": "General information about the API's content",
+        "description": "## Get general information about the API's content",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response<AboutDotJson>"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/api/services": {
+      "get": {
+        "tags": [
+          "Services"
+        ],
+        "summary": "List all services",
+        "description": "## Get a list of all services available",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response<List<Service>>"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/services/me": {
+      "get": {
+        "tags": [
+          "Services"
+        ],
+        "summary": "List a user's services",
+        "description": "## Get a list of all services where a user is subscribed to the its widget(s)",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response<List<Service>>"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/services/{serviceId}": {
+      "get": {
+        "tags": [
+          "Services"
+        ],
+        "summary": "Get a service",
+        "description": "## Get a information about a service in particular",
+        "parameters": [
+          {
+            "name": "serviceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response<Service>"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server Error"
+          },
+          "404": {
+            "description": "The service does not exist"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Services"
+        ],
+        "summary": "Sign-in a user to a service",
+        "description": "## Sign-in the user to a service.\n## If the service doesn't have sign-in capabilities, an empty success response is returned (a.k.a without `data`).\n## Otherwise an authentication URL is returned as `data` to redirect the user to",
+        "parameters": [
+          {
+            "name": "serviceId",
+            "in": "path",
+            "description": "Service's ID",
+            "required": true,
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response<String>"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Services"
+        ],
+        "summary": "Sign-out a user from a service",
+        "description": "## Sign-out the user from a service. If the service doesn't have sign-in capabilities, an empty success response is returned (a.k.a. without `data`)",
+        "parameters": [
+          {
+            "name": "serviceId",
+            "in": "path",
+            "description": "Service's ID",
+            "required": true,
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Status"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/users": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Register a user",
+        "description": "## Create a new user account",
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Register"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Register"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Register"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Register"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Status"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Malformed body, incorrect username/email format, password too weak"
+          },
+          "500": {
+            "description": "Server Error"
+          },
+          "409": {
+            "description": "Username or email already in use"
+          }
+        }
+      }
+    },
+    "/api/users/me": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get the current user's information",
+        "description": "## Get information about the current user associated to the bearer token used for the request",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response<User>"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Delete a user",
+        "description": "## Delete a user's account",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Status"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not allowed to delete the desired user"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/widgets": {
+      "get": {
+        "tags": [
+          "Widgets"
+        ],
+        "summary": "List all widgets",
+        "description": "## List all widgets. Optionally, you can get the widgets from one particular service. **The values of the parameters (`params`) are the widgets' default ones**",
+        "parameters": [
+          {
+            "name": "serviceId",
+            "in": "query",
+            "description": "A service's ID, to filter the results by.",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response<List<Widget>>"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server Error"
+          },
+          "404": {
+            "description": "The `serviceId` doesn't have a correspond service"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/widgets/me": {
+      "get": {
+        "tags": [
+          "Widgets"
+        ],
+        "summary": "List a user's widgets",
+        "description": "List the user's widgets. Optionally, you can get the widgets from one particular service. **The values of the parameters (`params`) are the ones the user has previously used in call to `/api/widgets/{widgetId}`**",
+        "parameters": [
+          {
+            "name": "serviceId",
+            "in": "query",
+            "description": "A service's ID, to filter the results by.",
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32",
+              "nullable": true
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response<List<Widget>>"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server Error"
+          },
+          "404": {
+            "description": "The `serviceId` doesn't have a correspond service"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/widgets/{widgetId}": {
+      "get": {
+        "tags": [
+          "Widgets"
+        ],
+        "summary": "Call a widget",
+        "description": "## Call the widget's corresponding API.\n## The query parameters will be used to override/complete the widget's `params` values, i.e.:**`paramName`=`value`**.\n## The API's request result is interpolated into a its corresponding data scheme (inheriting from `WidgetCallResponse`) and returned",
+        "parameters": [
+          {
+            "name": "widgetId",
+            "in": "path",
+            "description": "The widget's ID",
+            "required": true,
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response<WidgetCallResponse>"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server Error"
+          },
+          "404": {
+            "description": "The widget doesn't exist"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Widgets"
+        ],
+        "summary": "Unsubscribe the user to a widget",
+        "description": "## Remove a widget to the user's subscriptions",
+        "parameters": [
+          {
+            "name": "widgetId",
+            "in": "path",
+            "description": "The widget's ID",
+            "required": true,
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Status"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server Error"
+          },
+          "404": {
+            "description": "The widget doesn't exist or the user isn't subscribed to it"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Widgets"
+        ],
+        "summary": "Subscribe the user to a widget",
+        "description": "## Add a widget to the user's subscriptions",
+        "parameters": [
+          {
+            "name": "widgetId",
+            "in": "path",
+            "description": "The widget's ID",
+            "required": true,
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Status"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server Error"
+          },
+          "404": {
+            "description": "The widget doesn't exist"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SignIn": {
+        "required": [
+          "identifier",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "identifier": {
+            "type": "string",
+            "description": "Username or email"
+          },
+          "password": {
+            "type": "string",
+            "description": "User's password"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UserToken": {
+        "required": [
+          "access_token",
+          "expires_in",
+          "refresh_token"
+        ],
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "description": "Bearer token to access the account"
+          },
+          "expires_in": {
+            "type": "integer",
+            "description": "Lifetime in seconds of the access token",
+            "format": "int64"
+          },
+          "refresh_token": {
+            "type": "string",
+            "description": "Token to get a new pair of tokens"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Response<UserToken>": {
+        "required": [
+          "successful"
+        ],
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/UserToken"
+          },
+          "error": {
+            "type": "string",
+            "description": "Message describing the error if any"
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "State of the request (failed or successful)"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RefreshToken": {
+        "required": [
+          "refresh_token"
+        ],
+        "type": "object",
+        "properties": {
+          "refresh_token": {
+            "type": "string",
+            "description": "Token to get a new pair of tokens"
+          }
+        },
+        "additionalProperties": false
+      },
+      "AboutDotJson.Widget": {
+        "required": [
+          "description",
+          "id",
+          "name",
+          "requires_auth"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Widget's ID",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "description": "Widget's name"
+          },
+          "description": {
+            "type": "string",
+            "description": "Widget's description"
+          },
+          "requires_auth": {
+            "type": "boolean",
+            "description": "Indicates if authentication to the parent service is required in order to use the widget"
+          }
+        },
+        "additionalProperties": false
+      },
+      "AboutDotJson.Service": {
+        "required": [
+          "id",
+          "name",
+          "widgets"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Service's ID",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "description": "Service's name"
+          },
+          "widgets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AboutDotJson.Widget"
+            },
+            "description": "List of widgets in the service"
+          }
+        },
+        "additionalProperties": false
+      },
+      "AboutDotJson": {
+        "required": [
+          "services"
+        ],
+        "type": "object",
+        "properties": {
+          "services": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AboutDotJson.Service"
+            },
+            "description": "List of all available services"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Response<AboutDotJson>": {
+        "required": [
+          "successful"
+        ],
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/AboutDotJson"
+          },
+          "error": {
+            "type": "string",
+            "description": "Message describing the error if any"
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "State of the request (failed or successful)"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Service": {
+        "required": [
+          "id",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Service's ID",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "description": "Service's name"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Response<List<Service>>": {
+        "required": [
+          "successful"
+        ],
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Service"
+            }
+          },
+          "error": {
+            "type": "string",
+            "description": "Message describing the error if any"
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "State of the request (failed or successful)"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Response<Service>": {
+        "required": [
+          "successful"
+        ],
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Service"
+          },
+          "error": {
+            "type": "string",
+            "description": "Message describing the error if any"
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "State of the request (failed or successful)"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Response<String>": {
+        "required": [
+          "successful"
+        ],
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "string"
+          },
+          "error": {
+            "type": "string",
+            "description": "Message describing the error if any"
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "State of the request (failed or successful)"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Status": {
+        "required": [
+          "successful"
+        ],
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Message describing the error if any"
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "State of the request (failed or successful)"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Register": {
+        "required": [
+          "email",
+          "password",
+          "username"
+        ],
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "The user's username"
+          },
+          "password": {
+            "type": "string",
+            "description": "The user's password"
+          },
+          "email": {
+            "type": "string",
+            "description": "The user's email address"
+          }
+        },
+        "additionalProperties": false
+      },
+      "User": {
+        "required": [
+          "email",
+          "id",
+          "username"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "The user's ID",
+            "format": "int32"
+          },
+          "username": {
+            "type": "string",
+            "description": "The user's username"
+          },
+          "email": {
+            "type": "string",
+            "description": "The user's email"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Response<User>": {
+        "required": [
+          "successful"
+        ],
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/User"
+          },
+          "error": {
+            "type": "string",
+            "description": "Message describing the error if any"
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "State of the request (failed or successful)"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ParamType": {
+        "enum": [
+          "string",
+          "integer",
+          "boolean"
+        ],
+        "type": "string"
+      },
+      "Param": {
+        "required": [
+          "name",
+          "required",
+          "type"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Parameter's name"
+          },
+          "type": {
+            "$ref": "#/components/schemas/ParamType"
+          },
+          "value": {
+            "type": "string",
+            "description": "Parameter's default value (applicable to non `required` parameters only)"
+          },
+          "required": {
+            "type": "boolean",
+            "description": "Indicates if the parameter has to defined at for each call to the widget (`/api/widgets/{widgetId}`)"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Widget": {
+        "required": [
+          "description",
+          "id",
+          "name",
+          "params",
+          "requires_auth",
+          "service"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Widget's ID",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "description": "Widget's name"
+          },
+          "description": {
+            "type": "string",
+            "description": "Widget's description"
+          },
+          "requires_auth": {
+            "type": "boolean",
+            "description": "Indicates if authentication to the parent service is required in order to use the widget, **without checking if the user is already authenticated**"
+          },
+          "service": {
+            "$ref": "#/components/schemas/Service"
+          },
+          "params": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Param"
+            },
+            "description": "Widget's call parameters"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Response<List<Widget>>": {
+        "required": [
+          "successful"
+        ],
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Widget"
+            }
+          },
+          "error": {
+            "type": "string",
+            "description": "Message describing the error if any"
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "State of the request (failed or successful)"
+          }
+        },
+        "additionalProperties": false
+      },
+      "NewsApiArticle": {
+        "required": [
+          "author",
+          "description",
+          "source"
+        ],
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/WidgetCallResponseItem"
+          }
+        ],
+        "properties": {
+          "source": {
+            "type": "string",
+            "description": "The source of the article"
+          },
+          "author": {
+            "type": "string",
+            "description": "The author of the article"
+          },
+          "description": {
+            "type": "string",
+            "description": "The description of the content"
+          },
+          "published_at": {
+            "type": "integer",
+            "description": "The date publishing (epoch) of the article",
+            "format": "int64"
+          }
+        },
+        "additionalProperties": false,
+        "description": "## This is the response model for all the widgets of the NewsApi service"
+      },
+      "SpotifyTrack": {
+        "required": [
+          "artists",
+          "popularity",
+          "preview"
+        ],
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/WidgetCallResponseItem"
+          }
+        ],
+        "properties": {
+          "artists": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "The artists who collaborated on making the track"
+          },
+          "popularity": {
+            "type": "integer",
+            "description": "The popularity rank of the song",
+            "format": "int32"
+          },
+          "preview": {
+            "type": "string",
+            "description": "A link to a preview of the track"
+          }
+        },
+        "additionalProperties": false,
+        "description": "## This is the response model for the following widgets of the Spotify service:\n- Favorite tracks\n- History"
+      },
+      "SpotifyArtist": {
+        "required": [
+          "followers",
+          "genres",
+          "popularity"
+        ],
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/WidgetCallResponseItem"
+          }
+        ],
+        "properties": {
+          "followers": {
+            "type": "integer",
+            "description": "The amount of followers the artist has",
+            "format": "int32"
+          },
+          "genres": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "The genres of music the artist makes"
+          },
+          "popularity": {
+            "type": "integer",
+            "description": "The popularity rank of the artist",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false,
+        "description": "## This is the response model for the \"Favorite artists\" widget of the Spotify service"
+      },
+      "WidgetCallResponseItem": {
+        "type": "object",
+        "properties": {
+          "header": {
+            "type": "string",
+            "description": "A header/title"
+          },
+          "content": {
+            "type": "string",
+            "description": "The content/description"
+          },
+          "link": {
+            "type": "string",
+            "description": "A redirect link for the user"
+          },
+          "image": {
+            "type": "string",
+            "description": "A link to an image"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Base (generic) interpolation scheme for a widget's invocation result item. At least one of the field must be defined. This scheme can be extended depending on the widget"
+      },
+      "WidgetCallResponse": {
+        "required": [
+          "params"
+        ],
+        "type": "object",
+        "properties": {
+          "params": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Param"
+            },
+            "description": "List of parameters used for the request",
+            "readOnly": true
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/WidgetCallResponseItem"
+                },
+                {
+                  "$ref": "#/components/schemas/NewsApiArticle"
+                },
+                {
+                  "$ref": "#/components/schemas/SpotifyTrack"
+                },
+                {
+                  "$ref": "#/components/schemas/SpotifyArtist"
+                }
+              ],
+              "description": "Base (generic) interpolation scheme for a widget's invocation result item. At least one of the field must be defined. This scheme can be extended depending on the widget"
+            },
+            "description": "The result of the widget's invocation, if enumerable"
+          },
+          "item": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/WidgetCallResponseItem"
+              },
+              {
+                "$ref": "#/components/schemas/NewsApiArticle"
+              },
+              {
+                "$ref": "#/components/schemas/SpotifyTrack"
+              },
+              {
+                "$ref": "#/components/schemas/SpotifyArtist"
+              }
+            ],
+            "description": "The result of the widget's invocation, if singular"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Response<WidgetCallResponse>": {
+        "required": [
+          "successful"
+        ],
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/WidgetCallResponse"
+          },
+          "error": {
+            "type": "string",
+            "description": "Message describing the error if any"
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "State of the request (failed or successful)"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "description": "JWT Authorization header using the Bearer scheme",
+        "scheme": "bearer",
+        "bearerFormat": "Jwt"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Authentication-related endpoints"
+    },
+    {
+      "name": "Others",
+      "description": "Other informational endpoints"
+    },
+    {
+      "name": "Services",
+      "description": "Service-related endpoints"
+    },
+    {
+      "name": "Users",
+      "description": "User-related endpoints"
+    },
+    {
+      "name": "Widgets",
+      "description": "Widget-related endpoints"
+    }
+  ]
+}

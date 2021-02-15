@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Area.API.Exceptions.Http;
+using Area.API.Extensions;
 using Area.API.Models;
+using Area.API.Models.Table;
 using Area.API.Models.Widgets;
 using Microsoft.Extensions.Configuration;
 using NewsAPI;
@@ -25,12 +28,12 @@ namespace Area.API.Services.Widgets.NewsApi
 
         public string Name { get; } = "Top headlines";
 
-        public void CallWidgetApi(WidgetCallParameters widgetCallParams,
+        public void CallWidgetApi(IEnumerable<ParamModel> widgetCallParams,
             ref WidgetCallResponseModel response)
         {
-            var countryStr = widgetCallParams.Strings["country"];
-            var categoryStr = widgetCallParams.Strings["category"];
-            var languageStr = widgetCallParams.Strings["language"];
+            var countryStr = widgetCallParams.GetValue("country");
+            var categoryStr = widgetCallParams.GetValue("category");
+            var languageStr = widgetCallParams.GetValue("language");
 
             var topHeadlinesRequest = new TopHeadlinesRequest();
 
