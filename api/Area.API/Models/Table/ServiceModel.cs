@@ -5,6 +5,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace Area.API.Models.Table
 {
+    [Table("Services")]
     public class ServiceModel
     {
         [ForeignKey("ServiceId")]

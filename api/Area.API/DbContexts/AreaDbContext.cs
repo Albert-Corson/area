@@ -48,12 +48,6 @@ namespace Area.API.DbContexts
                 modelBuilder.Entity<UserModel>()
                     .OwnsMany(model => model.WidgetParams);
             }
-
-            // A widget owns many default parameters
-            {
-                modelBuilder.Entity<WidgetModel>()
-                    .OwnsMany(model => model.Params);
-            }
         }
     }
 }

@@ -1,5 +1,8 @@
+using System.Collections.Generic;
 using Area.API.Exceptions.Http;
+using Area.API.Extensions;
 using Area.API.Models;
+using Area.API.Models.Table;
 using Area.API.Models.Table.Owned;
 using Area.API.Services.Services;
 using Imgur.API.Endpoints.Impl;
@@ -27,7 +30,7 @@ namespace Area.API.Services.Widgets.Imgur
 
         public string Name { get; } = "Imgur favorites";
 
-        public void CallWidgetApi(WidgetCallParameters widgetCallParams,
+        public void CallWidgetApi(IEnumerable<ParamModel> widgetCallParams,
             ref WidgetCallResponseModel response)
         {
             if (Imgur.Client == null || _oAuth2Token == null)
@@ -35,7 +38,7 @@ namespace Area.API.Services.Widgets.Imgur
 
             Imgur.Client.SetOAuth2Token(_oAuth2Token);
 
-            var sort = widgetCallParams.Strings["sort"] == "newest"
+            var sort = widgetCallParams.GetValue("sort") == "newest"
                 ? AccountGallerySortOrder.Newest
                 : AccountGallerySortOrder.Oldest;
 

@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Area.API.Exceptions.Http;
+using Area.API.Extensions;
 using Area.API.Models;
+using Area.API.Models.Table;
 using RestSharp;
 
 namespace Area.API.Services.Widgets.LoremPicsum
@@ -10,11 +13,11 @@ namespace Area.API.Services.Widgets.LoremPicsum
     {
         public string Name { get; } = "Lorem Picsum random Image";
 
-        public void CallWidgetApi(WidgetCallParameters widgetCallParams,
+        public void CallWidgetApi(IEnumerable<ParamModel> widgetCallParams,
             ref WidgetCallResponseModel response)
         {
-            var width = widgetCallParams.Integers["width"];
-            var height = widgetCallParams.Integers["height"];
+            var width = widgetCallParams.GetValue("width");
+            var height = widgetCallParams.GetValue("height");
 
             if (height == null || width == null) {
                 var name = height == null ? "height" : "width";

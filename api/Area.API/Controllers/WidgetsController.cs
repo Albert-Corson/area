@@ -87,11 +87,11 @@ namespace Area.API.Controllers
                 widgets =  _widgetRepository.GetUserWidgets(userId!.Value, true).ToList();
             }
 
-            var user = _userRepository.GetUser(userId);
+            var user = _userRepository.GetUser(userId, includeChildren: true);
             var widgetParams = user!.WidgetParams.ToList();
 
             foreach (var widget in widgets) {
-                var currentParam = widgetParams.Where(model => model.WidgetId == widget.Id);
+                var currentParam = widgetParams.Where(model => model.Param.WidgetId == widget.Id);
                 widget.Params = WidgetManagerService.BuildUserWidgetCallParams(currentParam, widget.Params!);
                 widget.RequiresAuth = user.ServiceTokens.FirstOrDefault(model => model.ServiceId == widget.ServiceId) != null;
             }

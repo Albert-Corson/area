@@ -7,6 +7,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace Area.API.Models.Table
 {
+    [Table("Users")]
     public class UserModel
     {
         [ForeignKey("UserId")]
@@ -33,6 +34,6 @@ namespace Area.API.Models.Table
         public ICollection<UserServiceTokensModel> ServiceTokens { get; set; } = null!;
 
         [JsonIgnore]
-        public ICollection<UserWidgetParamModel> WidgetParams { get; set; } = null!;
+        public ICollection<UserParamModel> WidgetParams { get; set; } = null!;
     }
 }

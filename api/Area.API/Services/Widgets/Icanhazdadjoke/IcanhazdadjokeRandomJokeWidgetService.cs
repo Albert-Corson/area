@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using System.Net;
 using Area.API.Exceptions.Http;
 using Area.API.Models;
+using Area.API.Models.Table;
 using ICanHazDadJoke.NET;
 
 namespace Area.API.Services.Widgets.Icanhazdadjoke
@@ -9,7 +11,7 @@ namespace Area.API.Services.Widgets.Icanhazdadjoke
     {
         public string Name { get; } = "Random dad joke";
 
-        public void CallWidgetApi(WidgetCallParameters widgetCallParams,
+        public void CallWidgetApi(IEnumerable<ParamModel> widgetCallParams,
             ref WidgetCallResponseModel response)
         {
             var client = new DadJokeClient("Area Epitech school project", "https://github.com/Albert-Corson");
