@@ -205,7 +205,7 @@ namespace Area.API
             var typeName = strip(type.Name);
             string? genericTypeNames = null;
 
-            if (type.FullName?.StartsWith(abtType.FullName!) == true)
+            if (abtType.FullName != type.FullName && type.FullName?.StartsWith(abtType.FullName!) == true)
                 typeName = strip(abtType.Name) + "." + strip(type.Name);
 
             foreach (var genericType in type.GenericTypeArguments) {
