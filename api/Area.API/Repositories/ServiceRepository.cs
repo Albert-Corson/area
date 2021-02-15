@@ -17,13 +17,12 @@ namespace Area.API.Repositories
             return GetService(serviceId) != null;
         }
 
-        public IEnumerable<ServiceModel> GetServices(bool includeChildren = false, bool asNoTracking = true)
+        public IEnumerable<ServiceModel> GetServices(bool includeWidgets = false, bool asNoTracking = true)
         {
             var queryable = asNoTracking ? Database.Services.AsNoTracking() : Database.Services.AsQueryable();
 
-            return includeChildren
+            return includeWidgets
                 ? queryable.Include(model => model.Widgets)
-                    .ThenInclude(model => model.Params)
                 : queryable;
         }
 

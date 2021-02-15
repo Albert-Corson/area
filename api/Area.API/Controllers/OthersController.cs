@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Area.API.Constants;
 using Area.API.Models;
@@ -33,35 +32,19 @@ namespace Area.API.Controllers
         [Route(RoutesConstants.AboutDotJson)]
         [SwaggerOperation(
             Summary = "General information about the API's content",
-            Description = "## Get general information about the API's content such as the list of all services and widgets (and more TO BE DEFINED)"
+            Description = "## Get general information about the API's content"
         )]
-        public AboutDotJsonModel AboutDotJson()
+        public ResponseModel<AboutDotJsonModel> AboutDotJson()
         {
-            // TODO: rework this endpoint to return useful information
-            var clientIp = HttpContext.Connection.RemoteIpAddress.MapToIPv4() + ":" + HttpContext.Connection.RemotePort;
-
-            var serviceModels = _serviceRepository.GetServices(true).ToList();
-
-            var services = serviceModels.Select(service => new AboutDotJsonModel.ServiceModel {
-                    Name = service.Name,
-                    Widgets = service.Widgets.Select(widget => new AboutDotJsonModel.WidgetModel {
-                        Name = widget.Name,
-                        Description = widget.Description,
-                        Params = widget.Params.Select(model => new AboutDotJsonModel.WidgetParamModel {
-                            Name = model.Name,
-                            Type = model.Type
+            return new ResponseModel<AboutDotJsonModel> {
+                Data = new AboutDotJsonModel {
+                    Services = _serviceRepository.GetServices(true).Select(service => new AboutDotJsonModel.ServiceModel {
+                        Name = service.Name,
+                        Widgets = service.Widgets.Select(widget => new AboutDotJsonModel.WidgetModel {
+                            Name = widget.Name,
+                            Description = widget.Description,
                         })
                     })
-                })
-                .ToList();
-
-            return new AboutDotJsonModel {
-                Client = new AboutDotJsonModel.ClientModel {
-                    Host = clientIp
-                },
-                Server = new AboutDotJsonModel.ServerModel {
-                    CurrentTime = DateTime.Now.Ticks,
-                    Services = services
                 }
             };
         }
