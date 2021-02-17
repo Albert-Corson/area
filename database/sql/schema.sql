@@ -41,7 +41,8 @@ create table "Widgets"
     "ServiceId" integer default 0 not null
         constraint "FK_Widgets_Services_ServiceId"
             references "Services"
-                on delete cascade
+                on delete cascade,
+    "Frequency" integer default 0 not null
 );
 
 alter table "Widgets" owner to postgres;

@@ -24,8 +24,12 @@ namespace Area.API.Models.Table
         public string Description { get; set; } = null!;
 
         [JsonProperty("requires_auth", Required = Required.Always)]
-        [SwaggerSchema("Indicates if authentication to the parent service is required in order to use the widget, **without checking if the user is already authenticated**")]
+        [SwaggerSchema("Indicates if authentication to the parent service is required in order to use the widget")]
         public bool RequiresAuth { get; set; }
+
+        [JsonProperty("frequency", Required = Required.Always)]
+        [SwaggerSchema("Recommended frequency (in seconds) at which to call the widget. Zero means refreshing is unnecessary")]
+        public int Frequency { get; set; }
 
         [JsonIgnore]
         public int ServiceId { get; set; }
