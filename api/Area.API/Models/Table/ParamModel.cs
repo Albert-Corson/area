@@ -51,7 +51,7 @@ namespace Area.API.Models.Table
 
         [JsonProperty("required", Required = Newtonsoft.Json.Required.Always)]
         [SwaggerSchema("Indicates if the parameter has to defined at for each call to the widget (`"
-            + RoutesConstants.Widgets.CallWidget + "`)")]
+            + RouteConstants.Widgets.CallWidget + "`)")]
         public bool Required { get; set; }
 
         [JsonIgnore]

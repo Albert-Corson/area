@@ -28,8 +28,7 @@ namespace Area.API.Controllers
             _configuration = configuration;
         }
 
-        [HttpPost]
-        [Route(RoutesConstants.Users.Register)]
+        [HttpPost(RouteConstants.Users.Register)]
         [AllowAnonymous]
         [SwaggerOperation(
             Summary = "Register a user",
@@ -73,8 +72,7 @@ namespace Area.API.Controllers
             return StatusModel.Success();
         }
 
-        [HttpGet]
-        [Route(RoutesConstants.Users.GetMyUser)]
+        [HttpGet(RouteConstants.Users.GetMyUser)]
         [SwaggerOperation(
             Summary = "Get the current user's information",
             Description =
@@ -93,8 +91,7 @@ namespace Area.API.Controllers
             };
         }
 
-        [HttpDelete]
-        [Route(RoutesConstants.Users.DeleteMyUser)]
+        [HttpDelete(RouteConstants.Users.DeleteMyUser)]
         [SwaggerOperation(
             Summary = "Delete a user",
             Description = "## Delete a user's account"

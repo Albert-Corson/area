@@ -28,8 +28,7 @@ namespace Area.API.Controllers
             _configuration = configuration;
         }
 
-        [HttpPost]
-        [Route(RoutesConstants.Auth.SignIn)]
+        [HttpPost(RouteConstants.Auth.SignIn)]
         [AllowAnonymous]
         [SwaggerOperation(
             Summary = "Sign-in to a user's account",
@@ -58,8 +57,7 @@ namespace Area.API.Controllers
             };
         }
 
-        [HttpPost]
-        [Route(RoutesConstants.Auth.RefreshAccessToken)]
+        [HttpPost(RouteConstants.Auth.RefreshAccessToken)]
         [AllowAnonymous]
         [SwaggerOperation(
             Summary = "Refresh access tokens",
@@ -68,8 +66,8 @@ namespace Area.API.Controllers
         public ResponseModel<UserTokenModel> RefreshAccessToken(
             [FromBody]
             [SwaggerRequestBody(
-                "The refresh_token obtained from a previous call to `" + RoutesConstants.Auth.SignIn + "` or `" +
-                RoutesConstants.Auth.RefreshAccessToken + "`", Required = true)]
+                "The refresh_token obtained from a previous call to `" + RouteConstants.Auth.SignIn + "` or `" +
+                RouteConstants.Auth.RefreshAccessToken + "`", Required = true)]
             RefreshTokenModel body
         )
         {
@@ -86,8 +84,7 @@ namespace Area.API.Controllers
             };
         }
 
-        [HttpDelete]
-        [Route(RoutesConstants.Auth.RevokeUserTokens)]
+        [HttpDelete(RouteConstants.Auth.RevokeUserTokens)]
         [ApiExplorerSettings(IgnoreApi = true)]
         public StatusModel RevokeUserTokens()
         {

@@ -34,8 +34,7 @@ namespace Area.API.Controllers
             _userRepository = userRepository;
         }
 
-        [HttpGet]
-        [Route(RoutesConstants.Widgets.GetWidgets)]
+        [HttpGet(RouteConstants.Widgets.GetWidgets)]
         [SwaggerOperation(
             Summary = "List all widgets",
             Description =
@@ -62,13 +61,12 @@ namespace Area.API.Controllers
             };
         }
 
-        [HttpGet]
-        [Route(RoutesConstants.Widgets.GetMyWidgets)]
+        [HttpGet(RouteConstants.Widgets.GetMyWidgets)]
         [SwaggerOperation(
             Summary = "List a user's widgets",
             Description =
                 "List the user's widgets. Optionally, you can get the widgets from one particular service. **The values of the parameters (`params`) are the ones the user has previously used in call to `"
-                + RoutesConstants.Widgets.CallWidget + "`**"
+                + RouteConstants.Widgets.CallWidget + "`**"
         )]
         [SwaggerResponse((int) HttpStatusCode.NotFound, "The `serviceId` doesn't have a correspond service")]
         public ResponseModel<List<WidgetModel>> GetMyWidgets(
@@ -101,8 +99,7 @@ namespace Area.API.Controllers
             };
         }
 
-        [HttpGet]
-        [Route(RoutesConstants.Widgets.CallWidget)]
+        [HttpGet(RouteConstants.Widgets.CallWidget)]
         [SwaggerOperation(
             Summary = "Call a widget",
             Description = @"## Call the widget's corresponding API.
@@ -120,8 +117,7 @@ namespace Area.API.Controllers
             };
         }
 
-        [HttpDelete]
-        [Route(RoutesConstants.Widgets.UnsubscribeWidget)]
+        [HttpDelete(RouteConstants.Widgets.UnsubscribeWidget)]
         [SwaggerOperation(
             Summary = "Unsubscribe the user to a widget",
             Description = "## Remove a widget to the user's subscriptions"
@@ -139,8 +135,7 @@ namespace Area.API.Controllers
             return StatusModel.Success();
         }
 
-        [HttpPost]
-        [Route(RoutesConstants.Widgets.SubscribeWidget)]
+        [HttpPost(RouteConstants.Widgets.SubscribeWidget)]
         [SwaggerOperation(
             Summary = "Subscribe the user to a widget",
             Description = "## Add a widget to the user's subscriptions"

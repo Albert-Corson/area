@@ -134,7 +134,7 @@ namespace Area.API
             InitDbContext(app);
             ConfigureSwagger(app);
 
-            app.UseStatusCodePagesWithReExecute(RoutesConstants.Error);
+            app.UseStatusCodePagesWithReExecute(RouteConstants.Error);
             app.UseRouting();
             app.UseAuthorization();
             app.UseCors();
@@ -158,7 +158,7 @@ namespace Area.API
             app.UseSwagger();
             app.UseSwaggerUI(options => {
                 options.SwaggerEndpoint("/swagger/v1/swagger.json", "Area");
-                options.RoutePrefix = RoutesConstants.Docs;
+                options.RoutePrefix = RouteConstants.Docs;
                 options.DocumentTitle = "Area API";
                 options.DefaultModelRendering(ModelRendering.Example);
                 options.DefaultModelExpandDepth(int.MaxValue);

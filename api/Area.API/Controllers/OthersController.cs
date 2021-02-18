@@ -18,7 +18,7 @@ namespace Area.API.Controllers
             _serviceRepository = serviceRepository;
         }
 
-        [Route(RoutesConstants.Error)]
+        [Route(RouteConstants.Error)]
         [ApiExplorerSettings(IgnoreApi = true)]
         public StatusModel Error()
         {
@@ -28,8 +28,7 @@ namespace Area.API.Controllers
             };
         }
 
-        [HttpGet]
-        [Route(RoutesConstants.AboutDotJson)]
+        [HttpGet(RouteConstants.AboutDotJson)]
         [SwaggerOperation(
             Summary = "General information about the API's content",
             Description = "## Get general information about the API's content"

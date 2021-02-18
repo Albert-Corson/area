@@ -32,8 +32,7 @@ namespace Area.API.Controllers
             _userRepository = userRepository;
         }
 
-        [HttpGet]
-        [Route(RoutesConstants.Services.GetServices)]
+        [HttpGet(RouteConstants.Services.GetServices)]
         [SwaggerOperation(
             Summary = "List all services",
             Description = "## Get a list of all services available"
@@ -45,8 +44,7 @@ namespace Area.API.Controllers
             };
         }
 
-        [HttpGet]
-        [Route(RoutesConstants.Services.GetMyServices)]
+        [HttpGet(RouteConstants.Services.GetMyServices)]
         [SwaggerOperation(
             Summary = "List a user's services",
             Description = "## Get a list of all services where a user is subscribed to the its widget(s)"
@@ -62,8 +60,7 @@ namespace Area.API.Controllers
             };
         }
 
-        [HttpGet]
-        [Route(RoutesConstants.Services.GetService)]
+        [HttpGet(RouteConstants.Services.GetService)]
         [SwaggerOperation(
             Summary = "Get a service",
             Description = "## Get a information about a service in particular"
@@ -84,8 +81,7 @@ namespace Area.API.Controllers
             };
         }
 
-        [HttpPost]
-        [Route(RoutesConstants.Services.SignInService)]
+        [HttpPost(RouteConstants.Services.SignInService)]
         [SwaggerOperation(
             Summary = "Sign-in a user to a service",
             Description =
@@ -110,8 +106,7 @@ namespace Area.API.Controllers
             };
         }
 
-        [HttpDelete]
-        [Route(RoutesConstants.Services.SignOutService)]
+        [HttpDelete(RouteConstants.Services.SignOutService)]
         [SwaggerOperation(
             Summary = "Sign-out a user from a service",
             Description =
@@ -128,8 +123,7 @@ namespace Area.API.Controllers
             return StatusModel.Success();
         }
 
-        [HttpGet]
-        [Route(RoutesConstants.Services.SignInServiceCallback)]
+        [HttpGet(RouteConstants.Services.SignInServiceCallback)]
         [AllowAnonymous]
         [ApiExplorerSettings(IgnoreApi = true)]
         [Produces("text/html")]
