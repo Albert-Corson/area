@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Area.API", "Area.API.csproj", "{900610E3-F306-40B1-8DBC-30F4782976FA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Area.AcceptanceTests", "..\Area.AcceptanceTests\Area.AcceptanceTests.csproj", "{5694C760-F304-490F-8A24-C793F51CDA6E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{900610E3-F306-40B1-8DBC-30F4782976FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{900610E3-F306-40B1-8DBC-30F4782976FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{900610E3-F306-40B1-8DBC-30F4782976FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5694C760-F304-490F-8A24-C793F51CDA6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5694C760-F304-490F-8A24-C793F51CDA6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5694C760-F304-490F-8A24-C793F51CDA6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5694C760-F304-490F-8A24-C793F51CDA6E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
