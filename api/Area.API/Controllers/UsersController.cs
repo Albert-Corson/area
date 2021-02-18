@@ -1,5 +1,6 @@
-using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Area.API.Constants;
 using Area.API.Exceptions.Http;
 using Area.API.Models;
@@ -10,7 +11,6 @@ using Area.API.Utilities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Area.API.Controllers
@@ -19,13 +19,11 @@ namespace Area.API.Controllers
     [SwaggerTag("User-related endpoints")]
     public class UsersController : ControllerBase
     {
-        private readonly IConfiguration _configuration;
         private readonly UserRepository _userRepository;
 
-        public UsersController(UserRepository userRepository, IConfiguration configuration)
+        public UsersController(UserRepository userRepository)
         {
             _userRepository = userRepository;
-            _configuration = configuration;
         }
 
         [HttpPost(RouteConstants.Users.Register)]
@@ -38,37 +36,25 @@ namespace Area.API.Controllers
         [SwaggerResponse((int) HttpStatusCode.BadRequest,
             "Malformed body, incorrect username/email format, password too weak")]
         [SwaggerResponse((int) HttpStatusCode.Conflict, "Username or email already in use")]
-        public StatusModel Register(
+        public async Task<StatusModel> Register(
             [FromBody]
             [SwaggerSchema(
                 "The user's information. The password must be at least 8 characters long, with and without capitals, with numerical and special characters. The username must start with a letter, numeric characters and some special characters (._-) are accepted")]
             RegisterModel body
         )
         {
-            if (!AuthUtilities.IsValidEmail(body.Email!))
-                throw new BadRequestHttpException("Please provide a valid email address");
-
-            if (PasswordUtilities.IsWeakPassword(body.Password!))
-                throw new BadRequestHttpException(
-                    "Password too weak. At least 8 characters, with and without capitals, with numerical and special characters required.");
-
-            if (!UsernameUtilities.IsUsernameValid(body.Username!))
-                throw new BadRequestHttpException(
-                    "Invalid username. Must start with a letter, numeric characters and some special characters (._-) are accepted");
-
             if (_userRepository.UserExists(email: body.Email, username: body.Username))
                 throw new ConflictHttpException("Username or email already in use");
 
-            var encryptedPasswd = PasswordUtilities.Encrypt(_configuration[JwtConstants.SecretKeyName], body.Password!);
-            if (encryptedPasswd == null)
-                throw new InternalServerErrorHttpException();
-
-            _userRepository.AddUser(new UserModel {
-                Username = body.Username,
-                Password = encryptedPasswd,
+            var user = new UserModel {
+                UserName = body.Username,
                 Email = body.Email
-            });
+            };
 
+            var result = await _userRepository.AddUser(user, body.Password);
+
+            if (!result.Succeeded)
+                throw new BadRequestHttpException(result.Errors.First().Description);
             return StatusModel.Success();
         }
 
@@ -78,7 +64,7 @@ namespace Area.API.Controllers
             Description =
                 "## Get information about the current user associated to the bearer token used for the request"
         )]
-        public ResponseModel<UserModel> GetMyUser()
+        public ResponseModel<UserInformationModel> GetMyUser()
         {
             var userId = AuthUtilities.GetUserIdFromPrincipal(User);
             var user = _userRepository.GetUser(userId);
@@ -86,8 +72,8 @@ namespace Area.API.Controllers
             if (user == null)
                 throw new InternalServerErrorHttpException(); // should never happen
 
-            return new ResponseModel<UserModel> {
-                Data = user
+            return new ResponseModel<UserInformationModel> {
+                Data = new UserInformationModel(user)
             };
         }
 

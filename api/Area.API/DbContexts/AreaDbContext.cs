@@ -1,16 +1,15 @@
 using Area.API.Models.Table;
 using Area.API.Models.Table.ManyToMany;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Area.API.DbContexts
 {
-    public class AreaDbContext : DbContext
+    public class AreaDbContext : IdentityDbContext<UserModel, UserModel.RoleModel, int>
     {
         public AreaDbContext(DbContextOptions<AreaDbContext> options)
             : base(options)
         { }
-
-        public DbSet<UserModel> Users { get; set; } = null!;
 
         public DbSet<ServiceModel> Services { get; set; } = null!;
 

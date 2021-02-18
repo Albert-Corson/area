@@ -53,16 +53,6 @@ namespace Area.API.Utilities
             });
         }
 
-        public static bool IsValidEmail(string email)
-        {
-            try {
-                var addr = new MailAddress(email);
-                return addr.Address == email;
-            } catch {
-                return false;
-            }
-        }
-
         private string GenerateToken(DateTime expiryTime, IEnumerable<Claim> claims)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["SECRET_SALT"]));

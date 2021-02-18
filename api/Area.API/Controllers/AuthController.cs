@@ -8,7 +8,6 @@ using Area.API.Utilities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Area.API.Controllers
@@ -18,14 +17,12 @@ namespace Area.API.Controllers
     public class AuthController : ControllerBase
     {
         private readonly AuthUtilities _authUtilities;
-        private readonly IConfiguration _configuration;
         private readonly UserRepository _userRepository;
 
-        public AuthController(AuthUtilities authUtilities, UserRepository userRepository, IConfiguration configuration)
+        public AuthController(AuthUtilities authUtilities, UserRepository userRepository)
         {
             _authUtilities = authUtilities;
             _userRepository = userRepository;
-            _configuration = configuration;
         }
 
         [HttpPost(RouteConstants.Auth.SignIn)]
@@ -40,12 +37,8 @@ namespace Area.API.Controllers
             SignInModel body
         )
         {
-            var encryptedPasswd = PasswordUtilities.Encrypt(_configuration[JwtConstants.SecretKeyName], body.Password!);
-            if (encryptedPasswd == null)
-                throw new InternalServerErrorHttpException();
-
-            var user = _userRepository.GetUser(email: body.Identifier, passwd: encryptedPasswd)
-                ?? _userRepository.GetUser(username: body.Identifier, passwd: encryptedPasswd);
+            var user = _userRepository.GetUser(email: body.Identifier, passwd: body.Password)
+                ?? _userRepository.GetUser(username: body.Identifier, passwd: body.Password);
             if (user == null)
                 throw new UnauthorizedHttpException("Invalid identifier/password");
 
