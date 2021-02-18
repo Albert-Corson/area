@@ -1,21 +1,26 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Area.API.DbContexts;
 using Area.API.Models.Table;
 using Area.API.Models.Table.ManyToMany;
 using Area.API.Models.Table.Owned;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Swan;
 
 namespace Area.API.Repositories
 {
     public class UserRepository : ARepository
     {
         private readonly WidgetRepository _widgetRepository;
+        private readonly UserManager<UserModel> _userManager;
 
-        public UserRepository(AreaDbContext database, WidgetRepository widgetRepository) : base(database)
+        public UserRepository(AreaDbContext database, WidgetRepository widgetRepository, UserManager<UserModel> userManager) : base(database)
         {
             _widgetRepository = widgetRepository;
+            _userManager = userManager;
         }
 
         public bool UserExists(int? userId = null, string? username = null, string? email = null)
@@ -27,7 +32,7 @@ namespace Area.API.Repositories
                 .AsNoTracking()
                 .FirstOrDefault(model =>
                     (userId == null || model.Id == userId.Value)
-                    && (username == null || model.Username == username)
+                    && (username == null || model.UserName == username)
                     && (email == null || model.Email == email)
                 ) != null;
         }
@@ -44,27 +49,30 @@ namespace Area.API.Repositories
             if (userId == null && username == null && email == null && passwd == null)
                 throw new ArgumentException("At least one non-null argument expected");
 
-            return queryable.FirstOrDefault(model =>
+            var user = queryable.FirstOrDefault(model =>
                 (userId == null || model.Id == userId)
-                && (username == null || model.Username == username)
+                && (username == null || model.UserName == username)
                 && (email == null || model.Email == email)
-                && (passwd == null || model.Password == passwd)
             );
+
+            if (user == null || passwd == null)
+                return user;
+
+            if (!_userManager.CheckPasswordAsync(user, passwd).Await())
+                return null;
+            return user;
         }
 
-        public void AddUser(UserModel user)
+        public Task<IdentityResult> AddUser(UserModel user, string password)
         {
-            Database.Users.Add(user);
+            return _userManager.CreateAsync(user, password);
         }
 
         public bool RemoveUser(int userId)
         {
             var user = GetUser(userId);
 
-            if (user == null)
-                return false;
-            Database.Users.Remove(user);
-            return true;
+            return user != null && _userManager.DeleteAsync(user).Await().Succeeded;
         }
 
         public bool AddWidgetSubscription(int userId, int widgetId)

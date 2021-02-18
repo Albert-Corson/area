@@ -4,7 +4,7 @@ using Area.API.Models.Table;
 
 namespace Area.API.Extensions
 {
-    public static class ExtensionMethods
+    public static class IEnumerableParamModelExtension
     {
         public static string? GetValue(this IEnumerable<ParamModel> dictionary, string key)
         {

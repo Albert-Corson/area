@@ -8,6 +8,7 @@ using Area.API.DbContexts;
 using Area.API.Filters;
 using Area.API.Middlewares;
 using Area.API.Models;
+using Area.API.Models.Table;
 using Area.API.Repositories;
 using Area.API.Services;
 using Area.API.Services.Services;
@@ -21,6 +22,7 @@ using Area.API.Utilities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -46,13 +48,14 @@ namespace Area.API
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration[JwtConstants.SecretKeyName]));
             var tokenValidationParameters = new TokenValidationParameters {
-                ValidIssuer = _configuration[JwtConstants.ValidIssuer],
-                ValidAudience = _configuration[JwtConstants.ValidAudience],
-                IssuerSigningKey = key,
                 ValidateIssuer = true,
                 ValidateAudience = true,
+                ValidIssuer = _configuration[JwtConstants.ValidIssuer],
+                ValidAudience = _configuration[JwtConstants.ValidAudience],
+                RequireExpirationTime = true,
+                IssuerSigningKey = key,
                 ValidateLifetime = true,
-                ValidateIssuerSigningKey = true
+                ValidateIssuerSigningKey = true,
             };
 
             services
@@ -70,7 +73,20 @@ namespace Area.API
                     builder => { builder.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery); });
             });
 
-            services.AddSingleton(_configuration);
+            services.AddIdentity<UserModel, UserModel.RoleModel>(options => {
+                    options.Password = new PasswordOptions {
+                        RequireDigit = true,
+                        RequiredLength = 8,
+                        RequireLowercase = true,
+                        RequireUppercase = true,
+                        RequireNonAlphanumeric = true
+                    };
+                    options.User = new UserOptions {
+                        RequireUniqueEmail = true
+                    };
+                })
+                .AddEntityFrameworkStores<AreaDbContext>();
+
             services.AddSingleton(tokenValidationParameters);
             services.AddSingleton<AuthUtilities>();
 
@@ -136,6 +152,7 @@ namespace Area.API
 
             app.UseStatusCodePagesWithReExecute(RouteConstants.Error);
             app.UseRouting();
+            app.UseAuthentication();
             app.UseAuthorization();
             app.UseCors();
             app.UseMiddleware<HttpExceptionHandlingMiddleware>();
