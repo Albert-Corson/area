@@ -1,4 +1,4 @@
-import {StyleSheet} from 'react-native';
+import {StyleSheet} from 'react-native'
 
 const Shadow = StyleSheet.create({
   upShadow: {
@@ -19,6 +19,6 @@ const Shadow = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 5,
   },
-});
+})
 
-export default Shadow;
+export default Shadow

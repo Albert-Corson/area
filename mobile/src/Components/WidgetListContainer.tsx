@@ -1,8 +1,9 @@
-import React from 'react';
+import React, {useContext, useCallback} from 'react'
 import {
-  View, ScrollView, StyleProp, ViewStyle,
-} from 'react-native';
-import InsetShadow from 'react-native-inset-shadow';
+  View, ScrollView, StyleProp, ViewStyle, RefreshControl,
+} from 'react-native'
+import InsetShadow from 'react-native-inset-shadow'
+import RootStoreContext from '../Stores/RootStore'
 
 interface Props {
   children: React.ReactNode;
@@ -10,16 +11,38 @@ interface Props {
   bounce?: boolean;
 }
 
-const WidgetListContainer = ({children, containerStyle, bounce = true}: Props): JSX.Element => (
-  <InsetShadow shadowColor="#A6ABBD">
-    <ScrollView showsVerticalScrollIndicator={false} bounces={bounce}>
-      <View style={containerStyle}>
+const wait = (timeout: number) => {
+  return new Promise(resolve => setTimeout(resolve, timeout))
+}
 
-        {children}
+const WidgetListContainer = ({children, containerStyle, bounce = true}: Props): JSX.Element => {
+  const store = useContext(RootStoreContext)
+  const [refreshing, setRefreshing] = React.useState(false)
 
-      </View>
-    </ScrollView>
-  </InsetShadow>
-);
+  const onRefresh = useCallback(() => {
+    setRefreshing(true)
+    store.widget.updateParameters().then(() => setRefreshing(false))
+  }, [])
 
-export default WidgetListContainer;
+  return (
+    <InsetShadow shadowColor="#A6ABBD">
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        bounces={bounce}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
+        }>
+        <View style={containerStyle}>
+
+          {children}
+
+        </View>
+      </ScrollView>
+    </InsetShadow>
+  )
+}
+
+export default WidgetListContainer

@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useState} from 'react'
 import {
   View,
   Text,
@@ -6,23 +6,23 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   Platform,
-} from 'react-native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {observer} from 'mobx-react-lite';
-import TextInput from '../Components/TextInput';
-import TextButton from '../Components/TextButton';
-import GradientFlatButton from '../Components/GradientFlatButton';
-import {Form as styles} from '../StyleSheets/Form';
-import windowPadding from '../StyleSheets/WindowPadding';
-import {RootStackParamList} from '../Navigation/StackNavigator';
-import RootStoreContext from '../Stores/RootStore';
+} from 'react-native'
+import {StackNavigationProp} from '@react-navigation/stack'
+import {observer} from 'mobx-react-lite'
+import TextInput from '../Components/TextInput'
+import TextButton from '../Components/TextButton'
+import GradientFlatButton from '../Components/GradientFlatButton'
+import {Form as styles} from '../StyleSheets/Form'
+import windowPadding from '../StyleSheets/WindowPadding'
+import {RootStackParamList} from '../Navigation/StackNavigator'
+import RootStoreContext from '../Stores/RootStore'
 
 interface Props {
   navigation: StackNavigationProp<RootStackParamList>
 }
 
 const HelpScreen = observer(({navigation}: Props): JSX.Element => {
-  const store = useContext(RootStoreContext).auth;
+  const store = useContext(RootStoreContext).auth
 
   return (
     <KeyboardAvoidingView
@@ -60,7 +60,7 @@ const HelpScreen = observer(({navigation}: Props): JSX.Element => {
         </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
-  );
-});
+  )
+})
 
-export default HelpScreen;
+export default HelpScreen

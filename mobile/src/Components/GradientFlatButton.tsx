@@ -1,8 +1,8 @@
-import React from 'react';
+import React from 'react'
 import {
   TouchableOpacity, Text, View, StyleSheet, GestureResponderEvent,
-} from 'react-native';
-import {LinearGradient} from 'expo-linear-gradient';
+} from 'react-native'
+import {LinearGradient} from 'expo-linear-gradient'
 
 interface Props {
   width?: number | string;
@@ -35,7 +35,7 @@ const GradientFlatButton = ({
       </View>
     </View>
   </View>
-);
+)
 
 const styles = StyleSheet.create({
   button: {
@@ -69,6 +69,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: 'white',
   },
-});
+})
 
-export default GradientFlatButton;
+export default GradientFlatButton

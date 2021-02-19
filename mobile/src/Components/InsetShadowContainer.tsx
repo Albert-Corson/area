@@ -1,6 +1,6 @@
-import React from 'react';
-import {StyleSheet} from 'react-native';
-import InsetShadow from 'react-native-inset-shadow';
+import React from 'react'
+import {StyleSheet} from 'react-native'
+import InsetShadow from 'react-native-inset-shadow'
 
 interface Props {
   children: React.ReactNode
@@ -26,12 +26,12 @@ const InsetShadowContainer = ({children}: Props) => (
 
     </InsetShadow>
   </InsetShadow>
-);
+)
 
-export default InsetShadowContainer;
+export default InsetShadowContainer
 
 const styles = StyleSheet.create({
   shadowStyle: {
     borderRadius: 25,
   },
-});
+})

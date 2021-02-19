@@ -1,4 +1,4 @@
-import {API_HOST, API_PORT} from '@env';
+import {API_HOST, API_PORT} from '@env'
 
 type Method = 'get' | 'post' | 'put' | 'delete';
 
@@ -15,4 +15,4 @@ export default ({
   method,
   body,
   headers: {...headers, 'Content-Type': 'application/json'},
-});
+})

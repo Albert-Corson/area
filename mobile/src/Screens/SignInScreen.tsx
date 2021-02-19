@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext} from 'react'
 import {
   View,
   Text,
@@ -6,22 +6,22 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   Platform,
-} from 'react-native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {observer} from 'mobx-react-lite';
-import TextInput from '../Components/TextInput';
-import TextButton from '../Components/TextButton';
-import GradientFlatButton from '../Components/GradientFlatButton';
-import {Form as styles} from '../StyleSheets/Form';
-import {RootStackParamList} from '../Navigation/StackNavigator';
-import RootStoreContext from '../Stores/RootStore';
+} from 'react-native'
+import {StackNavigationProp} from '@react-navigation/stack'
+import {observer} from 'mobx-react-lite'
+import TextInput from '../Components/TextInput'
+import TextButton from '../Components/TextButton'
+import GradientFlatButton from '../Components/GradientFlatButton'
+import {Form as styles} from '../StyleSheets/Form'
+import {RootStackParamList} from '../Navigation/StackNavigator'
+import RootStoreContext from '../Stores/RootStore'
 
 interface Props {
   navigation: StackNavigationProp<RootStackParamList>;
 }
 
 const SignInScreen = observer(({navigation}: Props): JSX.Element => {
-  const store = useContext(RootStoreContext);
+  const store = useContext(RootStoreContext)
 
   return (
     <KeyboardAvoidingView
@@ -54,7 +54,7 @@ const SignInScreen = observer(({navigation}: Props): JSX.Element => {
                 // navigation.navigate('Dashboard');
                 // return;
                 if (await store.auth.signIn()) {
-                  navigation.navigate('Dashboard');
+                  navigation.navigate('Dashboard')
                 }
               }}
             />
@@ -76,7 +76,7 @@ const SignInScreen = observer(({navigation}: Props): JSX.Element => {
         </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
-  );
-});
+  )
+})
 
-export default SignInScreen;
+export default SignInScreen

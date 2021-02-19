@@ -1,4 +1,4 @@
-import {StyleSheet} from 'react-native';
+import {StyleSheet} from 'react-native'
 
 export const Form = StyleSheet.create({
   container: {
@@ -32,4 +32,4 @@ export const Form = StyleSheet.create({
     color: '#a35150',
     marginBottom: 10,
   },
-});
+})

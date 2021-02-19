@@ -1,6 +1,6 @@
-import React from 'react';
-import {TextInput as RNTextInput, StyleSheet, View} from 'react-native';
-import InsetShadowContainer from './InsetShadowContainer';
+import React from 'react'
+import {TextInput as RNTextInput, StyleSheet, View} from 'react-native'
+import InsetShadowContainer from './InsetShadowContainer'
 
 interface Props {
   value: string;
@@ -26,7 +26,7 @@ const TextInput = ({
       />
     </InsetShadowContainer>
   </View>
-);
+)
 
 const styles = StyleSheet.create({
   container: {
@@ -49,6 +49,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Dosis',
     color: 'black',
   },
-});
+})
 
-export default TextInput;
+export default TextInput

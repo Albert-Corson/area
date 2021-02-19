@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext} from 'react'
 import {
   Text,
   KeyboardAvoidingView,
@@ -6,23 +6,23 @@ import {
   Keyboard,
   View,
   Platform,
-} from 'react-native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {observer} from 'mobx-react-lite';
-import TextInput from '../Components/TextInput';
-import GradientFlatButton from '../Components/GradientFlatButton';
-import TextButton from '../Components/TextButton';
-import {Form as styles} from '../StyleSheets/Form';
-import windowPadding from '../StyleSheets/WindowPadding';
-import {RootStackParamList} from '../Navigation/StackNavigator';
-import RootStoreContext from '../Stores/RootStore';
+} from 'react-native'
+import {StackNavigationProp} from '@react-navigation/stack'
+import {observer} from 'mobx-react-lite'
+import TextInput from '../Components/TextInput'
+import GradientFlatButton from '../Components/GradientFlatButton'
+import TextButton from '../Components/TextButton'
+import {Form as styles} from '../StyleSheets/Form'
+import windowPadding from '../StyleSheets/WindowPadding'
+import {RootStackParamList} from '../Navigation/StackNavigator'
+import RootStoreContext from '../Stores/RootStore'
 
 interface Props {
   navigation: StackNavigationProp<RootStackParamList>;
 }
 
 const SignUpScreen = observer(({navigation}: Props) => {
-  const store = useContext(RootStoreContext).auth;
+  const store = useContext(RootStoreContext).auth
 
   return (
     <KeyboardAvoidingView
@@ -64,7 +64,7 @@ const SignUpScreen = observer(({navigation}: Props) => {
             width={325}
             onPress={async () => {
               if (await store.signUp()) {
-                navigation.navigate('Login');
+                navigation.navigate('Login')
               }
             }}
             containerStyle={{margin: 10}}
@@ -83,7 +83,7 @@ const SignUpScreen = observer(({navigation}: Props) => {
         </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
-  );
-});
+  )
+})
 
-export default SignUpScreen;
+export default SignUpScreen

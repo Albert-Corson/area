@@ -1,4 +1,5 @@
-import {Block} from './Block';
+import { Parameters } from './API';
+import {Block} from './Block'
 
 export interface Service {
   id: number;
@@ -18,5 +19,5 @@ export interface Widget extends Block {
   description: string;
   requires_auth: boolean;
   service: Service;
-  params: Array<WidgetParam>
+  params: Parameters
 }

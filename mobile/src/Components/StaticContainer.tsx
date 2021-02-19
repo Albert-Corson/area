@@ -1,8 +1,8 @@
-import React, {useRef} from 'react';
-import {Dimensions, StyleSheet, View} from 'react-native';
-import {TapGestureHandler, TapGestureHandlerGestureEvent} from 'react-native-gesture-handler';
-import Animated from 'react-native-reanimated';
-import DropShadowContainer from './DropShadowContainer';
+import React, {useRef} from 'react'
+import {Dimensions, StyleSheet, View} from 'react-native'
+import {TapGestureHandler, TapGestureHandlerGestureEvent} from 'react-native-gesture-handler'
+import Animated from 'react-native-reanimated'
+import DropShadowContainer from './DropShadowContainer'
 
 interface Props {
   index: number;
@@ -14,11 +14,11 @@ const StaticContainer = ({
   index,
   onTap,
   renderItem,
-}: Props) => {
-  const tapRef = useRef(null);
+}: Props): JSX.Element => {
+  const tapRef = useRef(null)
 
-  const SIZE = Dimensions.get('window').width / 2.5;
-  const MARGIN = ((SIZE * (2.5 - 2.14)) / 4);
+  const SIZE = Dimensions.get('window').width / 2.5
+  const MARGIN = ((SIZE * (2.5 - 2.14)) / 4)
 
   return (
     <View style={{margin: MARGIN}}>
@@ -36,14 +36,14 @@ const StaticContainer = ({
         </TapGestureHandler>
       </DropShadowContainer>
     </View>
-  );
-};
+  )
+}
 
-export default StaticContainer;
+export default StaticContainer
 
 const styles = StyleSheet.create({
   box: {
     borderRadius: 25,
     backgroundColor: '#e6e6e9',
   },
-});
+})

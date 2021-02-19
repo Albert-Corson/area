@@ -1,11 +1,11 @@
-import React from 'react';
+import React from 'react'
 import {
   TouchableOpacity,
   Text,
   View,
   StyleSheet,
   GestureResponderEvent,
-} from 'react-native';
+} from 'react-native'
 
 interface Props {
   value: string;
@@ -22,13 +22,13 @@ const TextButton = ({
       <Text style={[styles.text, style]}>{value}</Text>
     </TouchableOpacity>
   </View>
-);
+)
 
 const styles = StyleSheet.create({
   text: {
     fontFamily: 'DosisLight',
     color: '#545454',
   },
-});
+})
 
-export default TextButton;
+export default TextButton

@@ -1,6 +1,7 @@
-import {makeAutoObservable, observable, action} from 'mobx';
-import {RootStore} from './RootStore';
-import absFetch from '../Tools/Network';
+import {makeAutoObservable, observable, action} from 'mobx'
+import {RootStore} from './RootStore'
+import absFetch from '../Tools/Network'
+import {Response} from '../Types/API'
 
 export class AuthStore {
   @observable private _email = '';
@@ -10,62 +11,62 @@ export class AuthStore {
   @observable private _error = '';
 
   constructor(private _rootStore: RootStore) {
-    makeAutoObservable(this);
+    makeAutoObservable(this)
   }
 
   public get email(): string {
-    return this._email.toLowerCase();
+    return this._email.toLowerCase()
   }
 
   @action
   public set email(value: string) {
-    this._email = value;
+    this._email = value
   }
 
   public get username(): string {
-    return this._username;
+    return this._username
   }
 
   @action
   public set username(value: string) {
-    this._username = value;
+    this._username = value
   }
 
   public get password(): string {
-    return this._password;
+    return this._password
   }
 
   @action
   public set password(value: string) {
-    this._password = value;
+    this._password = value
   }
 
   public get confirm(): string {
-    return this._confirm;
+    return this._confirm
   }
 
   @action
   public set confirm(value: string) {
-    this._confirm = value;
+    this._confirm = value
   }
 
   public get error(): string {
-    return this._error;
+    return this._error
   }
 
   @action
   public set error(value: string) {
-    this._error = value;
+    this._error = value
   }
 
   @action
   public signUp = async (): Promise<boolean> => {
     if (this._password !== this._confirm) {
-      this._error = 'Passwords must be equals';
-      return false;
+      this._error = 'Passwords must be equals'
+      return false
     } if (!this._email.length || !this._username.length || !this._password.length) {
-      this._error = 'All entry are required';
-      return false;
+      this._error = 'All entry are required'
+      return false
     }
 
     const res = await absFetch({
@@ -76,30 +77,30 @@ export class AuthStore {
         username: this._username,
         password: this._password,
       }),
-    });
+    })
 
     try {
-      const body = await res.json();
+      const body = await res.json()
 
       if (!body.successful) {
-        this.error = body.error ?? 'An error occurred';
-        return false;
+        this.error = body.error ?? 'An error occurred'
+        return false
       }
 
-      this.password = '';
-      this.error = '';
-      return true;
+      this.password = ''
+      this.error = ''
+      return true
     } catch {
-      console.warn('error while parsing json');
+      console.warn('error while parsing json')
     }
-    return false;
+    return false
   };
 
   @action
   public signIn = async (): Promise<boolean> => {
     if (!this._username.length || !this._password.length) {
-      this._error = 'All entries are required';
-      return false;
+      this._error = 'All entries are required'
+      return false
     }
 
     const res = await absFetch({
@@ -109,32 +110,52 @@ export class AuthStore {
         identifier: this._username,
         password: this._password,
       }),
-    });
+    })
+
+    this.password = ''
 
     try {
-      const body = await res.json();
+      const body = await res.json()
 
       if (!body.successful) {
-        this.error = body.error ?? 'Error occured';
-        return false;
+        this.error = body.error ?? 'Error occured'
+        return false
       }
+
+      this._rootStore.user.loadUser()
 
       return await this._rootStore.user.storeUser(
         body.data.refresh_token,
         body.data.access_token,
         body.data.expires_in,
         this.username,
-      );
+      )
     } catch (e) {
-      console.warn(e);
-      this.error = 'Error occured';
+      console.warn(e)
+      this.error = 'Error occured'
     }
 
-    return false;
+    return false
   };
 
   @action
   public resetPassword = (): void => {
-    console.warn('Not implemented yet');
+    console.warn('Not implemented yet')
   };
+
+  @action
+  public logout = async (): Promise<boolean> => {
+    const res = await absFetch({
+      route: '/auth/revoke',
+      method: 'delete'
+    })
+
+    const json: Response = await res.json()
+
+    if (json.successful || res.status === 401) {
+      this._rootStore.user.removeCurrentUser()
+      return true
+    }
+    return false
+  }
 }

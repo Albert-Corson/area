@@ -1,8 +1,12 @@
-import React, {useContext} from 'react';
-import {loadFonts} from './Fonts';
+import React, {useContext} from 'react'
+import {loadFonts} from './Fonts'
+import {loadImages} from './Images'
 
 const loadResources = async (): Promise<void> => {
-  await loadFonts();
-};
+  await Promise.all([
+    loadFonts(),
+    loadImages()
+  ])
+}
 
-export default loadResources;
+export default loadResources

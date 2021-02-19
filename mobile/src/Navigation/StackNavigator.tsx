@@ -1,11 +1,12 @@
-import React, {useContext} from 'react';
-import {createStackNavigator} from '@react-navigation/stack';
-import SignInScreen from '../Screens/SignInScreen';
-import SignUpScreen from '../Screens/SignUpScreen';
-import HelpScreen from '../Screens/HelpScreen';
-import DashboardScreen from '../Screens/DashboardScreen';
-import ProfileScreen from '../Screens/ProfileScreen';
-import RootStoreContext from '../Stores/RootStore';
+import React, {useContext} from 'react'
+import {createStackNavigator} from '@react-navigation/stack'
+import SignInScreen from '../Screens/SignInScreen'
+import SignUpScreen from '../Screens/SignUpScreen'
+import HelpScreen from '../Screens/HelpScreen'
+import DashboardScreen from '../Screens/DashboardScreen'
+import ProfileScreen from '../Screens/ProfileScreen'
+import RootStoreContext from '../Stores/RootStore'
+import ServiceAuthScreen from '../Screens/ServiceAuthScreen'
 
 export type RootStackParamList = {
   Login: undefined;
@@ -13,12 +14,13 @@ export type RootStackParamList = {
   Help: undefined;
   Dashboard: undefined;
   Profile: undefined;
+  ServiceAuth: {authUrl: string, widgetId: number};
 };
 
-const Stack = createStackNavigator<RootStackParamList>();
+const Stack = createStackNavigator<RootStackParamList>()
 
 const StackNavigator = (): JSX.Element => {
-  const store = useContext(RootStoreContext);
+  const store = useContext(RootStoreContext)
 
   return (
     <Stack.Navigator
@@ -30,8 +32,9 @@ const StackNavigator = (): JSX.Element => {
       <Stack.Screen name="Help" component={HelpScreen} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen name="Dashboard" component={DashboardScreen} />
+      <Stack.Screen name="ServiceAuth" component={ServiceAuthScreen} />
     </Stack.Navigator>
-  );
-};
+  )
+}
 
-export default StackNavigator;
+export default StackNavigator

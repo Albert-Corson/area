@@ -1,10 +1,10 @@
-import {loadAsync} from 'expo-font';
+import {loadAsync} from 'expo-font'
 
 interface Font {
   [name: string]: number
 }
 
-const fontsPath = '../../assets/fonts';
+const fontsPath = '../../assets/fonts'
 
 const fonts: Array<Font> = [
   // Dosis
@@ -18,12 +18,10 @@ const fonts: Array<Font> = [
   {LouisGeorgeCafe: require(`${fontsPath}/LouisGeorgeCafe/LouisGeorgeCafe-Normal.otf`)},
   {LouisGeorgeCafeLight: require(`${fontsPath}/LouisGeorgeCafe/LouisGeorgeCafe-Light.otf`)},
   {LouisGeorgeCafeBold: require(`${fontsPath}/LouisGeorgeCafe/LouisGeorgeCafe-Bold.otf`)},
-];
+]
 
 const loadFonts = async (): Promise<void> => {
-  for (const font of fonts) {
-    await loadAsync(font);
-  }
-};
+  await Promise.all(fonts.map(font => loadAsync(font)))
+}
 
-export {loadFonts};
+export {loadFonts}

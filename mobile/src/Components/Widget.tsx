@@ -1,12 +1,12 @@
-import React, {useState} from 'react'
-import {View, Text, StyleSheet, ImageBackground} from 'react-native'
+import React, {useRef, useState} from 'react'
+import {View, Text, StyleSheet, ImageBackground, TouchableOpacity} from 'react-native'
 import {Widget as WidgetType} from '../Types/Widgets'
 import {observer} from 'mobx-react-lite'
 import {BlurView} from 'expo-blur'
-import {TouchableWithoutFeedback} from 'react-native-gesture-handler'
 import {Size} from '../Types/Block'
 import {Video} from 'expo-av'
-
+import {FontAwesome} from '@expo/vector-icons'
+import DoubleTap from './DoubleTap'
 
 interface Props {
   item: WidgetType;
@@ -20,12 +20,12 @@ const sizes = {
   [Size.full]: 500,
 }
 
+const DOUBLE_PRESS_DELAY = 400
 
 const Widget = observer(({item, size, subscribed = true}: Props): JSX.Element => {
   const [showText, setShowText] = useState<boolean>(true)
   const display = item.params?.item ?? (item.params?.items?.length ? item.params.items[0] : {})
-
-  console.log(item)
+  const queries = item?.params?.params || []
 
   const truncateString = (str: string): string => {
     const length = sizes[size]
@@ -35,34 +35,48 @@ const Widget = observer(({item, size, subscribed = true}: Props): JSX.Element =>
     return str.length > length ? `${str.slice(0, length)}...` : str
   }
 
-  const content: JSX.Element = (
-    <View style={styles.contentContainer}>
-      <Text style={[styles.text, styles.title, {}]}>
-        {truncateString(display.header ?? item.name)}
-      </Text>
+  const onTap = (): void => {
+    if (!subscribed) return
 
-      {(() => {
-        const body = (display.artists ?? display.genres)?.map((item: string, i: number) => (
-          <Text style={styles.text} key={i}>
-            {truncateString(item)}
-          </Text>
-        ))
+    setShowText(!showText)
+  }
 
-        if (body?.length) {
-          return body
-        }
+  const onDoubleTap = () => {
+    if (!queries.length) return
 
-        if (!display.content && !display.description && subscribed) {
-          return null
-        }
+    // open query modal
+  }
 
-        return (
-          <Text style={styles.text}>
-            {truncateString(display.content || display.description || item.description)}
-          </Text>
-        )
-      })()}
-    </View>
+  const content: JSX.Element | boolean = showText && (
+    <BlurView intensity={100} style={[styles.centerContent, styles.fullSize]}>
+      <View style={styles.contentContainer}>
+        <Text style={[styles.text, styles.title, {}]}>
+          {truncateString(display.header ?? item.name)}
+        </Text>
+
+        {(() => {
+          const body = (display.artists ?? display.genres)?.map((item: string, i: number) => (
+            <Text style={styles.text} key={i}>
+              {truncateString(item)}
+            </Text>
+          ))
+
+          if (body?.length) {
+            return body
+          }
+
+          if (!display.content && !display.description && subscribed) {
+            return null
+          }
+
+          return (
+            <Text style={styles.text}>
+              {truncateString(display.content || display.description || item.description)}
+            </Text>
+          )
+        })()}
+      </View>
+    </BlurView>
   )
 
   const container: JSX.Element = (
@@ -70,27 +84,18 @@ const Widget = observer(({item, size, subscribed = true}: Props): JSX.Element =>
       {display.image ? (
         <>
           {display.image.includes('.mp4') ? (
-            
             <Video
               style={[styles.widget, styles.fullSize]}
-              source={{uri: display.image}} 
+              source={{uri: display.image}}
               shouldPlay={true}
               isLooping={true}
               volume={0}
               resizeMode="cover">
-              {showText && (
-                <BlurView intensity={100} style={[styles.centerContent, styles.fullSize]}>
-                  {content}
-                </BlurView>
-              )}
+              {content}
             </Video>
           ) : (
             <ImageBackground style={[styles.widget, styles.fullSize]} source={{uri: display.image}}>
-              {showText && (
-                <BlurView intensity={100} style={[styles.centerContent, styles.fullSize]}>
-                  {content}
-                </BlurView>
-              )}
+              {content}
             </ImageBackground>
           )}
         </>
@@ -103,9 +108,16 @@ const Widget = observer(({item, size, subscribed = true}: Props): JSX.Element =>
   )
 
   return (
-    <TouchableWithoutFeedback onPress={() => subscribed && display.image && setShowText(!showText)}>
+    <DoubleTap
+      onPress={onTap}
+      onDoublePress={onDoubleTap}
+      delay={200}
+      activeOpacity={1}
+    >
+
       {container}
-    </TouchableWithoutFeedback>
+
+    </DoubleTap>
   )
 })
 
@@ -149,5 +161,22 @@ const styles = StyleSheet.create({
   fullSize: {
     width: '100%',
     height: '100%',
-  }
+  },
+  query: {
+    width: 20,
+    height: 20,
+    borderRadius: 20,
+
+    zIndex: 1000,
+
+    position: 'absolute',
+
+    bottom: 0,
+    right: 0,
+
+    backgroundColor: '#54545477',
+
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 })

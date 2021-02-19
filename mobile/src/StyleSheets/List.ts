@@ -1,4 +1,4 @@
-import {StyleSheet} from 'react-native';
+import {StyleSheet} from 'react-native'
 
 const List = StyleSheet.create({
   container: {
@@ -6,6 +6,6 @@ const List = StyleSheet.create({
     backgroundColor: '#e7e7e7',
     alignItems: 'center',
   },
-});
+})
 
-export default List;
+export default List

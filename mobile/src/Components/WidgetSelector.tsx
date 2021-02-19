@@ -1,53 +1,97 @@
-import React from 'react';
-import {observer} from 'mobx-react-lite';
-import {View, Text, StyleSheet,} from 'react-native';
-import {State, TapGestureHandlerGestureEvent} from 'react-native-gesture-handler';
-import {RootStore} from '../Stores/RootStore';
-import WidgetListContainer from './WidgetListContainer';
-import Widget from './Widget';
-import StaticContainer from './StaticContainer';
+import React from 'react'
+import {observer} from 'mobx-react-lite'
+import {View, Text, StyleSheet} from 'react-native'
+import {State, TapGestureHandlerGestureEvent} from 'react-native-gesture-handler'
+import {RootStore} from '../Stores/RootStore'
+import WidgetListContainer from './WidgetListContainer'
+import Widget from './Widget'
+import StaticContainer from './StaticContainer'
+import {StackNavigationProp} from '@react-navigation/stack'
+import {RootStackParamList} from '../Navigation/StackNavigator'
+import ServiceLoginPrompt from './ServiceLoginPrompt'
+import Animated, {useAnimatedStyle, useSharedValue, withSpring} from 'react-native-reanimated'
 
 interface WidgetSelectorProps {
   store: RootStore;
+  navigation: StackNavigationProp<RootStackParamList>;
 }
 
-const WidgetSelector = observer(({store}: WidgetSelectorProps): JSX.Element => {
+const WidgetSelector = observer(({store, navigation}: WidgetSelectorProps): JSX.Element => {
+  const {availableWidgets} = store.widget
+  const opacity = useSharedValue<number>(1)
+
+  const opacityStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value
+  }))
+
   const onTap = (e: TapGestureHandlerGestureEvent, index: number): void => {
-    if (e.nativeEvent.state !== State.ACTIVE) return;
+    if (e.nativeEvent.state !== State.ACTIVE) return
 
-    const {availableWidgets} = store.widget;
+    const {availableWidgets} = store.widget
 
-    if (index < 0 || index >= availableWidgets.length) return;
+    if (index < 0 || index >= availableWidgets.length) return
 
-    store.widget.subscribeToWidget(availableWidgets[index].id);
-  };
+    const widget = availableWidgets[index]
 
-  const {availableWidgets} = store.widget;
+    if (widget.requires_auth) {
+      store.widget.currentWidget = widget
+      opacity.value = withSpring(.3)
+    } else {
+      store.widget.subscribeToWidget(widget.id)
+    }
+  }
+
+  const onPromptPress = async () => {
+    const authUrl = await store.widget.serviceAuthentication()
+
+    opacity.value = withSpring(1)
+
+    navigation.navigate('ServiceAuth', {
+      authUrl: authUrl ?? '',
+      widgetId: store.widget.currentWidget?.id ?? -1
+    })
+
+    store.widget.currentWidget = null
+  }
+
+  const onPromptCancel = () => {
+    store.widget.currentWidget = null
+    opacity.value = withSpring(1)
+
+  }
+
 
   return (
-    <WidgetListContainer containerStyle={[styles.container, styles.selector]} bounce={false}>
-      {!availableWidgets.length && (
-        <Text style={styles.title}>{'No new widget available, you got\'em all!'}</Text>
-      )}
-      {availableWidgets.map((widget, index) => (
-        <StaticContainer
-          key={index}
-          onTap={onTap}
-          index={index}
-          renderItem={() => <Widget item={widget} />}
+    <Animated.View style={opacityStyle}>
+      <WidgetListContainer containerStyle={[styles.container, styles.selector]} bounce={false}>
+        <ServiceLoginPrompt
+          onPress={onPromptPress}
+          onCancel={onPromptCancel}
+          service={store.widget.currentWidget?.service || null}
         />
-      ))}
-    </WidgetListContainer>
-  );
-});
+        {!availableWidgets.length && (
+          <Text style={styles.title}>{'No new widget available, you got\'em all!'}</Text>
+        )}
+        {availableWidgets.map((widget, index) => (
+          <StaticContainer
+            key={index}
+            onTap={onTap}
+            index={index}
+            renderItem={() => <Widget item={widget} subscribed={false} />}
+          />
+        ))}
+      </WidgetListContainer>
+    </Animated.View>
+  )
+})
 
 const WidgetSelectorHeader = (): JSX.Element => (
   <View style={[styles.header]}>
     <View style={styles.handle} />
   </View>
-);
+)
 
-export {WidgetSelector, WidgetSelectorHeader};
+export {WidgetSelector, WidgetSelectorHeader}
 
 const styles = StyleSheet.create({
   selector: {
@@ -102,4 +146,4 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: 'DosisBold',
   },
-});
+})

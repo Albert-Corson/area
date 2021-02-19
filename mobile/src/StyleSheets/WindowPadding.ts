@@ -1,5 +1,5 @@
-import {Dimensions} from 'react-native';
+import {Dimensions} from 'react-native'
 
-const windowPadding = (Dimensions.get('window').width - 300) / 2 + 10;
+const windowPadding = (Dimensions.get('window').width - 300) / 2 + 10
 
-export default windowPadding;
+export default windowPadding

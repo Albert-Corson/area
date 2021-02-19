@@ -1,9 +1,9 @@
-import React from 'react';
+import React from 'react'
 import {
   TouchableOpacity, Text, View, StyleSheet, GestureResponderEvent,
-} from 'react-native';
-import DropShadowContainer from './DropShadowContainer';
-import InsetShadowContainer from './InsetShadowContainer';
+} from 'react-native'
+import DropShadowContainer from './DropShadowContainer'
+import InsetShadowContainer from './InsetShadowContainer'
 
 interface Props {
   width?: number;
@@ -54,7 +54,7 @@ const FlatButton = ({
       </DropShadowContainer>
     )}
   </View>
-);
+)
 
 const styles = StyleSheet.create({
   button: {
@@ -71,6 +71,6 @@ const styles = StyleSheet.create({
   shadowStyle: {
     borderRadius: 25,
   },
-});
+})
 
-export default FlatButton;
+export default FlatButton
