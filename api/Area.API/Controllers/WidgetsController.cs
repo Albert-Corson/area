@@ -42,7 +42,7 @@ namespace Area.API.Controllers
         )]
         [SwaggerResponse((int) HttpStatusCode.NotFound, "The `serviceId` doesn't have a correspond service")]
         public ResponseModel<List<WidgetModel>> GetWidgets(
-            [FromQuery] [Range(1, 2147483647)] [SwaggerParameter("A service's ID, to filter the results by.")]
+            [FromQuery] [Range(1, int.MaxValue)] [SwaggerParameter("A service's ID, to filter the results by.")]
             int? serviceId
         )
         {
@@ -70,7 +70,7 @@ namespace Area.API.Controllers
         )]
         [SwaggerResponse((int) HttpStatusCode.NotFound, "The `serviceId` doesn't have a correspond service")]
         public ResponseModel<List<WidgetModel>> GetMyWidgets(
-            [FromQuery] [Range(1, 2147483647)] [SwaggerParameter("A service's ID, to filter the results by.")]
+            [FromQuery] [Range(1, int.MaxValue)] [SwaggerParameter("A service's ID, to filter the results by.")]
             int? serviceId
         )
         {
@@ -108,7 +108,7 @@ namespace Area.API.Controllers
         )]
         [SwaggerResponse((int) HttpStatusCode.NotFound, "The widget doesn't exist")]
         public ResponseModel<WidgetCallResponseModel> CallWidget(
-            [FromRoute] [Required] [Range(1, 2147483647)] [SwaggerParameter("The widget's ID")]
+            [FromRoute] [Required] [Range(1, int.MaxValue)] [SwaggerParameter("The widget's ID")]
             int? widgetId
         )
         {
@@ -124,7 +124,7 @@ namespace Area.API.Controllers
         )]
         [SwaggerResponse((int) HttpStatusCode.NotFound, "The widget doesn't exist or the user isn't subscribed to it")]
         public StatusModel UnsubscribeWidget(
-            [FromRoute] [Required] [Range(1, 2147483647)] [SwaggerParameter("The widget's ID")]
+            [FromRoute] [Required] [Range(1, int.MaxValue)] [SwaggerParameter("The widget's ID")]
             int? widgetId
         )
         {
@@ -142,7 +142,7 @@ namespace Area.API.Controllers
         )]
         [SwaggerResponse((int) HttpStatusCode.NotFound, "The widget doesn't exist")]
         public StatusModel SubscribeWidget(
-            [FromRoute] [Required] [Range(1, 2147483647)] [SwaggerParameter("The widget's ID")]
+            [FromRoute] [Required] [Range(1, int.MaxValue)] [SwaggerParameter("The widget's ID")]
             int? widgetId
         )
         {

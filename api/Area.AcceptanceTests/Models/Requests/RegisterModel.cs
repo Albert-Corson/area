@@ -4,6 +4,16 @@ namespace Area.AcceptanceTests.Models.Requests
 {
     public class RegisterModel
     {
+        public RegisterModel()
+        { }
+
+        public RegisterModel(RegisterModel other)
+        {
+            Email = other.Email;
+            Username = other.Username;
+            Password = other.Password;
+        }
+
         [JsonProperty("username")]
         public string Username { get; set; } = null!;
 

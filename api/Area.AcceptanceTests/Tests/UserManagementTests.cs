@@ -1,35 +1,32 @@
 using System.Net;
-using Area.AcceptanceTests.Collections;
 using Area.AcceptanceTests.Models.Requests;
+using Area.AcceptanceTests.Utilities;
 using Xunit;
 using Xunit.Priority;
 
 namespace Area.AcceptanceTests.Tests
 {
-    [Collection(nameof(ApiTestCollection))]
     [TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)]
-    public class UserEndpointTests
+    public class UserEndpointTests : IClassFixture<AreaApi>
     {
-        private readonly AreaApiClient _areaApiClient;
+        private readonly AreaApi _areaApi;
         private readonly RegisterModel _registerForm = new RegisterModel {
             Email = "some@email.adress",
             Password = "Some*Password1234",
             Username = "SomeUsername"
         };
 
-        public UserEndpointTests(AreaApiClient areaApiClient)
+        public UserEndpointTests(AreaApi areaApi)
         {
-            _areaApiClient = areaApiClient;
+            _areaApi = areaApi;
         }
 
         [Fact, Priority(1)]
         public void Register()
         {
-            var result = _areaApiClient.Register(_registerForm).Result;
+            var response = _areaApi.Register(_registerForm).Result;
 
-            Assert.Equal(HttpStatusCode.OK, result.Status);
-            Assert.Null(result.Data.Error);
-            Assert.True(result.Data.Successful);
+            AssertExtension.SuccessfulApiResponse(response);
         }
 
         [Fact, Priority(2)]
@@ -40,35 +37,52 @@ namespace Area.AcceptanceTests.Tests
                 Password = _registerForm.Password
             };
 
-            var result = _areaApiClient.SignIn(form).Result;
+            var response = _areaApi.SignIn(form).Result;
 
-            Assert.Equal(HttpStatusCode.OK, result.Status);
-            Assert.NotNull(result.Data.Data);
-            Assert.Null(result.Data.Error);
-            Assert.True(result.Data.Successful);
+            AssertExtension.SuccessfulApiResponse(response);
 
-            _areaApiClient.Tokens = result.Data.Data;
+            _areaApi.Tokens = response.Content.Data;
         }
 
         [Fact, Priority(3)]
-        public void DeleteAccount()
+        public async void GetMyUser()
         {
-            var result = _areaApiClient.DeleteMyUser().Result;
-
-            Assert.Equal(HttpStatusCode.OK, result.Status);
-            Assert.Null(result.Data.Error);
-            Assert.True(result.Data.Successful);
+            var response = await _areaApi.GetMyUser();
+        
+            AssertExtension.SuccessfulApiResponse(response);
+            Assert.Equal(_registerForm.Email, response.Content.Data!.Email);
+            Assert.Equal(_registerForm.Username, response.Content.Data!.Username);
+            Assert.InRange(response.Content.Data!.Id, 1, int.MaxValue);
+        }
+        
+        [Fact, Priority(4)]
+        public async void RefreshAccessToken()
+        {
+            var form = new RefreshTokenModel {
+                RefreshToken = _areaApi.Tokens!.RefreshToken
+            };
+        
+            var response = await _areaApi.RefreshAccessToken(form);
+        
+            AssertExtension.SuccessfulApiResponse(response);
+        
+            _areaApi.Tokens = response.Content.Data;
         }
 
-        [Fact, Priority(4)]
-        public void GetMyDeletedUser()
+        [Fact, Priority(5)]
+        public void DeleteMyUser()
         {
-            var result = _areaApiClient.GetMyUser().Result;
+            var response = _areaApi.DeleteMyUser().Result;
 
-            Assert.Equal(HttpStatusCode.Unauthorized, result.Status);
-            Assert.Null(result.Data.Data);
-            Assert.NotNull(result.Data.Error);
-            Assert.False(result.Data.Successful);
+            AssertExtension.SuccessfulApiResponse(response);
+        }
+
+        [Fact, Priority(6)]
+        public async void GetMyDeletedUser()
+        {
+            var response = await _areaApi.GetMyUser();
+        
+            AssertExtension.FailedApiResponse(response, HttpStatusCode.Unauthorized);
         }
     }
 }

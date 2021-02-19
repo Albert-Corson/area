@@ -5,6 +5,7 @@ namespace Area.AcceptanceTests.Constants
         private const string Api = "/api";
 
         public const string AboutDotJson = Api + "/about";
+        public const string InvalidRoute = "/this/route/leads/to/nowhere";
 
         public static class Auth
         {
