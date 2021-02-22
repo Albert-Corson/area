@@ -49,8 +49,6 @@ namespace Area.AcceptanceTests.Tests
             });
             var request4 = AreaApi.Register(new RegisterModel(_authenticatedTestsFixture.RegisterForm));
 
-            Task.WaitAll(request1, request2, request3, request4);
-
             AssertExtension.FailedApiResponse(request1.Result, HttpStatusCode.BadRequest);
             AssertExtension.FailedApiResponse(request2.Result, HttpStatusCode.BadRequest);
             AssertExtension.FailedApiResponse(request3.Result, HttpStatusCode.BadRequest);
@@ -64,27 +62,31 @@ namespace Area.AcceptanceTests.Tests
             var request3 = AreaApi.Client.DeleteAsync(RouteConstants.InvalidRoute);
             var request2 = AreaApi.Client.PostAsync(RouteConstants.InvalidRoute);
 
-            Task.WaitAll(request1, request2, request3);
-
             AssertExtension.FailedApiResponse(request1.Result, HttpStatusCode.NotFound);
             AssertExtension.FailedApiResponse(request2.Result, HttpStatusCode.NotFound);
             AssertExtension.FailedApiResponse(request3.Result, HttpStatusCode.NotFound);
         }
 
         [Fact]
-        public void InvalidGetParameterValue()
+        public void InvalidQueryParameterFormat()
         {
-            var notFound1 = AreaApi.Client.GetAsync<ResponseModel<IEnumerable<WidgetModel>>>(RouteConstants.Widgets.GetWidgets + "?serviceId=100");
             var badRequest1 = AreaApi.Client.GetAsync<ResponseModel<IEnumerable<WidgetModel>>>(RouteConstants.Widgets.GetWidgets + "?serviceId=aaaa");
-            var notFound2 = AreaApi.Client.GetAsync<ResponseModel<IEnumerable<WidgetModel>>>(RouteConstants.Widgets.GetMyWidgets + "?serviceId=100");
             var badRequest2 = AreaApi.Client.GetAsync<ResponseModel<IEnumerable<WidgetModel>>>(RouteConstants.Widgets.GetMyWidgets + "?serviceId=aaaa");
 
-            Task.WaitAll(notFound1, badRequest1, notFound2, badRequest2);
+            AssertExtension.FailedApiResponse(badRequest1.Result, HttpStatusCode.BadRequest);
+            AssertExtension.FailedApiResponse(badRequest2.Result, HttpStatusCode.BadRequest);
+        }
+
+        [Fact]
+        public void InvalidQueryParameterValue()
+        {
+            var notFound1 = AreaApi.Client.GetAsync<ResponseModel<IEnumerable<WidgetModel>>>(RouteConstants.Widgets.GetWidgets + "?serviceId=100");
+            var notFound2 = AreaApi.Client.GetAsync<ResponseModel<IEnumerable<WidgetModel>>>(RouteConstants.Widgets.GetMyWidgets + "?serviceId=100");
+            var notFound3 = AreaApi.GetServiceById(int.MaxValue - 1);
 
             AssertExtension.FailedApiResponse(notFound1.Result, HttpStatusCode.NotFound);
-            AssertExtension.FailedApiResponse(badRequest1.Result, HttpStatusCode.BadRequest);
             AssertExtension.FailedApiResponse(notFound2.Result, HttpStatusCode.NotFound);
-            AssertExtension.FailedApiResponse(badRequest2.Result, HttpStatusCode.BadRequest);
+            AssertExtension.FailedApiResponse(notFound3.Result, HttpStatusCode.NotFound);
         }
     }
 }

@@ -22,22 +22,22 @@ namespace Area.AcceptanceTests.Tests
         }
 
         [Fact, Priority(1)]
-        public void Register()
+        public async void Register()
         {
-            var response = _areaApi.Register(_registerForm).Result;
+            var response = await _areaApi.Register(_registerForm);
 
             AssertExtension.SuccessfulApiResponse(response);
         }
 
         [Fact, Priority(2)]
-        public void SignIn()
+        public async void SignIn()
         {
             var form = new SignInModel {
                 Identifier = _registerForm.Email,
                 Password = _registerForm.Password
             };
 
-            var response = _areaApi.SignIn(form).Result;
+            var response = await _areaApi.SignIn(form);
 
             AssertExtension.SuccessfulApiResponse(response);
 
@@ -65,14 +65,15 @@ namespace Area.AcceptanceTests.Tests
             var response = await _areaApi.RefreshAccessToken(form);
         
             AssertExtension.SuccessfulApiResponse(response);
-        
+            Assert.NotEqual(_areaApi.Tokens, response.Content.Data);
+
             _areaApi.Tokens = response.Content.Data;
         }
 
         [Fact, Priority(5)]
-        public void DeleteMyUser()
+        public async void DeleteMyUser()
         {
-            var response = _areaApi.DeleteMyUser().Result;
+            var response = await _areaApi.DeleteMyUser();
 
             AssertExtension.SuccessfulApiResponse(response);
         }

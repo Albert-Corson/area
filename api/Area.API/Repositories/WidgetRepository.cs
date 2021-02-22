@@ -73,7 +73,7 @@ namespace Area.API.Repositories
 
         public IEnumerable<WidgetModel> GetUserWidgetsByService(int userId, int serviceId, bool asNoTracking = true)
         {
-            return GetUserWidgets(userId, asNoTracking: asNoTracking)
+            return GetUserWidgets(userId, true, asNoTracking)
                 .Where(model => model.ServiceId == serviceId);
         }
     }

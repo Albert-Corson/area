@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Http;
+
 namespace Area.AcceptanceTests.Constants
 {
     public static class RouteConstants
@@ -43,6 +45,7 @@ namespace Area.AcceptanceTests.Constants
             public const string GetWidgets = Root;
             public const string GetMyWidgets = Root + "/me";
             public static string CallWidgetById(int id) => Root + "/" + id;
+            public static string CallWidgetById(int id, QueryString queryString) => CallWidgetById(id) + queryString;
             public static string SubscribeWidgetById(int id) => Root + "/" + id;
             public static string UnsubscribeWidgetById(int id) => Root + "/" + id;
         }

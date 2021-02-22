@@ -47,7 +47,7 @@ namespace Area.API.Controllers
         [HttpGet(RouteConstants.Services.GetMyServices)]
         [SwaggerOperation(
             Summary = "List a user's services",
-            Description = "## Get a list of all services where a user is subscribed to the its widget(s)"
+            Description = "## Get a list of all services where a user is subscribed to some of its widget(s)"
         )]
         public ResponseModel<List<ServiceModel>> GetMyService()
         {

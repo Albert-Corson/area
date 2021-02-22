@@ -13,6 +13,19 @@ namespace Area.AcceptanceTests.Models.Responses
             [EnumMember(Value = "boolean")] Boolean
         }
 
+        public static bool operator!=(ParamModel self, ParamModel other)
+        {
+            return !(self == other);
+        }
+
+        public static bool operator==(ParamModel self, ParamModel other)
+        {
+            return self.Name == other.Name
+                && self.Required == other.Required
+                && self.Type == other.Type
+                && self.Value == other.Value;
+        }
+
         [JsonProperty("name", Required = Newtonsoft.Json.Required.Always)]
         public string Name { get; set; } = null!;
 

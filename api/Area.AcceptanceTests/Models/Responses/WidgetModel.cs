@@ -1,29 +1,45 @@
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace Area.AcceptanceTests.Models.Responses
 {
-    public class WidgetModel
+    public class WidgetModel : AboutDotJsonModel.WidgetModel
     {
-        [JsonProperty("id", Required = Required.Always)]
-        public int Id { get; set; }
+        public void Copy(WidgetModel other)
+        {
+            base.Copy(other);
+            Frequency = other.Frequency;
+            Service.Copy(other.Service);
+            Params = other.Params;
+        }
 
-        [JsonProperty("name", Required = Required.Always)]
-        public string Name { get; set; } = null!;
+        public static bool operator!=(WidgetModel self, WidgetModel other)
+        {
+            return !(self == other);
+        }
 
-        [JsonProperty("description", Required = Required.Always)]
-        public string Description { get; set; } = null!;
+        public static bool operator==(WidgetModel self, WidgetModel other)
+        {
+            if (self.Params.Count != other.Params.Count)
+                return false;
 
-        [JsonProperty("requires_auth", Required = Required.Always)]
-        public bool RequiresAuth { get; set; }
+            foreach (var param in self.Params) {
+                other.Params.Single(model => model == param);
+            }
+            
+            return self as AboutDotJsonModel.WidgetModel == other
+                && self.Frequency == other.Frequency
+                && self.Service == other.Service;
+        }
 
         [JsonProperty("frequency", Required = Required.Always)]
         public int Frequency { get; set; }
 
-        [JsonProperty("service", Required = Required.DisallowNull)]
+        [JsonProperty("service", Required = Required.Always)]
         public ServiceModel Service { get; set; } = null!;
 
-        [JsonProperty("params", Required = Required.DisallowNull)]
+        [JsonProperty("params", Required = Required.Always)]
         public ICollection<ParamModel> Params { get; set; } = null!;
     }
 }
