@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Net;
+using Area.AcceptanceTests.Collections;
 using Area.AcceptanceTests.Fixtures;
 using Area.AcceptanceTests.Models.Responses;
 using Area.AcceptanceTests.Utilities;
@@ -9,6 +10,7 @@ using Xunit.Priority;
 
 namespace Area.AcceptanceTests.Tests
 {
+    [Collection(nameof(AreaCollection))]
     [TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)]
     public class ServiceEndpointsTests : IClassFixture<AuthenticatedTestsFixture>, IClassFixture<ServiceModel>
     {

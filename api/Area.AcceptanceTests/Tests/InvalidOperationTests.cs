@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Area.AcceptanceTests.Collections;
 using Area.AcceptanceTests.Constants;
 using Area.AcceptanceTests.Fixtures;
 using Area.AcceptanceTests.Models.Requests;
@@ -10,6 +11,7 @@ using Xunit;
 
 namespace Area.AcceptanceTests.Tests
 {
+    [Collection(nameof(AreaCollection))]
     public class InvalidOperationTests : IClassFixture<AuthenticatedTestsFixture>
     {
         private readonly AuthenticatedTestsFixture _authenticatedTestsFixture;

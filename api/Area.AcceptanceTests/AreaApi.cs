@@ -76,8 +76,8 @@ namespace Area.AcceptanceTests
         public async Task<ResponseHolder<StatusModel>> UnsubscribeWidgetById(int id) =>
             await Client.DeleteAsync(RouteConstants.Widgets.UnsubscribeWidgetById(id));
         
-        public async Task<ResponseHolder<ResponseModel<WidgetResponseModel>>> CallWidgetById(int id, QueryString queryParameters) =>
-            await Client.GetAsync<ResponseModel<WidgetResponseModel>>(RouteConstants.Widgets.CallWidgetById(id, queryParameters));
+        public async Task<ResponseHolder<ResponseModel<WidgetResponseModel>>> CallWidgetById(int id, string queryParameters) =>
+            await Client.GetAsync<ResponseModel<WidgetResponseModel>>(RouteConstants.Widgets.CallWidgetById(id) + queryParameters);
 
         public async Task<ResponseHolder<ResponseModel<WidgetResponseModel>>> CallWidgetById(int id) =>
             await Client.GetAsync<ResponseModel<WidgetResponseModel>>(RouteConstants.Widgets.CallWidgetById(id));

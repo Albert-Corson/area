@@ -25,7 +25,9 @@ namespace Area.AcceptanceTests.Models.Responses
                 return false;
 
             foreach (var param in self.Params) {
-                other.Params.Single(model => model == param);
+                var otherParam = other.Params.FirstOrDefault(model => model.Name == param.Name);
+                if (otherParam != param)
+                    return false;
             }
             
             return self as AboutDotJsonModel.WidgetModel == other

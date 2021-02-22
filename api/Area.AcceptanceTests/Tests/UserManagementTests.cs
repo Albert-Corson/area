@@ -1,4 +1,5 @@
 using System.Net;
+using Area.AcceptanceTests.Collections;
 using Area.AcceptanceTests.Models.Requests;
 using Area.AcceptanceTests.Utilities;
 using Xunit;
@@ -6,6 +7,7 @@ using Xunit.Priority;
 
 namespace Area.AcceptanceTests.Tests
 {
+    [Collection(nameof(AreaCollection))]
     [TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)]
     public class UserEndpointTests : IClassFixture<AreaApi>
     {

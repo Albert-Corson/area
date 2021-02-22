@@ -72,7 +72,10 @@ namespace Area.API.Repositories
         {
             var user = GetUser(userId);
 
-            return user != null && _userManager.DeleteAsync(user).Await().Succeeded;
+            if (user == null)
+                return false;
+            Database.Users.Remove(user);
+            return true;
         }
 
         public bool AddWidgetSubscription(int userId, int widgetId)
