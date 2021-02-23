@@ -3,15 +3,17 @@ using System;
 using Area.API.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Area.API.Migrations
 {
     [DbContext(typeof(AreaDbContext))]
-    partial class DatabaseRepositoryModelSnapshot : ModelSnapshot
+    [Migration("20210223203330_AddUserDeviceModel")]
+    partial class AddUserDeviceModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

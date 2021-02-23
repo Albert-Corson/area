@@ -1,10 +1,11 @@
 using System.Net;
+using System.Threading.Tasks;
 using Area.API.Constants;
 using Area.API.Exceptions.Http;
 using Area.API.Models;
 using Area.API.Models.Request;
 using Area.API.Repositories;
-using Area.API.Utilities;
+using Area.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,12 +17,12 @@ namespace Area.API.Controllers
     [SwaggerTag("Authentication-related endpoints")]
     public class AuthController : ControllerBase
     {
-        private readonly AuthUtilities _authUtilities;
+        private readonly AuthService _authService;
         private readonly UserRepository _userRepository;
 
-        public AuthController(AuthUtilities authUtilities, UserRepository userRepository)
+        public AuthController(AuthService authService, UserRepository userRepository)
         {
-            _authUtilities = authUtilities;
+            _authService = authService;
             _userRepository = userRepository;
         }
 
@@ -32,7 +33,7 @@ namespace Area.API.Controllers
             Description = "## Get a pair of access and refresh tokens, allowing access a user's account"
         )]
         [SwaggerResponse((int) HttpStatusCode.Unauthorized, "Invalid Bearer token, identifier or password")]
-        public ResponseModel<UserTokenModel> SignIn(
+        public async Task<ResponseModel<UserTokenModel>> SignIn(
             [FromBody] [SwaggerRequestBody("The user's credentials", Required = true)]
             SignInModel body
         )
@@ -44,8 +45,8 @@ namespace Area.API.Controllers
 
             return new ResponseModel<UserTokenModel> {
                 Data = new UserTokenModel {
-                    RefreshToken = _authUtilities.GenerateRefreshToken(user.Id),
-                    AccessToken = _authUtilities.GenerateAccessToken(user.Id)
+                    RefreshToken = await _authService.GenerateRefreshToken(user.Id, HttpContext.Connection.RemoteIpAddress),
+                    AccessToken = await _authService.GenerateAccessToken(user.Id, HttpContext.Connection.RemoteIpAddress)
                 }
             };
         }
@@ -56,7 +57,7 @@ namespace Area.API.Controllers
             Summary = "Refresh access tokens",
             Description = "## Get a new pair of access and refresh tokens from a previous refresh token"
         )]
-        public ResponseModel<UserTokenModel> RefreshAccessToken(
+        public async Task<ResponseModel<UserTokenModel>> RefreshAccessToken(
             [FromBody]
             [SwaggerRequestBody(
                 "The refresh_token obtained from a previous call to `" + RouteConstants.Auth.SignIn + "` or `" +
@@ -64,15 +65,15 @@ namespace Area.API.Controllers
             RefreshTokenModel body
         )
         {
-            var userId = _authUtilities.GetUserIdFromRefreshToken(body.RefreshToken!);
+            var userId = _authService.GetUserIdFromRefreshToken(body.RefreshToken!);
 
             if (userId == null)
                 throw new UnauthorizedHttpException();
 
             return new ResponseModel<UserTokenModel> {
                 Data = new UserTokenModel {
-                    RefreshToken = _authUtilities.GenerateRefreshToken(userId.Value),
-                    AccessToken = _authUtilities.GenerateAccessToken(userId.Value)
+                    RefreshToken = await _authService.GenerateRefreshToken(userId.Value, HttpContext.Connection.RemoteIpAddress),
+                    AccessToken = await _authService.GenerateAccessToken(userId.Value, HttpContext.Connection.RemoteIpAddress)
                 }
             };
         }

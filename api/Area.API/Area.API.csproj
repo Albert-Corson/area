@@ -10,6 +10,7 @@
     <PackageReference Include="CatApiWrapper" Version="1.0.0" />
     <PackageReference Include="ICanHazDadJoke.NET" Version="1.0.13" />
     <PackageReference Include="Imgur.API" Version="4.0.1" />
+    <PackageReference Include="IpData" Version="2.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.10" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.12" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.0" />
@@ -26,5 +27,6 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="5.6.3" />
     <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="5.6.3" />
+    <PackageReference Include="Wangkanai.Detection" Version="3.0.0" />
   </ItemGroup>
 </Project>

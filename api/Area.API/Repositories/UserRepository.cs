@@ -133,7 +133,6 @@ namespace Area.API.Repositories
         public void RemoveServiceCredentials(int userId, int serviceId)
         {
             var user = Database.Users
-                .Include(model => model.ServiceTokens)
                 .FirstOrDefault(model => model.Id == userId);
 
             var serviceToken = user?.ServiceTokens.FirstOrDefault(model => model.ServiceId == serviceId);

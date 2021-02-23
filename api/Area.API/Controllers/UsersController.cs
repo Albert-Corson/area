@@ -7,7 +7,7 @@ using Area.API.Models;
 using Area.API.Models.Request;
 using Area.API.Models.Table;
 using Area.API.Repositories;
-using Area.API.Utilities;
+using Area.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -67,7 +67,7 @@ namespace Area.API.Controllers
         )]
         public ResponseModel<UserInformationModel> GetMyUser()
         {
-            var userId = AuthUtilities.GetUserIdFromPrincipal(User);
+            var userId = AuthService.GetUserIdFromPrincipal(User);
             var user = _userRepository.GetUser(userId);
 
             if (user == null)
@@ -86,7 +86,7 @@ namespace Area.API.Controllers
         [SwaggerResponse((int) HttpStatusCode.Unauthorized, "Not allowed to delete the desired user")]
         public StatusModel DeleteUser()
         {
-            var userId = AuthUtilities.GetUserIdFromPrincipal(User);
+            var userId = AuthService.GetUserIdFromPrincipal(User);
 
             if (userId == null || !_userRepository.RemoveUser(userId!.Value))
                 throw new InternalServerErrorHttpException(); // this should never happen, but we still have to handle the error

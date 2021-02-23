@@ -12,7 +12,6 @@ using Area.API.Services.Widgets.Imgur;
 using Area.API.Services.Widgets.LoremPicsum;
 using Area.API.Services.Widgets.NewsApi;
 using Area.API.Services.Widgets.Spotify;
-using Area.API.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Primitives;
@@ -63,7 +62,7 @@ namespace Area.API.Services
 
         public WidgetCallResponseModel CallWidgetById(HttpContext context, int widgetId)
         {
-            var userId = AuthUtilities.GetUserIdFromPrincipal(context.User);
+            var userId = AuthService.GetUserIdFromPrincipal(context.User);
 
             var user = userId != null ? _userRepository.GetUser(userId) : null;
             if (user == null)

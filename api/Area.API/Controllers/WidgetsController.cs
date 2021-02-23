@@ -8,7 +8,6 @@ using Area.API.Models;
 using Area.API.Models.Table;
 using Area.API.Repositories;
 using Area.API.Services;
-using Area.API.Utilities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -74,7 +73,7 @@ namespace Area.API.Controllers
             int? serviceId
         )
         {
-            var userId = AuthUtilities.GetUserIdFromPrincipal(User);
+            var userId = AuthService.GetUserIdFromPrincipal(User);
 
             List<WidgetModel> widgets;
             if (serviceId != null) {
@@ -128,7 +127,7 @@ namespace Area.API.Controllers
             int? widgetId
         )
         {
-            var userId = AuthUtilities.GetUserIdFromPrincipal(User);
+            var userId = AuthService.GetUserIdFromPrincipal(User);
 
             if (!_userRepository.RemoveWidgetSubscription(userId!.Value, widgetId!.Value))
                 throw new NotFoundHttpException("The widget doesn't exist or the user is not subscribed");
@@ -146,7 +145,7 @@ namespace Area.API.Controllers
             int? widgetId
         )
         {
-            var userId = AuthUtilities.GetUserIdFromPrincipal(User);
+            var userId = AuthService.GetUserIdFromPrincipal(User);
 
             if (!_userRepository.AddWidgetSubscription(userId!.Value, widgetId!.Value))
                 throw new NotFoundHttpException("This widget does not exist");

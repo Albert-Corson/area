@@ -8,7 +8,6 @@ using Area.API.Models;
 using Area.API.Models.Table;
 using Area.API.Repositories;
 using Area.API.Services;
-using Area.API.Utilities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -51,7 +50,7 @@ namespace Area.API.Controllers
         )]
         public ResponseModel<List<ServiceModel>> GetMyService()
         {
-            var userId = AuthUtilities.GetUserIdFromPrincipal(User);
+            var userId = AuthService.GetUserIdFromPrincipal(User);
 
             var services = _serviceRepository.GetServicesByUser(userId!.Value);
 
@@ -117,7 +116,7 @@ namespace Area.API.Controllers
             int? serviceId
         )
         {
-            var userId = AuthUtilities.GetUserIdFromPrincipal(User);
+            var userId = AuthService.GetUserIdFromPrincipal(User);
 
             _userRepository.RemoveServiceCredentials(userId!.Value, serviceId!.Value);
             return StatusModel.Success();

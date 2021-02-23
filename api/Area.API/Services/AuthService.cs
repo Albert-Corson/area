@@ -2,26 +2,38 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Net.Mail;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
+using Area.API.Extensions;
+using Area.API.Models.Table.Owned;
+using Area.API.Repositories;
+using IpData;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Wangkanai.Detection.Services;
 using JwtConstants = Area.API.Constants.JwtConstants;
 
-namespace Area.API.Utilities
+namespace Area.API.Services
 {
-    public class AuthUtilities
+    public class AuthService
     {
         private const string ClaimTypeUserId = "uid";
         private const string Algorithm = SecurityAlgorithms.HmacSha256;
         private readonly IConfiguration _configuration;
         private readonly TokenValidationParameters _validationParameters;
+        private readonly IDetectionService _detection;
+        private readonly IpDataClient _ipDataClient;
+        private readonly UserRepository _userRepository;
 
-        public AuthUtilities(IConfiguration configuration, TokenValidationParameters validationParameters)
+        public AuthService(IConfiguration configuration, TokenValidationParameters validationParameters, IDetectionService detection, IpDataClient ipDataClient, UserRepository userRepository)
         {
             _configuration = configuration;
             _validationParameters = validationParameters;
+            _detection = detection;
+            _ipDataClient = ipDataClient;
+            _userRepository = userRepository;
         }
 
         public static int? GetUserIdFromPrincipal(ClaimsPrincipal principal)
@@ -35,31 +47,51 @@ namespace Area.API.Utilities
             return userId;
         }
 
-        public string GenerateAccessToken(int userId)
+        public static int? GetDeviceIdFromPrincipal(ClaimsPrincipal principal)
         {
-            return GenerateToken(DateTime.Now.AddTicks(JwtConstants.AccessTokenLifespanTicks), new[] {
-                new Claim(ClaimTypeUserId, userId.ToString()),
-                new Claim(JwtRegisteredClaimNames.AuthTime, DateTime.Now.Ticks.ToString()),
+            var deviceIdClaim = principal.FindFirst(claim => claim.Type == JwtRegisteredClaimNames.Iss);
+
+            if (deviceIdClaim == null)
+                return null;
+            if (!int.TryParse(deviceIdClaim.Value, out var deviceId))
+                return null;
+            return deviceId;
+        }
+
+        public async Task<string> GenerateAccessToken(int userId, IPAddress ipAddress)
+        {
+            var claims = new List<Claim>(new [] {
                 new Claim(JwtRegisteredClaimNames.Typ, "access_token")
             });
+
+            return await GenerateToken(DateTime.Now.AddTicks(JwtConstants.AccessTokenLifespanTicks), claims, userId, ipAddress);
         }
 
-        public string GenerateRefreshToken(int userId)
+        public async Task<string> GenerateRefreshToken(int userId, IPAddress ipAddress)
         {
-            return GenerateToken(DateTime.Now.AddTicks(JwtConstants.RefreshTokenLifespanTicks), new[] {
-                new Claim(ClaimTypeUserId, userId.ToString()),
-                new Claim(JwtRegisteredClaimNames.AuthTime, DateTime.Now.Ticks.ToString()),
+            var claims = new List<Claim>(new [] {
                 new Claim(JwtRegisteredClaimNames.Typ, "refresh_token")
             });
+
+            return await GenerateToken(DateTime.Now.AddTicks(JwtConstants.RefreshTokenLifespanTicks), claims, userId, ipAddress);
         }
 
-        private string GenerateToken(DateTime expiryTime, IEnumerable<Claim> claims)
+        private async Task<string> GenerateToken(DateTime expiryTime, List<Claim> claims, int userId, IPAddress ipAddress)
         {
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["SECRET_SALT"]));
+            var country = await _ipDataClient.GetCountry(ipAddress);
+            var device = new UserDeviceModel(_detection, userId, country);
+
+            AssociateDeviceToUser(userId, device);
+
+            claims.AddRange(new [] {
+                new Claim(ClaimTypeUserId, userId.ToString()),
+            });
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration[JwtConstants.SecretKeyName]));
             var signingCredentials = new SigningCredentials(key, Algorithm);
             var token = new JwtSecurityToken(
-                _configuration["ValidIssuer"],
-                _configuration["ValidAudience"],
+                device.Id.ToString(),
+                _configuration[JwtConstants.ValidAudience],
                 claims,
                 DateTime.Now,
                 expiryTime,
@@ -67,6 +99,19 @@ namespace Area.API.Utilities
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        private void AssociateDeviceToUser(int userId, UserDeviceModel device)
+        {
+            var user = _userRepository.GetUser(userId, asNoTracking: false);
+
+            var existingDevice = user!.Devices.FirstOrDefault(model => model.Id == device.Id);
+
+            if (existingDevice != null) {
+                existingDevice.LastUsed = device.LastUsed;
+            } else {
+                user.Devices.Add(device);
+            }
         }
 
         public int? GetUserIdFromRefreshToken(string refreshToken)
