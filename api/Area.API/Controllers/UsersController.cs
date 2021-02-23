@@ -43,6 +43,9 @@ namespace Area.API.Controllers
             RegisterModel body
         )
         {
+            if (body.Username.Length < 4)
+                throw new BadRequestHttpException("Username must be at least 4 characters long");
+
             if (_userRepository.UserExists(email: body.Email, username: body.Username))
                 throw new ConflictHttpException("Username or email already in use");
 

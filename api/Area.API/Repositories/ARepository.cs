@@ -1,5 +1,7 @@
 using System;
+using System.Linq;
 using Area.API.DbContexts;
+using Microsoft.EntityFrameworkCore;
 
 namespace Area.API.Repositories
 {
@@ -14,11 +16,19 @@ namespace Area.API.Repositories
 
         public void Dispose()
         {
-            try {
-                Database.SaveChanges();
-            } catch (ObjectDisposedException) {
-                // ignored
-            }
+            bool saveFailed;
+            do {
+                saveFailed = false;
+
+                try {
+                    Database.SaveChanges();
+                } catch (DbUpdateConcurrencyException ex) {
+                    saveFailed = true;
+                    ex.Entries.Single().Reload();
+                } catch (ObjectDisposedException) {
+                    
+                }
+            } while (saveFailed);
         }
     }
 }

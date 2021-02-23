@@ -47,7 +47,7 @@ namespace Area.API.Controllers
         [HttpGet(RouteConstants.Services.GetMyServices)]
         [SwaggerOperation(
             Summary = "List a user's services",
-            Description = "## Get a list of all services where a user is subscribed to the its widget(s)"
+            Description = "## Get a list of all services where a user is subscribed to some of its widget(s)"
         )]
         public ResponseModel<List<ServiceModel>> GetMyService()
         {
@@ -67,7 +67,7 @@ namespace Area.API.Controllers
         )]
         [SwaggerResponse((int) HttpStatusCode.NotFound, "The service does not exist")]
         public ResponseModel<ServiceModel> GetService(
-            [FromRoute] [Required] [Range(1, 2147483647)]
+            [FromRoute] [Required] [Range(1, int.MaxValue)]
             int? serviceId
         )
         {
@@ -90,7 +90,7 @@ namespace Area.API.Controllers
 ## Otherwise an authentication URL is returned as `data` to redirect the user to"
         )]
         public ResponseModel<string?> SignInService(
-            [FromRoute] [Required] [Range(1, 2147483647)] [SwaggerParameter("Service's ID")]
+            [FromRoute] [Required] [Range(1, int.MaxValue)] [SwaggerParameter("Service's ID")]
             int? serviceId
         )
         {
@@ -113,7 +113,7 @@ namespace Area.API.Controllers
                 "## Sign-out the user from a service. If the service doesn't have sign-in capabilities, an empty success response is returned (a.k.a. without `data`)"
         )]
         public StatusModel SignOutService(
-            [FromRoute] [Required] [Range(1, 2147483647)] [SwaggerParameter("Service's ID")]
+            [FromRoute] [Required] [Range(1, int.MaxValue)] [SwaggerParameter("Service's ID")]
             int? serviceId
         )
         {
@@ -128,7 +128,7 @@ namespace Area.API.Controllers
         [ApiExplorerSettings(IgnoreApi = true)]
         [Produces("text/html")]
         public ContentResult SignInServiceCallback(
-            [FromRoute] [Required] [Range(1, 2147483647)]
+            [FromRoute] [Required] [Range(1, int.MaxValue)]
             int? serviceId
         )
         {

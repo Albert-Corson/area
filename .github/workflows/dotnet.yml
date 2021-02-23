@@ -1,10 +1,6 @@
 name: ASP.NET build & test
 
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+on: push
 
 jobs:
   build:
@@ -17,12 +13,16 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.x
+    - name: Start build docker services
+      run: docker-compose build
+    - name: Start docker
+      run: docker-compose up -d
     - name: Restore dependencies
-      working-directory: api/Area.API
+      working-directory: api/Area.AcceptanceTests
       run: dotnet restore
     - name: Build
-      working-directory: api/Area.API
+      working-directory: api/Area.AcceptanceTests
       run: dotnet build --no-restore
-#     - name: Test
-#       working-directory: api/Area.API
-#       run: dotnet test --no-build --verbosity normal
+    - name: Test
+      working-directory: api/Area.AcceptanceTests
+      run: dotnet test --no-build --verbosity normal
