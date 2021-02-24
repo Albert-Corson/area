@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Area.API.DbContexts;
@@ -68,14 +67,9 @@ namespace Area.API.Repositories
             return _userManager.CreateAsync(user, password);
         }
 
-        public bool RemoveUser(int userId)
+        public void RemoveUser(UserModel user)
         {
-            var user = GetUser(userId);
-
-            if (user == null)
-                return false;
             Database.Users.Remove(user);
-            return true;
         }
 
         public bool AddWidgetSubscription(int userId, int widgetId)

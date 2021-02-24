@@ -2,6 +2,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Area.API.Constants;
 using Area.API.Exceptions.Http;
+using Area.API.Extensions;
 using Area.API.Models;
 using Area.API.Models.Request;
 using Area.API.Repositories;
@@ -65,25 +66,17 @@ namespace Area.API.Controllers
             RefreshTokenModel body
         )
         {
-            var userId = _authService.GetUserIdFromRefreshToken(body.RefreshToken!);
+            var principal = await _authService.ValidateRefreshToken(body.RefreshToken, HttpContext.Connection.RemoteIpAddress.MapToIPv4());
 
-            if (userId == null)
+            if (principal == null || !principal.TryGetUserId(out var userId))
                 throw new UnauthorizedHttpException();
 
             return new ResponseModel<UserTokenModel> {
                 Data = new UserTokenModel {
-                    RefreshToken = await _authService.GenerateRefreshToken(userId.Value, HttpContext.Connection.RemoteIpAddress),
-                    AccessToken = await _authService.GenerateAccessToken(userId.Value, HttpContext.Connection.RemoteIpAddress)
+                    RefreshToken = await _authService.GenerateRefreshToken(userId, HttpContext.Connection.RemoteIpAddress),
+                    AccessToken = await _authService.GenerateAccessToken(userId, HttpContext.Connection.RemoteIpAddress)
                 }
             };
-        }
-
-        [HttpDelete(RouteConstants.Auth.RevokeUserTokens)]
-        [ApiExplorerSettings(IgnoreApi = true)]
-        public StatusModel RevokeUserTokens()
-        {
-            // TODO: (optional) revoke the credentials
-            return StatusModel.Failed("Not implemented");
         }
     }
 }

@@ -7,6 +7,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Area.API.Extensions;
+using Area.API.Models.Table;
 using Area.API.Models.Table.Owned;
 using Area.API.Repositories;
 using IpData;
@@ -19,7 +20,7 @@ namespace Area.API.Services
 {
     public class AuthService
     {
-        private const string ClaimTypeUserId = "uid";
+        public const string ClaimTypeUserId = "uid";
         private const string Algorithm = SecurityAlgorithms.HmacSha256;
         private readonly IConfiguration _configuration;
         private readonly TokenValidationParameters _validationParameters;
@@ -27,7 +28,8 @@ namespace Area.API.Services
         private readonly IpDataClient _ipDataClient;
         private readonly UserRepository _userRepository;
 
-        public AuthService(IConfiguration configuration, TokenValidationParameters validationParameters, IDetectionService detection, IpDataClient ipDataClient, UserRepository userRepository)
+        public AuthService(IConfiguration configuration, TokenValidationParameters validationParameters,
+            IDetectionService detection, IpDataClient ipDataClient, UserRepository userRepository)
         {
             _configuration = configuration;
             _validationParameters = validationParameters;
@@ -36,55 +38,37 @@ namespace Area.API.Services
             _userRepository = userRepository;
         }
 
-        public static int? GetUserIdFromPrincipal(ClaimsPrincipal principal)
-        {
-            var userIdClaim = principal.FindFirst(claim => claim.Type == ClaimTypeUserId);
-
-            if (userIdClaim == null)
-                return null;
-            if (!int.TryParse(userIdClaim.Value, out var userId))
-                return null;
-            return userId;
-        }
-
-        public static uint? GetDeviceIdFromPrincipal(ClaimsPrincipal principal)
-        {
-            var deviceIdClaim = principal.FindFirst(claim => claim.Type == JwtRegisteredClaimNames.Iss);
-
-            if (deviceIdClaim == null)
-                return null;
-            if (!uint.TryParse(deviceIdClaim.Value, out var deviceId))
-                return null;
-            return deviceId;
-        }
-
         public async Task<string> GenerateAccessToken(int userId, IPAddress ipAddress)
         {
-            var claims = new List<Claim>(new [] {
+            var claims = new List<Claim>(new[] {
                 new Claim(JwtRegisteredClaimNames.Typ, "access_token")
             });
 
-            return await GenerateToken(DateTime.Now.AddTicks(JwtConstants.AccessTokenLifespanTicks), claims, userId, ipAddress);
+            return await GenerateToken(DateTime.Now.AddTicks(JwtConstants.AccessTokenLifespanTicks), claims, userId,
+                ipAddress);
         }
 
         public async Task<string> GenerateRefreshToken(int userId, IPAddress ipAddress)
         {
-            var claims = new List<Claim>(new [] {
+            var claims = new List<Claim>(new[] {
                 new Claim(JwtRegisteredClaimNames.Typ, "refresh_token")
             });
 
-            return await GenerateToken(DateTime.Now.AddTicks(JwtConstants.RefreshTokenLifespanTicks), claims, userId, ipAddress);
+            return await GenerateToken(DateTime.Now.AddTicks(JwtConstants.RefreshTokenLifespanTicks), claims, userId,
+                ipAddress);
         }
 
-        private async Task<string> GenerateToken(DateTime expiryTime, List<Claim> claims, int userId, IPAddress ipAddress)
+        private async Task<string> GenerateToken(DateTime expiryTime, List<Claim> claims, int userId,
+            IPAddress ipAddress)
         {
             var country = await _ipDataClient.GetCountry(ipAddress);
             var device = new UserDeviceModel(_detection, userId, country);
 
             AssociateDeviceToUser(userId, device);
 
-            claims.AddRange(new [] {
+            claims.AddRange(new[] {
                 new Claim(ClaimTypeUserId, userId.ToString()),
+                new Claim(JwtRegisteredClaimNames.AuthTime, device.FirstUsed.Ticks.ToString())
             });
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration[JwtConstants.SecretKeyName]));
@@ -114,30 +98,61 @@ namespace Area.API.Services
             }
         }
 
-        public int? GetUserIdFromRefreshToken(string refreshToken)
+        public async Task<bool> ValidateDeviceUse(ClaimsPrincipal principal, UserModel user, IPAddress ipv4)
         {
-            var claimsPrincipal = GetPrincipalFromToken(refreshToken);
+            if (!principal.TryGetAuthTime(out var authTime)
+                || !principal.TryGetDeviceId(out var registeredDeviceId))
+                return false;
+            
+            var registeredDevice = user.Devices.FirstOrDefault(model => model.Id == registeredDeviceId);
+            if (registeredDevice == null || DateTime.Compare(registeredDevice.FirstUsed, authTime) > 0)
+                return false;
 
-            if (claimsPrincipal == null)
+            var currentCountry = await _ipDataClient.GetCountry(ipv4);
+            var currentDevice = new UserDeviceModel(_detection, user.Id, currentCountry);
+            if (registeredDeviceId != currentDevice.Id)
+                return false;
+
+            registeredDevice.LastUsed = DateTime.Now;
+
+            return true;
+        }
+
+        private async Task<bool> ValidateDeviceUse(ClaimsPrincipal principal, IPAddress ipv4)
+        {
+            if (!principal.TryGetUser(_userRepository, out var user))
+                return false;
+
+            return await ValidateDeviceUse(principal, user, ipv4);
+        }
+
+        public async Task<ClaimsPrincipal?> ValidateRefreshToken(string refreshToken, IPAddress ipv4)
+        {
+            if (!TryGetPrincipalFromToken(refreshToken, out var claimsPrincipal))
                 return null;
+
             try {
                 var typ = claimsPrincipal.Claims.First(claim => claim.Type == JwtRegisteredClaimNames.Typ);
-                var nameId = claimsPrincipal.Claims.First(claim => claim.Type == ClaimTypeUserId);
-                if (typ.Value != "refresh_token" || nameId == null)
+                if (typ.Value != "refresh_token")
                     return null;
-                return int.Parse(nameId.Value);
+
+                if (await ValidateDeviceUse(claimsPrincipal, ipv4))
+                    return claimsPrincipal;
+                return null;
             } catch {
                 return null;
             }
         }
 
-        private ClaimsPrincipal? GetPrincipalFromToken(string token)
+        private bool TryGetPrincipalFromToken(string token, out ClaimsPrincipal principals)
         {
             try {
-                var principal = new JwtSecurityTokenHandler().ValidateToken(token, _validationParameters, out var validatedToken);
-                return !IsJwtWithValidSecurityAlgorithm(validatedToken) ? null : principal;
+                principals =
+                    new JwtSecurityTokenHandler().ValidateToken(token, _validationParameters, out var validatedToken);
+                return IsJwtWithValidSecurityAlgorithm(validatedToken);
             } catch {
-                return null;
+                principals = new ClaimsPrincipal();
+                return false;
             }
         }
 

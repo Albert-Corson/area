@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Area.API.Exceptions.Http;
+using Area.API.Extensions;
 using Area.API.Models;
 using Area.API.Models.Table;
 using Area.API.Models.Table.Owned;
@@ -13,10 +14,6 @@ using Area.API.Services.Widgets.LoremPicsum;
 using Area.API.Services.Widgets.NewsApi;
 using Area.API.Services.Widgets.Spotify;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Primitives;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
 
 namespace Area.API.Services
 {
@@ -62,11 +59,12 @@ namespace Area.API.Services
 
         public WidgetCallResponseModel CallWidgetById(HttpContext context, int widgetId)
         {
-            var userId = AuthService.GetUserIdFromPrincipal(context.User);
-
-            var user = userId != null ? _userRepository.GetUser(userId) : null;
-            if (user == null)
+            if (!context.User.TryGetUserId(out var userId))
                 throw new InternalServerErrorHttpException(); // this means that the JWT falsely validated
+
+            var user = _userRepository.GetUser(userId, includeChildren: true, asNoTracking: false);
+            if (user == null)
+                throw new InternalServerErrorHttpException();
 
             var widget = _widgetRepository.GetWidget(widgetId, true);
             if (widget == null || !_widgets.TryGetValue(widget.Name!, out var widgetService))
@@ -78,7 +76,7 @@ namespace Area.API.Services
             var widgetCallParams = BuildWidgetCallParams(
                 widgetId,
                 widget.Params,
-                _userRepository.GetUser(userId, includeChildren: true, asNoTracking: false)!.WidgetParams,
+                user.WidgetParams,
                 context.Request.Query);
 
             var response = new WidgetCallResponseModel(widgetCallParams);
