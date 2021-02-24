@@ -10,7 +10,7 @@ using Wangkanai.Detection.Services;
 namespace Area.API.Models.Table.Owned
 {
     [Owned]
-    [Table("UserHasDevice")]
+    [Table("UserHasDevices")]
     public sealed class UserDeviceModel
     {
         public UserDeviceModel()
@@ -27,13 +27,13 @@ namespace Area.API.Models.Table.Owned
             Architecture = detectionService.Platform.Processor;
             Browser = detectionService.Browser.Name;
             BrowserVersion = detectionService.Browser.Version.ToString();
-            Id = GetHashCode();
+            Id = (uint) GetHashCode();
         }
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [JsonIgnore]
-        public int Id { get; set; }
+        public uint Id { get; set; }
 
         [JsonIgnore]
         public int UserId { get; set; }

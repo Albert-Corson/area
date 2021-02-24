@@ -251,3 +251,29 @@ alter table "AspNetUserRoles" owner to postgres;
 create index "IX_AspNetUserRoles_RoleId"
     on "AspNetUserRoles" ("RoleId");
 
+create table "UserHasDevices"
+(
+    "Id" bigint not null
+        constraint "PK_UserHasDevices"
+            primary key,
+    "UserId" integer not null,
+    "FirstUsed" timestamp not null,
+    "LastUsed" timestamp not null,
+    "Country" text not null,
+    "Device" integer not null,
+    "Browser" integer not null,
+    "BrowserVersion" text not null,
+    "Os" integer not null,
+    "OsVersion" text not null,
+    "Architecture" integer not null,
+    "UserModelId" integer not null
+        constraint "FK_UserHasDevices_AspNetUsers_UserModelId"
+            references "AspNetUsers"
+                on delete cascade
+);
+
+alter table "UserHasDevices" owner to postgres;
+
+create index "IX_UserHasDevices_UserModelId"
+    on "UserHasDevices" ("UserModelId");
+

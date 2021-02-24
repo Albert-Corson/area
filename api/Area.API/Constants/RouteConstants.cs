@@ -24,6 +24,8 @@ namespace Area.API.Constants
             public const string Register = Root;
             public const string GetMyUser = Root + "/me";
             public const string DeleteMyUser = Root + "/me";
+            public const string GetMyDevices = Root + "/me/devices";
+            public const string DeleteMyDevice = Root + "/me/devices/{deviceId}";
         }
 
         public static class Services

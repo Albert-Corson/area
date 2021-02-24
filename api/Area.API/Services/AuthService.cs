@@ -47,13 +47,13 @@ namespace Area.API.Services
             return userId;
         }
 
-        public static int? GetDeviceIdFromPrincipal(ClaimsPrincipal principal)
+        public static uint? GetDeviceIdFromPrincipal(ClaimsPrincipal principal)
         {
             var deviceIdClaim = principal.FindFirst(claim => claim.Type == JwtRegisteredClaimNames.Iss);
 
             if (deviceIdClaim == null)
                 return null;
-            if (!int.TryParse(deviceIdClaim.Value, out var deviceId))
+            if (!uint.TryParse(deviceIdClaim.Value, out var deviceId))
                 return null;
             return deviceId;
         }
