@@ -5,7 +5,6 @@ using Area.AcceptanceTests.Models;
 using Area.AcceptanceTests.Models.Requests;
 using Area.AcceptanceTests.Models.Responses;
 using Area.AcceptanceTests.Utilities;
-using Microsoft.AspNetCore.Http;
 
 namespace Area.AcceptanceTests
 {

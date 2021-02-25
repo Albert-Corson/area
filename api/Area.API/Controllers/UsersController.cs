@@ -30,11 +30,9 @@ namespace Area.API.Controllers
         [AllowAnonymous]
         [SwaggerOperation(
             Summary = "Register a user",
-            Description =
-                "## Create a new user account"
+            Description = "## Create a new user account"
         )]
-        [SwaggerResponse((int) HttpStatusCode.BadRequest,
-            "Malformed body, incorrect username/email format, password too weak")]
+        [SwaggerResponse((int) HttpStatusCode.BadRequest, "Malformed body, incorrect username/email format, password too weak")]
         [SwaggerResponse((int) HttpStatusCode.Conflict, "Username or email already in use")]
         public async Task<StatusModel> Register(
             [FromBody]
