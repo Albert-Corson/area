@@ -1,9 +1,9 @@
-    using System.Collections.Generic;
+using System.Collections.Generic;
 using Area.API.Models.Table.Owned;
 using Newtonsoft.Json;
-    using Swashbuckle.AspNetCore.Annotations;
+using Swashbuckle.AspNetCore.Annotations;
 
-    namespace Area.API.Models
+namespace Area.API.Models
 {
     public class UserDevicesModel
     {

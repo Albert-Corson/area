@@ -22,8 +22,6 @@ namespace Area.AcceptanceTests
             }
         }
 
-        // TODO: RevokeUserTokens
-
         public async Task<ResponseHolder<ResponseModel<AboutDotJsonModel>>> AboutDotJson() =>
             await Client.GetAsync<ResponseModel<AboutDotJsonModel>>(RouteConstants.AboutDotJson);
 
@@ -81,5 +79,10 @@ namespace Area.AcceptanceTests
         public async Task<ResponseHolder<ResponseModel<WidgetResponseModel>>> CallWidgetById(int id) =>
             await Client.GetAsync<ResponseModel<WidgetResponseModel>>(RouteConstants.Widgets.CallWidgetById(id));
 
+        public async Task<ResponseHolder<ResponseModel<DevicesModel>>> GetMyDevices() =>
+            await Client.GetAsync<ResponseModel<DevicesModel>>(RouteConstants.Users.GetMyDevices);
+
+        public async Task<ResponseHolder<StatusModel>> DeleteMyDevice(uint deviceId) =>
+            await Client.DeleteAsync<StatusModel>(RouteConstants.Users.DeleteMyDevice(deviceId));
     }
 }
