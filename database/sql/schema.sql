@@ -257,8 +257,8 @@ create table "UserHasDevices"
         constraint "PK_UserHasDevices"
             primary key,
     "UserId" integer not null,
-    "FirstUsed" timestamp not null,
-    "LastUsed" timestamp not null,
+    "FirstUsed" bigint not null,
+    "LastUsed" bigint not null,
     "Country" text not null,
     "Device" integer not null,
     "Browser" integer not null,

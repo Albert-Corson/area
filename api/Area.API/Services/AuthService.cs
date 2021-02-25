@@ -68,7 +68,7 @@ namespace Area.API.Services
 
             claims.AddRange(new[] {
                 new Claim(ClaimTypeUserId, userId.ToString()),
-                new Claim(JwtRegisteredClaimNames.AuthTime, device.FirstUsed.Ticks.ToString())
+                new Claim(JwtRegisteredClaimNames.AuthTime, device.FirstUsed.ToString())
             });
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration[JwtConstants.SecretKeyName]));
@@ -103,9 +103,9 @@ namespace Area.API.Services
             if (!principal.TryGetAuthTime(out var authTime)
                 || !principal.TryGetDeviceId(out var registeredDeviceId))
                 return false;
-            
+
             var registeredDevice = user.Devices.FirstOrDefault(model => model.Id == registeredDeviceId);
-            if (registeredDevice == null || DateTime.Compare(registeredDevice.FirstUsed, authTime) > 0)
+            if (registeredDevice == null || registeredDevice.FirstUsed > authTime)
                 return false;
 
             var currentCountry = await _ipDataClient.GetCountry(ipv4);
@@ -113,14 +113,17 @@ namespace Area.API.Services
             if (registeredDeviceId != currentDevice.Id)
                 return false;
 
-            registeredDevice.LastUsed = DateTime.Now;
+            registeredDevice.LastUsed = DateTime.Now.Ticks;
 
             return true;
         }
 
         private async Task<bool> ValidateDeviceUse(ClaimsPrincipal principal, IPAddress ipv4)
         {
-            if (!principal.TryGetUser(_userRepository, out var user))
+            var user = principal.TryGetUserId(out var userId)
+                ? _userRepository.GetUser(userId, asNoTracking: false)
+                : null;
+            if (user == null)
                 return false;
 
             return await ValidateDeviceUse(principal, user, ipv4);

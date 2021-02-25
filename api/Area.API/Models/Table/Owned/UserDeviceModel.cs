@@ -2,8 +2,10 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Swashbuckle.AspNetCore.Annotations;
 using Wangkanai.Detection.Models;
 using Wangkanai.Detection.Services;
 
@@ -32,46 +34,69 @@ namespace Area.API.Models.Table.Owned
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [JsonIgnore]
+        [JsonProperty("id", Required = Required.Always)]
+        [SwaggerSchema("Device's Id")]
         public uint Id { get; set; }
 
         [JsonIgnore]
         public int UserId { get; set; }
-        
+
         [JsonIgnore]
-        public DateTime FirstUsed { get; set; } = DateTime.Now;
+        public long FirstUsed { get; set; } = DateTime.Now.Ticks;
 
         [JsonProperty("last_used", Required = Required.Always)]
-        public DateTime LastUsed { get; set; } = DateTime.Now;
+        [SwaggerSchema("Date (seconds since EPOCH) at which the device was last used")]
+        public long LastUsed { get; set; } = DateTime.Now.Ticks;
 
         [JsonProperty("country", Required = Required.Always)]
-        public string Country { get; set; } = "Local network";
+        [SwaggerSchema("The country associated to the device")]
+        public string Country { get; set; } = "Unknown";
 
         [JsonProperty("device", Required = Required.Always)]
         [JsonConverter(typeof(StringEnumConverter))]
+        [SwaggerSchema("Device's type")]
         public Device Device { get; set; }
 
-        [JsonProperty("browser", Required = Required.DisallowNull)]
-        [JsonConverter(typeof(BrowserJsonConverter))]
+        [JsonProperty("browser", Required = Required.Always)]
+        [JsonConverter(typeof(StringEnumConverter))]
+        [SwaggerSchema("Browser's type")]
         public Browser Browser { get; set; }
 
-        [JsonProperty("browser_version", Required = Required.DisallowNull)]
+        [JsonProperty("browser_version", Required = Required.Always)]
+        [SwaggerSchema("Browser's version")]
         public string BrowserVersion { get; set; } = null!;
 
         [JsonProperty("os", Required = Required.Always)]
         [JsonConverter(typeof(StringEnumConverter))]
+        [SwaggerSchema("Device's operating system")]
         public Platform Os { get; set; }
 
         [JsonProperty("os_version", Required = Required.Always)]
+        [SwaggerSchema("Operating system's version")]
         public string OsVersion { get; set; } = null!;
 
         [JsonProperty("architecture", Required = Required.Always)]
         [JsonConverter(typeof(StringEnumConverter))]
+        [SwaggerSchema("Device's processor architecture")]
         public Processor Architecture { get; set; }
 
         public override int GetHashCode()
         {
-            return ToString().GetHashCode();
+            var str = ToString();
+
+            unchecked {
+                var hash1 = (5381 << 16) + 5381;
+                var hash2 = hash1;
+
+                for (var i = 0; i < str.Length; i += 2) {
+                    hash1 = ((hash1 << 5) + hash1) ^ str[i];
+                    if (i == str.Length - 1)
+                        break;
+                    hash2 = ((hash2 << 5) + hash2) ^ str[i + 1];
+                }
+
+                return hash1 + (hash2 * 1566083941);
+            }
         }
 
         public override string ToString()
@@ -91,23 +116,6 @@ namespace Area.API.Models.Table.Owned
             if (obj is UserDeviceModel)
                 return obj.ToString() == ToString();
             return false;
-        }
-    }
-
-    internal class BrowserJsonConverter : JsonConverter<Browser>
-    {
-        public override void WriteJson(JsonWriter writer, Browser value, JsonSerializer serializer)
-        {
-            if (value == Browser.Unknown)
-                writer.WriteNull();
-            writer.WriteValue(value.ToString());
-        }
-
-        public override Browser ReadJson(JsonReader reader, Type objectType, Browser existingValue,
-            bool hasExistingValue,
-            JsonSerializer serializer)
-        {
-            return Enum.TryParse<Browser>(reader.Value as string, true, out var value) ? value : Browser.Unknown;
         }
     }
 }

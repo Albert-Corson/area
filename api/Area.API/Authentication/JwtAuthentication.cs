@@ -30,7 +30,11 @@ namespace Area.API.Authentication
             if (!authenticateResult.Succeeded)
                 return authenticateResult;
 
-            if (!authenticateResult.Principal.TryGetUser(_userRepository, out var user))
+            var user = authenticateResult.Principal.TryGetUserId(out var userId)
+                ? _userRepository.GetUser(userId, asNoTracking: false)
+                : null;
+
+            if (user == null)
                 return AuthenticateResult.Fail("The associated user does not exist");
 
             if (!await _authService.ValidateDeviceUse(authenticateResult.Principal, user, Context.Connection.RemoteIpAddress.MapToIPv4())) 

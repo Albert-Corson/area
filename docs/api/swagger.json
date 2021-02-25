@@ -189,7 +189,7 @@
           "Services"
         ],
         "summary": "List a user's services",
-        "description": "## Get a list of all services where a user is subscribed to the its widget(s)",
+        "description": "## Get a list of all services where a user is subscribed to some of its widget(s)",
         "responses": {
           "200": {
             "description": "Success",
@@ -433,7 +433,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Response<User>"
+                  "$ref": "#/components/schemas/Response<UserInformation>"
                 }
               }
             }
@@ -479,6 +479,93 @@
           },
           "500": {
             "description": "Server Error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/users/me/devices": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get a user's known devices",
+        "description": "## Get a list of devices associated to the user's account",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response<UserDevices>"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/users/me/devices/{deviceId}": {
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Forget a user's device",
+        "description": "## Forget a user's device and revoke the access and refresh tokens created from this device",
+        "parameters": [
+          {
+            "name": "deviceId",
+            "in": "path",
+            "description": "Device's ID",
+            "required": true,
+            "schema": {
+              "maximum": 4294967295,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Status"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server Error"
+          },
+          "404": {
+            "description": "Invalid deviceId"
           }
         },
         "security": [
@@ -1036,7 +1123,7 @@
         },
         "additionalProperties": false
       },
-      "User": {
+      "UserInformation": {
         "required": [
           "email",
           "id",
@@ -1060,14 +1147,155 @@
         },
         "additionalProperties": false
       },
-      "Response<User>": {
+      "Response<UserInformation>": {
         "required": [
           "successful"
         ],
         "type": "object",
         "properties": {
           "data": {
-            "$ref": "#/components/schemas/User"
+            "$ref": "#/components/schemas/UserInformation"
+          },
+          "error": {
+            "type": "string",
+            "description": "Message describing the error if any"
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "State of the request (failed or successful)"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Device": {
+        "enum": [
+          "Unknown",
+          "Desktop",
+          "Tablet",
+          "Mobile",
+          "Watch",
+          "Tv",
+          "Console",
+          "Car",
+          "IoT"
+        ],
+        "type": "string"
+      },
+      "Browser": {
+        "enum": [
+          "Unknown",
+          "Chrome",
+          "InternetExplorer",
+          "Safari",
+          "Firefox",
+          "Edge",
+          "Opera",
+          "Others"
+        ],
+        "type": "string"
+      },
+      "Platform": {
+        "enum": [
+          "Unknown",
+          "Windows",
+          "Mac",
+          "iOS",
+          "Linux",
+          "Android",
+          "Others"
+        ],
+        "type": "string"
+      },
+      "Processor": {
+        "enum": [
+          "ARM",
+          "x64",
+          "x86",
+          "Others"
+        ],
+        "type": "string"
+      },
+      "UserDevice": {
+        "required": [
+          "architecture",
+          "browser",
+          "browser_version",
+          "country",
+          "device",
+          "id",
+          "last_used",
+          "os",
+          "os_version"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Device's Id",
+            "format": "int32"
+          },
+          "last_used": {
+            "type": "integer",
+            "description": "Date (seconds since EPOCH) at which the device was last used",
+            "format": "int64"
+          },
+          "country": {
+            "type": "string",
+            "description": "The country associated to the device"
+          },
+          "device": {
+            "$ref": "#/components/schemas/Device"
+          },
+          "browser": {
+            "$ref": "#/components/schemas/Browser"
+          },
+          "browser_version": {
+            "type": "string",
+            "description": "Browser's version"
+          },
+          "os": {
+            "$ref": "#/components/schemas/Platform"
+          },
+          "os_version": {
+            "type": "string",
+            "description": "Operating system's version"
+          },
+          "architecture": {
+            "$ref": "#/components/schemas/Processor"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UserDevices": {
+        "required": [
+          "current_device",
+          "devices"
+        ],
+        "type": "object",
+        "properties": {
+          "current_device": {
+            "type": "integer",
+            "description": "Id of the device used for this request",
+            "format": "int32"
+          },
+          "devices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserDevice"
+            },
+            "description": "List of devices associated to the user"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Response<UserDevices>": {
+        "required": [
+          "successful"
+        ],
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/UserDevices"
           },
           "error": {
             "type": "string",
@@ -1117,6 +1345,7 @@
       "Widget": {
         "required": [
           "description",
+          "frequency",
           "id",
           "name",
           "params",
@@ -1140,7 +1369,12 @@
           },
           "requires_auth": {
             "type": "boolean",
-            "description": "Indicates if authentication to the parent service is required in order to use the widget, **without checking if the user is already authenticated**"
+            "description": "Indicates if authentication to the parent service is required in order to use the widget"
+          },
+          "frequency": {
+            "type": "integer",
+            "description": "Recommended frequency (in seconds) at which to call the widget. Zero means refreshing is unnecessary",
+            "format": "int32"
           },
           "service": {
             "$ref": "#/components/schemas/Service"

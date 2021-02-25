@@ -1,3 +1,4 @@
+using System.Linq;
 using Area.API.Exceptions.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
 
@@ -9,7 +10,10 @@ namespace Area.API.Attributes
         {
             if (context.ModelState.IsValid)
                 return;
-            throw new BadRequestHttpException("Malformed body or query parameter(s).");
+
+            string str = context.ModelState.Values.SelectMany(entry => entry.Errors).Aggregate("", (current, it) => current + it.ErrorMessage + "; ");
+
+            throw new BadRequestHttpException(str);
         }
     }
 }

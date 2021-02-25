@@ -40,18 +40,13 @@ namespace Area.API.Extensions
             return deviceIdClaim != null && uint.TryParse(deviceIdClaim.Value, out deviceId);
         }
 
-        public static bool TryGetAuthTime(this ClaimsPrincipal principal, out DateTime dateTime)
+        public static bool TryGetAuthTime(this ClaimsPrincipal principal, out long ticks)
         {
-            dateTime = new DateTime();
+            ticks = 0;
 
             var authTimeClaim = principal.FindFirst(claim => claim.Type == JwtRegisteredClaimNames.AuthTime);
 
-            if (authTimeClaim == null)
-                return false;
-            if (!long.TryParse(authTimeClaim.Value, out var ticks))
-                return false;
-            dateTime = new DateTime(ticks);
-            return true;
+            return authTimeClaim != null && long.TryParse(authTimeClaim.Value, out ticks);
         }
     }
 }

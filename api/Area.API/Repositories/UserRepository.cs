@@ -134,5 +134,16 @@ namespace Area.API.Repositories
             if (serviceToken != null)
                 user!.ServiceTokens.Remove(serviceToken);
         }
+
+        public bool RemoveDevice(int userId, uint deviceId)
+        {
+            var user = GetUser(userId, asNoTracking: false);
+            var device = user?.Devices.FirstOrDefault(model => model.Id == deviceId);
+
+            if (device == null)
+                return false;
+            user!.Devices.Remove(device);
+            return true;
+        }
     }
 }
