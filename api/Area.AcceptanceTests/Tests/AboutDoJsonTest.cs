@@ -1,8 +1,10 @@
+using Area.AcceptanceTests.Collections;
 using Area.AcceptanceTests.Utilities;
 using Xunit;
 
 namespace Area.AcceptanceTests.Tests
 {
+    [Collection(nameof(AreaCollection))]
     public class AboutDoJsonTest
     {
         [Fact]
