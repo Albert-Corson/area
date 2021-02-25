@@ -1,13 +1,14 @@
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Area.API.Constants;
 using Area.API.Exceptions.Http;
+using Area.API.Extensions;
 using Area.API.Models;
 using Area.API.Models.Request;
 using Area.API.Models.Table;
 using Area.API.Repositories;
-using Area.API.Utilities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -67,10 +68,7 @@ namespace Area.API.Controllers
         )]
         public ResponseModel<UserInformationModel> GetMyUser()
         {
-            var userId = AuthUtilities.GetUserIdFromPrincipal(User);
-            var user = _userRepository.GetUser(userId);
-
-            if (user == null)
+            if (!User.TryGetUser(_userRepository, out var user))
                 throw new InternalServerErrorHttpException(); // should never happen
 
             return new ResponseModel<UserInformationModel> {
@@ -86,10 +84,51 @@ namespace Area.API.Controllers
         [SwaggerResponse((int) HttpStatusCode.Unauthorized, "Not allowed to delete the desired user")]
         public StatusModel DeleteUser()
         {
-            var userId = AuthUtilities.GetUserIdFromPrincipal(User);
+            UserModel? user = null;
 
-            if (userId == null || !_userRepository.RemoveUser(userId!.Value))
+            if (User.TryGetUserId(out var userId))
+                user = _userRepository.GetUser(userId, asNoTracking: false);
+
+            if (user == null)
                 throw new InternalServerErrorHttpException(); // this should never happen, but we still have to handle the error
+
+            _userRepository.RemoveUser(user);
+            return StatusModel.Success();
+        }
+
+        [HttpGet(RouteConstants.Users.GetMyDevices)]
+        [SwaggerOperation(
+            Summary = "Get a user's known devices",
+            Description = "## Get a list of devices associated to the user's account"
+        )]
+        public ResponseModel<UserDevicesModel> GetMyDevices()
+        {
+            User.TryGetUser(_userRepository, out var user);
+            User.TryGetDeviceId(out var deviceId);
+
+            return new ResponseModel<UserDevicesModel> {
+                Data = new UserDevicesModel {
+                    CurrentDevice = deviceId,
+                    Devices = user!.Devices.ToList()
+                }
+            };
+        }
+
+        [HttpDelete(RouteConstants.Users.DeleteMyDevice)]
+        [SwaggerOperation(
+            Summary = "Forget a user's device",
+            Description = "## Forget a user's device and revoke the access and refresh tokens created from this device"
+        )]
+        [SwaggerResponse((int) HttpStatusCode.NotFound, "Invalid deviceId")]
+        public StatusModel DeleteMyDevice(
+            [FromRoute] [Required] [Range(1, uint.MaxValue)] [SwaggerParameter("Device's ID")]
+            uint? deviceId
+        )
+        {
+            User.TryGetUserId(out var userId);
+
+            if (!_userRepository.RemoveDevice(userId, deviceId!.Value))
+                throw new NotFoundHttpException("This device doesn't exist");
 
             return StatusModel.Success();
         }

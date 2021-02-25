@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Area.API.Exceptions.Http;
+using Area.API.Extensions;
 using Area.API.Repositories;
 using Area.API.Services.Services;
-using Area.API.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
@@ -40,11 +40,10 @@ namespace Area.API.Services
             if (!_service.TryGetValue(serviceName, out var service))
                 return null;
 
-            var userId = AuthUtilities.GetUserIdFromPrincipal(context.User);
-            if (userId == null)
+            if (!context.User.TryGetUserId(out var userId))
                 return null;
 
-            var uri = service.SignIn(userId.Value);
+            var uri = service.SignIn(userId);
             return uri;
         }
 

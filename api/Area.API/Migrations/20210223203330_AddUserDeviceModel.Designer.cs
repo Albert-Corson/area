@@ -3,15 +3,17 @@ using System;
 using Area.API.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Area.API.Migrations
 {
     [DbContext(typeof(AreaDbContext))]
-    partial class DatabaseRepositoryModelSnapshot : ModelSnapshot
+    [Migration("20210223203330_AddUserDeviceModel")]
+    partial class AddUserDeviceModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -342,8 +344,8 @@ namespace Area.API.Migrations
                 {
                     b.OwnsMany("Area.API.Models.Table.Owned.UserDeviceModel", "Devices", b1 =>
                         {
-                            b1.Property<long>("Id")
-                                .HasColumnType("bigint");
+                            b1.Property<int>("Id")
+                                .HasColumnType("integer");
 
                             b1.Property<int>("Architecture")
                                 .HasColumnType("integer");
@@ -362,11 +364,11 @@ namespace Area.API.Migrations
                             b1.Property<int>("Device")
                                 .HasColumnType("integer");
 
-                            b1.Property<long>("FirstUsed")
-                                .HasColumnType("bigint");
+                            b1.Property<DateTime>("FirstUsed")
+                                .HasColumnType("timestamp without time zone");
 
-                            b1.Property<long>("LastUsed")
-                                .HasColumnType("bigint");
+                            b1.Property<DateTime>("LastUsed")
+                                .HasColumnType("timestamp without time zone");
 
                             b1.Property<int>("Os")
                                 .HasColumnType("integer");
@@ -385,7 +387,7 @@ namespace Area.API.Migrations
 
                             b1.HasIndex("UserModelId");
 
-                            b1.ToTable("UserHasDevices");
+                            b1.ToTable("UserHasDevice");
 
                             b1.WithOwner()
                                 .HasForeignKey("UserModelId");

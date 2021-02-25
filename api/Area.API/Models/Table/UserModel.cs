@@ -3,8 +3,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Area.API.Models.Table.ManyToMany;
 using Area.API.Models.Table.Owned;
 using Microsoft.AspNetCore.Identity;
-using Newtonsoft.Json;
-using Swashbuckle.AspNetCore.Annotations;
 
 namespace Area.API.Models.Table
 {
@@ -26,5 +24,7 @@ namespace Area.API.Models.Table
         public ICollection<UserServiceTokensModel> ServiceTokens { get; set; } = null!;
 
         public ICollection<UserParamModel> WidgetParams { get; set; } = null!;
+
+        public ICollection<UserDeviceModel> Devices { get; set; } = null!;
     }
 }

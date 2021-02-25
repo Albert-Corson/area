@@ -1,6 +1,8 @@
 using System.Text;
 using Area.API.Authentication;
 using Area.API.Constants;
+using Area.API.Services;
+using IpData;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,9 +15,8 @@ namespace Area.API.Installers
         public static IServiceCollection AddAreaAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
             var tokenValidationParameters = new TokenValidationParameters {
-                ValidateIssuer = true,
+                ValidateIssuer = false,
                 ValidateAudience = true,
-                ValidIssuer = configuration[JwtConstants.ValidIssuer],
                 ValidAudience = configuration[JwtConstants.ValidAudience],
                 RequireExpirationTime = true,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration[JwtConstants.SecretKeyName])),
@@ -29,6 +30,10 @@ namespace Area.API.Installers
                     options => { options.TokenValidationParameters = tokenValidationParameters; });
 
             services.AddSingleton(tokenValidationParameters);
+
+            services.AddDetection();
+            services.AddScoped(provider => new IpDataClient(configuration["IpDataKey"]));
+            services.AddScoped<AuthService>();
 
             return services;
         }

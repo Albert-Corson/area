@@ -1,9 +1,8 @@
-using Area.AcceptanceTests.Fixtures;
 using Xunit;
 
 namespace Area.AcceptanceTests.Collections
 {
-    [CollectionDefinition(nameof(AreaCollection), DisableParallelization = true)]
+    [CollectionDefinition(nameof(AreaCollection), DisableParallelization = false)]
     public class AreaCollection
     { }
 }

@@ -9,7 +9,7 @@ namespace Area.AcceptanceTests.Tests
 {
     [Collection(nameof(AreaCollection))]
     [TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)]
-    public class UserEndpointTests : IClassFixture<AreaApi>
+    public class UserManagementTests : IClassFixture<AreaApi>
     {
         private readonly AreaApi _areaApi;
         private readonly RegisterModel _registerForm = new RegisterModel {
@@ -18,7 +18,7 @@ namespace Area.AcceptanceTests.Tests
             Username = "SomeUsername"
         };
 
-        public UserEndpointTests(AreaApi areaApi)
+        public UserManagementTests(AreaApi areaApi)
         {
             _areaApi = areaApi;
         }

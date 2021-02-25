@@ -3,7 +3,6 @@ using Area.API.Attributes;
 using Area.API.Constants;
 using Area.API.Installers;
 using Area.API.Middlewares;
-using Area.API.Utilities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -31,8 +30,6 @@ namespace Area.API
                 .AddAreaRepositories()
                 .AddAreaWidgets()
                 .AddAreaServices();
-
-            services.AddSingleton<AuthUtilities>();
 
             services
                 .AddControllers()

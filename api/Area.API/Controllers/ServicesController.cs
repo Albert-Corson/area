@@ -4,11 +4,11 @@ using System.Linq;
 using System.Net;
 using Area.API.Constants;
 using Area.API.Exceptions.Http;
+using Area.API.Extensions;
 using Area.API.Models;
 using Area.API.Models.Table;
 using Area.API.Repositories;
 using Area.API.Services;
-using Area.API.Utilities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -51,9 +51,10 @@ namespace Area.API.Controllers
         )]
         public ResponseModel<List<ServiceModel>> GetMyService()
         {
-            var userId = AuthUtilities.GetUserIdFromPrincipal(User);
+            if (!User.TryGetUserId(out var userId))
+                throw new InternalServerErrorHttpException();
 
-            var services = _serviceRepository.GetServicesByUser(userId!.Value);
+            var services = _serviceRepository.GetServicesByUser(userId);
 
             return new ResponseModel<List<ServiceModel>> {
                 Data = services
@@ -117,9 +118,10 @@ namespace Area.API.Controllers
             int? serviceId
         )
         {
-            var userId = AuthUtilities.GetUserIdFromPrincipal(User);
+            if (!User.TryGetUserId(out var userId))
+                throw new InternalServerErrorHttpException();
 
-            _userRepository.RemoveServiceCredentials(userId!.Value, serviceId!.Value);
+            _userRepository.RemoveServiceCredentials(userId, serviceId!.Value);
             return StatusModel.Success();
         }
 

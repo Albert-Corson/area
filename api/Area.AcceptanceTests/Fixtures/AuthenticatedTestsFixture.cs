@@ -22,13 +22,18 @@ namespace Area.AcceptanceTests.Fixtures
 
             AreaApi.Register(RegisterForm).Wait();
 
-            var response = AreaApi.SignIn(new SignInModel(RegisterForm)).Result;
-            AreaApi.Tokens = response.Content.Data;
+            SignIn();
         }
 
         public void Dispose()
         {
             AreaApi.DeleteMyUser().Wait();
+        }
+
+        public void SignIn()
+        {
+            var response = AreaApi.SignIn(new SignInModel(RegisterForm)).Result;
+            AreaApi.Tokens = response.Content.Data;
         }
     }
 }

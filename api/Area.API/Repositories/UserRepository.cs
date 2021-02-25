@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Area.API.DbContexts;
@@ -68,14 +67,9 @@ namespace Area.API.Repositories
             return _userManager.CreateAsync(user, password);
         }
 
-        public bool RemoveUser(int userId)
+        public void RemoveUser(UserModel user)
         {
-            var user = GetUser(userId);
-
-            if (user == null)
-                return false;
             Database.Users.Remove(user);
-            return true;
         }
 
         public bool AddWidgetSubscription(int userId, int widgetId)
@@ -133,13 +127,23 @@ namespace Area.API.Repositories
         public void RemoveServiceCredentials(int userId, int serviceId)
         {
             var user = Database.Users
-                .Include(model => model.ServiceTokens)
                 .FirstOrDefault(model => model.Id == userId);
 
             var serviceToken = user?.ServiceTokens.FirstOrDefault(model => model.ServiceId == serviceId);
 
             if (serviceToken != null)
                 user!.ServiceTokens.Remove(serviceToken);
+        }
+
+        public bool RemoveDevice(int userId, uint deviceId)
+        {
+            var user = GetUser(userId, asNoTracking: false);
+            var device = user?.Devices.FirstOrDefault(model => model.Id == deviceId);
+
+            if (device == null)
+                return false;
+            user!.Devices.Remove(device);
+            return true;
         }
     }
 }

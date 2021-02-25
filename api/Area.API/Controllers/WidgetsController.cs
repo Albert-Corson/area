@@ -4,11 +4,11 @@ using System.Linq;
 using System.Net;
 using Area.API.Constants;
 using Area.API.Exceptions.Http;
+using Area.API.Extensions;
 using Area.API.Models;
 using Area.API.Models.Table;
 using Area.API.Repositories;
 using Area.API.Services;
-using Area.API.Utilities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -74,15 +74,15 @@ namespace Area.API.Controllers
             int? serviceId
         )
         {
-            var userId = AuthUtilities.GetUserIdFromPrincipal(User);
+            User.TryGetUserId(out var userId);
 
             List<WidgetModel> widgets;
             if (serviceId != null) {
                 if (!_serviceRepository.ServiceExists(serviceId.Value))
                     throw new NotFoundHttpException("This service does not exist");
-                widgets = _widgetRepository.GetUserWidgetsByService(userId!.Value, serviceId.Value).ToList();
+                widgets = _widgetRepository.GetUserWidgetsByService(userId, serviceId.Value).ToList();
             } else {
-                widgets =  _widgetRepository.GetUserWidgets(userId!.Value, true).ToList();
+                widgets =  _widgetRepository.GetUserWidgets(userId, true).ToList();
             }
 
             var user = _userRepository.GetUser(userId, includeChildren: true);
@@ -128,9 +128,9 @@ namespace Area.API.Controllers
             int? widgetId
         )
         {
-            var userId = AuthUtilities.GetUserIdFromPrincipal(User);
+            User.TryGetUserId(out var userId);
 
-            if (!_userRepository.RemoveWidgetSubscription(userId!.Value, widgetId!.Value))
+            if (!_userRepository.RemoveWidgetSubscription(userId, widgetId!.Value))
                 throw new NotFoundHttpException("The widget doesn't exist or the user is not subscribed");
             return StatusModel.Success();
         }
@@ -146,9 +146,9 @@ namespace Area.API.Controllers
             int? widgetId
         )
         {
-            var userId = AuthUtilities.GetUserIdFromPrincipal(User);
+            User.TryGetUserId(out var userId);
 
-            if (!_userRepository.AddWidgetSubscription(userId!.Value, widgetId!.Value))
+            if (!_userRepository.AddWidgetSubscription(userId, widgetId!.Value))
                 throw new NotFoundHttpException("This widget does not exist");
 
             return StatusModel.Success();
