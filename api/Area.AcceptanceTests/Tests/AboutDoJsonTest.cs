@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Area.AcceptanceTests.Collections;
 using Area.AcceptanceTests.Utilities;
 using Xunit;
@@ -8,7 +9,7 @@ namespace Area.AcceptanceTests.Tests
     public class AboutDoJsonTest
     {
         [Fact]
-        public async void ModelFormat()
+        public async Task ModelFormat()
         {
             var response = await new AreaApi().AboutDotJson();
 

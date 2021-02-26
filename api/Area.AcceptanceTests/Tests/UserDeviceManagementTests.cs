@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Area.AcceptanceTests.Collections;
 using Area.AcceptanceTests.Fixtures;
 using Area.AcceptanceTests.Models.Requests;
@@ -24,7 +25,7 @@ namespace Area.AcceptanceTests.Tests
         }
 
         [Fact, Priority(1)]
-        public async void GetMyDevices()
+        public async Task GetMyDevices()
         {
             var response = await AreaApi.GetMyDevices();
 
@@ -36,7 +37,7 @@ namespace Area.AcceptanceTests.Tests
         }
 
         [Fact, Priority(2)]
-        public async void DeleteMyDevice()
+        public async Task DeleteMyDevice()
         {
             var response = await AreaApi.DeleteMyDevice(_currentDeviceId);
 
@@ -44,7 +45,7 @@ namespace Area.AcceptanceTests.Tests
         }
 
         [Fact, Priority(3)]
-        public async void CheckAccessTokenValidity()
+        public async Task CheckAccessTokenValidity()
         {
             var response = await AreaApi.GetMyDevices();
 
@@ -52,7 +53,7 @@ namespace Area.AcceptanceTests.Tests
         }
 
         [Fact, Priority(4)]
-        public async void CheckRefreshTokenValidity()
+        public async Task CheckRefreshTokenValidity()
         {
             var response = await AreaApi.RefreshAccessToken(new RefreshTokenModel {
                 RefreshToken = AreaApi.Tokens!.RefreshToken
@@ -62,7 +63,7 @@ namespace Area.AcceptanceTests.Tests
         }
 
         [Fact, Priority(5)]
-        public async void SignBackIn()
+        public async Task SignBackIn()
         {
             var response = await AreaApi.SignIn(new SignInModel {
                 Identifier = _authenticatedTestsFixture.RegisterForm.Email,
@@ -73,7 +74,7 @@ namespace Area.AcceptanceTests.Tests
         }
 
         [Fact, Priority(6)]
-        public async void CheckOldAccessTokenValidity()
+        public async Task CheckOldAccessTokenValidity()
         {
             var response = await AreaApi.GetMyDevices();
 
@@ -81,7 +82,7 @@ namespace Area.AcceptanceTests.Tests
         }
 
         [Fact, Priority(7)]
-        public async void CheckOldRefreshTokenValidity()
+        public async Task CheckOldRefreshTokenValidity()
         {
             var response = await AreaApi.RefreshAccessToken(new RefreshTokenModel {
                 RefreshToken = AreaApi.Tokens!.RefreshToken
@@ -91,7 +92,7 @@ namespace Area.AcceptanceTests.Tests
         }
         
         [Fact, Priority(8)]
-        public async void CompareDeviceIds()
+        public async Task CompareDeviceIds()
         {
             _authenticatedTestsFixture.SignIn();
 

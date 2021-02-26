@@ -1,4 +1,5 @@
 using System.Net;
+using System.Threading.Tasks;
 using Area.AcceptanceTests.Collections;
 using Area.AcceptanceTests.Models.Requests;
 using Area.AcceptanceTests.Utilities;
@@ -24,7 +25,7 @@ namespace Area.AcceptanceTests.Tests
         }
 
         [Fact, Priority(1)]
-        public async void Register()
+        public async Task Register()
         {
             var response = await _areaApi.Register(_registerForm);
 
@@ -32,7 +33,7 @@ namespace Area.AcceptanceTests.Tests
         }
 
         [Fact, Priority(2)]
-        public async void SignIn()
+        public async Task SignIn()
         {
             var form = new SignInModel {
                 Identifier = _registerForm.Email,
@@ -47,7 +48,7 @@ namespace Area.AcceptanceTests.Tests
         }
 
         [Fact, Priority(3)]
-        public async void GetMyUser()
+        public async Task GetMyUser()
         {
             var response = await _areaApi.GetMyUser();
         
@@ -58,7 +59,7 @@ namespace Area.AcceptanceTests.Tests
         }
         
         [Fact, Priority(4)]
-        public async void RefreshAccessToken()
+        public async Task RefreshAccessToken()
         {
             var form = new RefreshTokenModel {
                 RefreshToken = _areaApi.Tokens!.RefreshToken
@@ -73,7 +74,7 @@ namespace Area.AcceptanceTests.Tests
         }
 
         [Fact, Priority(5)]
-        public async void DeleteMyUser()
+        public async Task DeleteMyUser()
         {
             var response = await _areaApi.DeleteMyUser();
 
@@ -81,7 +82,7 @@ namespace Area.AcceptanceTests.Tests
         }
 
         [Fact, Priority(6)]
-        public async void GetMyDeletedUser()
+        public async Task GetMyDeletedUser()
         {
             var response = await _areaApi.GetMyUser();
         

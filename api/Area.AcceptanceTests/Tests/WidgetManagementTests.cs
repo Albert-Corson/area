@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Area.AcceptanceTests.Collections;
 using Area.AcceptanceTests.Fixtures;
 using Area.AcceptanceTests.Models.Responses;
@@ -27,7 +28,7 @@ namespace Area.AcceptanceTests.Tests
         }
 
         [Fact, Priority(1)]
-        public async void GetWidgets()
+        public async Task GetWidgets()
         {
             var response = await AreaApi.GetWidgets();
 
@@ -49,7 +50,7 @@ namespace Area.AcceptanceTests.Tests
         }
 
         [Fact, Priority(2)]
-        public async void GetWidgetsFromService()
+        public async Task GetWidgetsFromService()
         {
             var notAuthed = _notAuthed;
 
@@ -75,7 +76,7 @@ namespace Area.AcceptanceTests.Tests
         }
 
         [Fact, Priority(4)]
-        public async void GetMyServices()
+        public async Task GetMyServices()
         {
             var response = await AreaApi.GetMyServices();
 
@@ -85,7 +86,7 @@ namespace Area.AcceptanceTests.Tests
         }
 
         [Fact, Priority(5)]
-        public async void GetMyWidgets()
+        public async Task GetMyWidgets()
         {
             var response = await AreaApi.GetMyWidgets();
 
@@ -96,7 +97,7 @@ namespace Area.AcceptanceTests.Tests
         }
 
         [Fact, Priority(6)]
-        public async void GetMyWidgetsFromService()
+        public async Task GetMyWidgetsFromService()
         {
             var response = await AreaApi.GetMyWidgets(_notAuthed.Service.Id);
 
@@ -106,7 +107,7 @@ namespace Area.AcceptanceTests.Tests
         }
 
         [Fact, Priority(7)]
-        public async void GetMyWidgetsFromOtherService()
+        public async Task GetMyWidgetsFromOtherService()
         {
             var response = await AreaApi.GetMyWidgets(_otherServiceId);
 
@@ -115,7 +116,7 @@ namespace Area.AcceptanceTests.Tests
         }
 
         [Fact, Priority(8)]
-        public async void CallAuthedWidgets()
+        public async Task CallAuthedWidgets()
         {
             var response = await AreaApi.CallWidgetById(_authed.Id);
 
@@ -133,7 +134,7 @@ namespace Area.AcceptanceTests.Tests
         }
 
         [Fact, Priority(10)]
-        public async void GetMyUnsubscribedServices()
+        public async Task GetMyUnsubscribedServices()
         {
             var response = await AreaApi.GetMyServices();
 
@@ -142,7 +143,7 @@ namespace Area.AcceptanceTests.Tests
         }
 
         [Fact, Priority(11)]
-        public async void GetMyUnsubscribedWidgets()
+        public async Task GetMyUnsubscribedWidgets()
         {
             var response = await AreaApi.GetMyWidgets();
 

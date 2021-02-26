@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Area.AcceptanceTests.Collections;
 using Area.AcceptanceTests.Fixtures;
 using Area.AcceptanceTests.Models.Responses;
@@ -45,7 +46,7 @@ namespace Area.AcceptanceTests.Tests
         }
 
         [Fact, Priority(2)]
-        public async void CallWithoutParams()
+        public async Task CallWithoutParams()
         {
             var response = await AreaApi.CallWidgetById(IMGUR_GALLERY);
 
@@ -60,7 +61,7 @@ namespace Area.AcceptanceTests.Tests
         }
         
         [Fact, Priority(4)]
-        public async void CallWithParams()
+        public async Task CallWithParams()
         {
             var response = await AreaApi.CallWidgetById(IMGUR_GALLERY, "?section=top");
         

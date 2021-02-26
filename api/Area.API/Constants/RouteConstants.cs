@@ -14,7 +14,6 @@ namespace Area.API.Constants
 
             public const string SignIn = Root + "/token";
             public const string RefreshAccessToken = Root + "/refresh";
-            public const string RevokeUserTokens = Root + "/revoke";
         }
 
         public static class Users

@@ -24,7 +24,7 @@ namespace Area.AcceptanceTests.Tests
         }
 
         [Fact]
-        public async void InvalidPostForm()
+        public async Task InvalidPostForm()
         {
             var result = await AreaApi.Client.PostAsync<ResponseModel<TokensModel>>(RouteConstants.Auth.SignIn);
 

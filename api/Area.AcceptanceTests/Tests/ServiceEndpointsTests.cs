@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Area.AcceptanceTests.Collections;
 using Area.AcceptanceTests.Fixtures;
 using Area.AcceptanceTests.Models.Responses;
@@ -26,7 +27,7 @@ namespace Area.AcceptanceTests.Tests
         }
 
         [Fact, Priority(1)]
-        public async void GetServices()
+        public async Task GetServices()
         {
             var response = await AreaApi.GetServices();
 
@@ -38,7 +39,7 @@ namespace Area.AcceptanceTests.Tests
         }
 
         [Fact, Priority(2)]
-        public async void GetServiceById()
+        public async Task GetServiceById()
         {
             var response = await AreaApi.GetServiceById(_service.Id);
 
@@ -48,7 +49,7 @@ namespace Area.AcceptanceTests.Tests
         }
 
         [Fact, Priority(3)]
-        public async void SignInServiceById()
+        public async Task SignInServiceById()
         {
             var response = await AreaApi.SignInServiceById(_service.Id);
 
@@ -58,7 +59,7 @@ namespace Area.AcceptanceTests.Tests
         }
 
         [Fact, Priority(10)]
-        public async void SignOutFromParentService()
+        public async Task SignOutFromParentService()
         {
             var response = await AreaApi.SignOutServiceById(_service.Id);
 
