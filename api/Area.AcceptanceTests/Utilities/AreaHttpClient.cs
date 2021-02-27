@@ -15,7 +15,9 @@ namespace Area.AcceptanceTests.Utilities
 
         public AreaHttpClient(string baseAddress)
         {
-            _client = new HttpClient {
+            var httpClientHandler = new HttpClientHandler();
+            httpClientHandler.AllowAutoRedirect = false;
+            _client = new HttpClient(httpClientHandler) {
                 BaseAddress = new Uri(baseAddress)
             };
         }
@@ -28,11 +30,17 @@ namespace Area.AcceptanceTests.Utilities
                 _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", value);
         }
 
+        public async Task<HttpResponseMessage> RawPostAsync<TRequest>(string endpoint, TRequest form)
+        {
+            var serializedForm = JsonConvert.SerializeObject(form);
+            return await _client.PostAsync(endpoint,
+                new StringContent(serializedForm, Encoding.UTF8, "application/json"));
+        }
+
         public async Task<ResponseHolder<TResponse>> PostAsync<TResponse, TRequest>(string endpoint, TRequest form)
             where TResponse : StatusModel
         {
-            var serializedForm = JsonConvert.SerializeObject(form);
-            var response = await _client.PostAsync(endpoint, new StringContent(serializedForm, Encoding.UTF8, "application/json"));
+            var response = await RawPostAsync(endpoint, form);
 
             return new ResponseHolder<TResponse> {
                 Content = JsonConvert.DeserializeObject<TResponse>(await response.Content.ReadAsStringAsync()),
@@ -45,10 +53,10 @@ namespace Area.AcceptanceTests.Utilities
 
         public async Task<ResponseHolder<StatusModel>> PostAsync(string endpoint) =>
             await PostAsync<StatusModel, object>(endpoint, new object());
-        
+
         public async Task<ResponseHolder<StatusModel>> PostAsync<TRequest>(string endpoint, TRequest form) =>
             await PostAsync<StatusModel, TRequest>(endpoint, form);
-        
+
         public async Task<ResponseHolder<TResponse>> GetAsync<TResponse>(string endpoint)
             where TResponse : StatusModel
         {

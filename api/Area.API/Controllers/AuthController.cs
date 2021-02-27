@@ -139,8 +139,9 @@ namespace Area.API.Controllers
         [ValidateModelState(false)]
         [SwaggerOperation(
             Summary = "Sign-in/register with Facebook",
-            Description = "Sign-in/register a user, using their Facebook account"
+            Description = "Redirect the user to this endpoint to let them sign-in/register with facebook. The user will be redirected back to the client with an authentication code once done."
         )]
+        [SwaggerResponse((int) HttpStatusCode.Found, "Redirection to Facebook's sign-in page")]
         public async Task<IActionResult> SignInWithFacebook(
             CancellationToken cancellationToken,
             [FromBody]

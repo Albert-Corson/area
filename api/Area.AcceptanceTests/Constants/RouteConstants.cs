@@ -13,7 +13,7 @@ namespace Area.AcceptanceTests.Constants
 
             public const string SignIn = Root + "/token";
             public const string RefreshAccessToken = Root + "/refresh";
-            public const string RevokeUserTokens = Root + "/revoke";
+            public const string SignInWithFacebook = Root + "/facebook";
         }
 
         public static class Users

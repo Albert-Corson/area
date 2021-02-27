@@ -11,7 +11,7 @@ namespace Area.API.Attributes
         private readonly bool _activated;
         
         public ValidateModelStateAttribute()
-            : this(false)
+            : this(true)
         { }
 
         public ValidateModelStateAttribute(bool activated)

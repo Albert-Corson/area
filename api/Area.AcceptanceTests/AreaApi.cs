@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Area.AcceptanceTests.Constants;
 using Area.AcceptanceTests.Models;
@@ -84,5 +85,8 @@ namespace Area.AcceptanceTests
 
         public async Task<ResponseHolder<StatusModel>> DeleteMyDevice(uint deviceId) =>
             await Client.DeleteAsync<StatusModel>(RouteConstants.Users.DeleteMyDevice(deviceId));
+
+        public async Task<HttpResponseMessage> SignInWithFacebook(ExternalAuthModel form) =>
+            await Client.RawPostAsync(RouteConstants.Auth.SignInWithFacebook, form);
     }
 }
