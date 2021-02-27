@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Area.API.Constants;
 using Area.API.Exceptions.Http;
 using Area.API.Models;
 using Area.API.Models.Table;
@@ -15,8 +16,7 @@ namespace Area.API.Services.Widgets.CatApi
 
         public CatApiRandomImagesWidgetService(IConfiguration configuration)
         {
-            var catApiConf = configuration.GetSection("WidgetApiKeys").GetSection("CatApi");
-            _apiKey = catApiConf["ApiKey"];
+            _apiKey = configuration[AuthConstants.CatApi.Key];
             Client = new CatClient();
         }
 

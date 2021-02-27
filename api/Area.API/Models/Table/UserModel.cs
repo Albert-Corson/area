@@ -8,6 +8,12 @@ namespace Area.API.Models.Table
 {
     public class UserModel : IdentityUser<int>
     {
+        public enum UserType {
+            Area,
+            Facebook,
+            Google
+        }
+        
         public class RoleModel : IdentityRole<int>
         { }
 
@@ -18,6 +24,8 @@ namespace Area.API.Models.Table
         public override string UserName { get; set; } = null!;
 
         public override string Email { get; set; } = null!;
+
+        public UserType Type { get; set; } = UserType.Area;
 
         public ICollection<UserWidgetModel> Widgets { get; set; } = null!;
 

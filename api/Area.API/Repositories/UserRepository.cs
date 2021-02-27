@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Area.API.DbContexts;
 using Area.API.Models.Table;
@@ -22,22 +24,13 @@ namespace Area.API.Repositories
             _userManager = userManager;
         }
 
-        public bool UserExists(int? userId = null, string? username = null, string? email = null)
+        public bool UserExists(int? userId = null, string? username = null, string? email = null, UserModel.UserType? type = null)
         {
-            if (userId == null && username == null && email == null)
-                return false;
-
-            return Database.Users
-                .AsNoTracking()
-                .FirstOrDefault(model =>
-                    (userId == null || model.Id == userId.Value)
-                    && (username == null || model.UserName == username)
-                    && (email == null || model.Email == email)
-                ) != null;
+            return GetUser(userId, username, email, type: type) != null;
         }
 
         public UserModel? GetUser(int? userId = null, string? username = null, string? email = null,
-            string? passwd = null, bool includeChildren = false, bool asNoTracking = true)
+            string? passwd = null, UserModel.UserType? type = null, bool includeChildren = false, bool asNoTracking = true)
         {
             var queryable = asNoTracking ? Database.Users.AsNoTracking() : Database.Users.AsQueryable();
             queryable = includeChildren
@@ -52,19 +45,48 @@ namespace Area.API.Repositories
                 (userId == null || model.Id == userId)
                 && (username == null || model.UserName == username)
                 && (email == null || model.Email == email)
+                && (type == null || model.Type == type)
             );
 
             if (user == null || passwd == null)
                 return user;
 
-            if (!_userManager.CheckPasswordAsync(user, passwd).Await())
-                return null;
-            return user;
+            return !_userManager.CheckPasswordAsync(user, passwd).Await() ? null : user;
         }
 
         public Task<IdentityResult> AddUser(UserModel user, string password)
         {
             return _userManager.CreateAsync(user, password);
+        }
+
+        public Task<IdentityResult> AddUser(UserModel user)
+        {
+            return _userManager.CreateAsync(user);
+        }
+
+        public Task<IdentityResult> AddUserClaim(UserModel user, Claim claim)
+        {
+            return _userManager.AddClaimAsync(user, claim);
+        }
+
+        public Task<IList<Claim>> GetUserClaims(UserModel user)
+        {
+            return _userManager.GetClaimsAsync(user);
+        }
+        
+        public IdentityUserClaim<int>? GetUserClaim(int userId, string claimType)
+        {
+            return Database.UserClaims.FirstOrDefault(claim => claim.UserId == userId && claim.ClaimType == claimType);
+        }
+
+        public Task<IdentityResult> RemoveUserClaims(UserModel user, IEnumerable<Claim> claims)
+        {
+            return _userManager.RemoveClaimsAsync(user, claims);
+        }
+
+        public Task<IdentityResult> RemoveUserClaim(UserModel user, Claim claim)
+        {
+            return _userManager.RemoveClaimAsync(user, claim);
         }
 
         public void RemoveUser(UserModel user)

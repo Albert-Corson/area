@@ -37,20 +37,6 @@ namespace Area.API.Installers
                     builder => { builder.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery); });
             });
 
-            services.AddIdentity<UserModel, UserModel.RoleModel>(options => {
-                    options.Password = new PasswordOptions {
-                        RequireDigit = true,
-                        RequiredLength = 8,
-                        RequireLowercase = true,
-                        RequireUppercase = true,
-                        RequireNonAlphanumeric = true
-                    };
-                    options.User = new UserOptions {
-                        RequireUniqueEmail = true
-                    };
-                })
-                .AddEntityFrameworkStores<AreaDbContext>();
-
             return services;
         }
     }

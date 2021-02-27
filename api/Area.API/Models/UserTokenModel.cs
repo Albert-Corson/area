@@ -12,7 +12,7 @@ namespace Area.API.Models
 
         [JsonProperty("expires_in", Required = Required.Always)]
         [SwaggerSchema("Lifetime in seconds of the access token")]
-        public long ExpiresIn { get; set; } =  JwtConstants.AccessTokenLifespanSeconds;
+        public long ExpiresIn { get; set; } =  AuthConstants.AccessTokenLifespanSeconds;
 
         [JsonProperty("refresh_token", Required = Required.Always)]
         [SwaggerSchema("Token to get a new pair of tokens")]

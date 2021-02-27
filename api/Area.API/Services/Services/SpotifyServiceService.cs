@@ -1,4 +1,5 @@
 using System;
+using Area.API.Constants;
 using Area.API.Models.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -17,12 +18,9 @@ namespace Area.API.Services.Services
 
         public SpotifyServiceService(IConfiguration configuration)
         {
-            var spotifyConf = configuration.GetSection("WidgetApiKeys").GetSection(Name);
-            if (spotifyConf == null)
-                return;
-            _clientId = spotifyConf["ClientId"];
-            _clientSecret = spotifyConf["ClientSecret"];
-            _redirectUri = new Uri(spotifyConf["RedirectUri"]);
+            _clientId = configuration[AuthConstants.Spotify.ClientId];
+            _clientSecret = configuration[AuthConstants.Spotify.ClientSecret];
+            _redirectUri = new Uri(configuration[AuthConstants.Spotify.RedirectUri]);
         }
 
         public string Name { get; } = "Spotify";
