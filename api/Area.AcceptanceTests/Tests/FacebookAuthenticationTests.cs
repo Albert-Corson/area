@@ -1,8 +1,10 @@
 using System;
 using System.Net;
 using System.Threading.Tasks;
+using System.Web;
 using Area.AcceptanceTests.Collections;
 using Area.AcceptanceTests.Models.Requests;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace Area.AcceptanceTests.Tests
@@ -23,6 +25,13 @@ namespace Area.AcceptanceTests.Tests
 
             Assert.Equal(HttpStatusCode.Found, response.StatusCode);
             Assert.StartsWith("https://www.facebook.com/dialog/oauth", response.Headers.Location.ToString());
+
+            var queryParams = HttpUtility.ParseQueryString(response.Headers.Location.Query);
+            var state = HttpUtility.UrlDecode(queryParams.Get("state"));
+            var recoveredForm = JsonConvert.DeserializeObject<ExternalAuthModel>(state);
+
+            Assert.Equal(form.RedirectUrl, recoveredForm.RedirectUrl);
+            Assert.Equal(form.State, recoveredForm.State);
         }
     }
 }
