@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
@@ -16,6 +17,22 @@ namespace Area.AcceptanceTests.Models.Responses
 
         public class WidgetModel
         {
+            private bool Equals(WidgetModel other) => Id == other.Id && Name == other.Name && Description == other.Description && RequiresAuth == other.RequiresAuth;
+
+            public override bool Equals(object? obj)
+            {
+                if (ReferenceEquals(null, obj))
+                    return false;
+                if (ReferenceEquals(this, obj))
+                    return true;
+                return obj.GetType() == GetType() && Equals((WidgetModel) obj);
+            }
+
+            public override int GetHashCode()
+            {
+                return HashCode.Combine(Id, Name, Description, RequiresAuth);
+            }
+
             public void Copy(WidgetModel other)
             {
                 Id = other.Id;
