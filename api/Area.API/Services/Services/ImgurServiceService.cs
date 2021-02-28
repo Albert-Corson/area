@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using Area.API.Constants;
 using Area.API.Exceptions.Http;
 using Area.API.Models;
@@ -29,19 +30,12 @@ namespace Area.API.Services.Services
 
         public string Name { get; } = "Imgur";
 
-        public Uri? SignIn(int userId)
+        public Uri? SignIn(string state)
         {
             if (Client == null)
                 throw new InternalServerErrorHttpException();
             var oAuth2Endpoint = new OAuth2Endpoint(Client);
-            return new Uri(oAuth2Endpoint.GetAuthorizationUrl(OAuth2ResponseType.Code, userId.ToString()));
-        }
-
-        public int? GetUserIdFromCallbackContext(HttpContext context)
-        {
-            if (!context.Request.Query.TryGetValue("state", out var state) || !int.TryParse(state, out var userId))
-                return null;
-            return userId;
+            return new Uri(oAuth2Endpoint.GetAuthorizationUrl(OAuth2ResponseType.Code, HttpUtility.UrlEncode(state)));
         }
 
         public string? HandleSignInCallback(HttpContext context)

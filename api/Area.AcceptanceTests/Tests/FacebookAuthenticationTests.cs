@@ -18,7 +18,7 @@ namespace Area.AcceptanceTests.Tests
             var areaApi = new AreaApi();
             var form = new ExternalAuthModel {
                 State = "test abcd",
-                RedirectUrl = new Uri("http://google.fr")
+                RedirectUrl = "http://google.fr"
             };
 
             var response = await areaApi.SignInWithFacebook(form);
@@ -30,7 +30,7 @@ namespace Area.AcceptanceTests.Tests
             var state = HttpUtility.UrlDecode(queryParams.Get("state"));
             var recoveredForm = JsonConvert.DeserializeObject<ExternalAuthModel>(state);
 
-            Assert.Equal(form.RedirectUrl, recoveredForm.RedirectUrl);
+            Assert.Equal(new Uri(form.RedirectUrl), new Uri(recoveredForm.RedirectUrl));
             Assert.Equal(form.State, recoveredForm.State);
         }
     }

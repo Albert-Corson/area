@@ -50,8 +50,8 @@ namespace Area.AcceptanceTests
         public async Task<ResponseHolder<ResponseModel<ServiceModel>>> GetServiceById(int id) =>
             await Client.GetAsync<ResponseModel<ServiceModel>>(RouteConstants.Services.GetServiceById(id));
 
-        public async Task<ResponseHolder<ResponseModel<string>>> SignInServiceById(int id) =>
-            await Client.PostAsync<ResponseModel<string>>(RouteConstants.Services.SignInServiceById(id));
+        public async Task<HttpResponseMessage> SignInServiceById(int id, ExternalAuthModel form) =>
+            await Client.RawPostAsync(RouteConstants.Services.SignInServiceById(id), form);
 
         public async Task<ResponseHolder<StatusModel>> SignOutServiceById(int id) =>
             await Client.DeleteAsync(RouteConstants.Services.SignOutServiceById(id));

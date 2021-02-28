@@ -25,14 +25,7 @@ namespace Area.API.Services.Services
 
         public string Name { get; } = "Spotify";
 
-        public int? GetUserIdFromCallbackContext(HttpContext context)
-        {
-            if (!context.Request.Query.TryGetValue("state", out var state) || !int.TryParse(state, out var userId))
-                return null;
-            return userId;
-        }
-
-        public Uri? SignIn(int userId)
+        public Uri? SignIn(string state)
         {
             if (_redirectUri == null || _clientId == null)
                 return null;
@@ -44,7 +37,7 @@ namespace Area.API.Services.Services
                     Scopes.PlaylistReadCollaborative,
                     Scopes.PlaylistReadPrivate
                 },
-                State = userId.ToString()
+                State = state
             };
             return loginRequest.ToUri();
         }
