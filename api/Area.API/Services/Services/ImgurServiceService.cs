@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Area.API.Constants;
 using Area.API.Exceptions.Http;
 using Area.API.Models;
 using Area.API.Models.Services;
@@ -19,11 +20,8 @@ namespace Area.API.Services.Services
     {
         public ImgurServiceService(IConfiguration configuration)
         {
-            var imgurConf = configuration.GetSection("WidgetApiKeys").GetSection(Name);
-            if (imgurConf == null)
-                return;
-            var clientId = imgurConf["ClientId"];
-            var clientSecret = imgurConf["ClientSecret"];
+            var clientId = configuration[AuthConstants.Imgur.ClientId];
+            var clientSecret = configuration[AuthConstants.Imgur.ClientSecret];
             Client = new ImgurClient(clientId, clientSecret);
         }
 

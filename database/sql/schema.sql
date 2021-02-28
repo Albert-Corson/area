@@ -36,7 +36,8 @@ create table "AspNetUsers"
     "PhoneNumber" text,
     "PhoneNumberConfirmed" boolean default false not null,
     "SecurityStamp" text,
-    "TwoFactorEnabled" boolean default false not null
+    "TwoFactorEnabled" boolean default false not null,
+    "Type" integer default 0 not null
 );
 
 alter table "AspNetUsers" owner to postgres;

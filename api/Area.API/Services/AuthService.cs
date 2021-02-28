@@ -4,17 +4,18 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
+using Area.API.Constants;
 using Area.API.Extensions;
 using Area.API.Models.Table;
 using Area.API.Models.Table.Owned;
 using Area.API.Repositories;
 using IpData;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using OAuth2.Models;
 using Wangkanai.Detection.Services;
-using JwtConstants = Area.API.Constants.JwtConstants;
 
 namespace Area.API.Services
 {
@@ -38,14 +39,55 @@ namespace Area.API.Services
             _userRepository = userRepository;
         }
 
+        public class AuthenticationResult
+        {
+            public string? Code { get; set; }
+            public string? Error { get; set; }
+            public bool Successful => Error == null;
+        }
+        
+        public async Task<AuthenticationResult> AuthenticateExternalUserAsync(UserInfo userInfo, UserModel.UserType type)
+        {
+            string claimType = type.ToString();
+            IdentityResult? identityResult = null;
+            string? code = null;
+
+            var user = _userRepository.GetUser(email: userInfo.Email, type: type,
+                asNoTracking: false);
+            if (user == null) {
+                user = new UserModel {
+                    UserName = userInfo.Email,
+                    Email = userInfo.Email,
+                    Type = type
+                };
+                identityResult = await _userRepository.AddUser(user);
+            }
+
+            if (identityResult == null || identityResult.Succeeded) {
+                var claims = await _userRepository.GetUserClaims(user);
+                identityResult = await _userRepository.RemoveUserClaims(user, claims.Where(claim =>
+                    claim.Type == claimType
+                    && TryGetPrincipalFromToken(claim.Value, out _)));
+
+                if (identityResult.Succeeded) {
+                    code = GenerateToken(user.Id, DateTime.Now.AddTicks(AuthConstants.CodeLifespanTicks), claimType);
+                    identityResult = await _userRepository.AddUserClaim(user, new Claim(claimType, code));
+                }
+            }
+
+            return new AuthenticationResult {
+                Code = identityResult?.Succeeded == true ? code : null,
+                Error = identityResult?.Succeeded == false ? identityResult.Errors.FirstOrDefault()?.Description ?? "Authentication failed" : null
+            };
+        }
+
         public async Task<string> GenerateAccessToken(int userId, IPAddress ipAddress)
         {
             var claims = new List<Claim>(new[] {
                 new Claim(JwtRegisteredClaimNames.Typ, "access_token")
             });
 
-            return await GenerateToken(DateTime.Now.AddTicks(JwtConstants.AccessTokenLifespanTicks), claims, userId,
-                ipAddress);
+            return await GenerateTokenWithDevice(userId, DateTime.Now.AddTicks(AuthConstants.RefreshTokenLifespanTicks), ipAddress, claims);
         }
 
         public async Task<string> GenerateRefreshToken(int userId, IPAddress ipAddress)
@@ -54,28 +96,22 @@ namespace Area.API.Services
                 new Claim(JwtRegisteredClaimNames.Typ, "refresh_token")
             });
 
-            return await GenerateToken(DateTime.Now.AddTicks(JwtConstants.RefreshTokenLifespanTicks), claims, userId,
-                ipAddress);
+            return await GenerateTokenWithDevice(userId, DateTime.Now.AddTicks(AuthConstants.RefreshTokenLifespanTicks), ipAddress, claims);
         }
 
-        private async Task<string> GenerateToken(DateTime expiryTime, List<Claim> claims, int userId,
-            IPAddress ipAddress)
+        public string GenerateToken(int userId, DateTime expiryTime, string issuer)
         {
-            var country = await _ipDataClient.GetCountry(ipAddress);
-            var device = new UserDeviceModel(_detection, userId, country);
+            return GenerateToken(userId, expiryTime, new List<Claim>(), issuer);
+        }
 
-            AssociateDeviceToUser(userId, device);
+        private string GenerateToken(int userId, DateTime expiryTime, ICollection<Claim> claims, string issuer)
+        {
+            claims.Add(new Claim(ClaimTypeUserId, userId.ToString()));
 
-            claims.AddRange(new[] {
-                new Claim(ClaimTypeUserId, userId.ToString()),
-                new Claim(JwtRegisteredClaimNames.AuthTime, device.FirstUsed.ToString())
-            });
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration[JwtConstants.SecretKeyName]));
-            var signingCredentials = new SigningCredentials(key, Algorithm);
+            var signingCredentials = new SigningCredentials(_validationParameters.IssuerSigningKey, Algorithm);
             var token = new JwtSecurityToken(
-                device.Id.ToString(),
-                _configuration[JwtConstants.ValidAudience],
+                issuer,
+                _configuration[AuthConstants.ValidAudience],
                 claims,
                 DateTime.Now,
                 expiryTime,
@@ -83,6 +119,18 @@ namespace Area.API.Services
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        private async Task<string> GenerateTokenWithDevice(int userId, DateTime expiryTime, IPAddress ipAddress, List<Claim> claims)
+        {
+            var country = await _ipDataClient.GetCountry(ipAddress);
+            var device = new UserDeviceModel(_detection, userId, country);
+
+            AssociateDeviceToUser(userId, device);
+
+            claims.Add(new Claim(JwtRegisteredClaimNames.AuthTime, device.FirstUsed.ToString()));
+
+            return GenerateToken(userId, expiryTime, claims, device.Id.ToString());
         }
 
         private void AssociateDeviceToUser(int userId, UserDeviceModel device)
@@ -147,7 +195,7 @@ namespace Area.API.Services
             }
         }
 
-        private bool TryGetPrincipalFromToken(string token, out ClaimsPrincipal principals)
+        public bool TryGetPrincipalFromToken(string token, out ClaimsPrincipal principals)
         {
             try {
                 principals =

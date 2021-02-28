@@ -14,6 +14,9 @@ namespace Area.API.Constants
 
             public const string SignIn = Root + "/token";
             public const string RefreshAccessToken = Root + "/refresh";
+            public const string ExchangeCode = Root + "/code";
+            public const string SignInWithFacebook = Root + "/facebook";
+            public const string SignInWithFacebookCallback = SignInWithFacebook + "/callback";
         }
 
         public static class Users

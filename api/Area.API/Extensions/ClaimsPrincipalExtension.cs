@@ -1,4 +1,3 @@
-using System;
 using System.Security.Claims;
 using Area.API.Models.Table;
 using Area.API.Repositories;

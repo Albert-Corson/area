@@ -37,7 +37,7 @@ namespace Area.API.Controllers
         [SwaggerResponse((int) HttpStatusCode.Conflict, "Username or email already in use")]
         public async Task<StatusModel> Register(
             [FromBody]
-            [SwaggerSchema(
+            [SwaggerRequestBody(
                 "The user's information. The password must be at least 8 characters long, with and without capitals, with numerical and special characters. The username must start with a letter, numeric characters and some special characters (._-) are accepted")]
             RegisterModel body
         )
@@ -50,7 +50,8 @@ namespace Area.API.Controllers
 
             var user = new UserModel {
                 UserName = body.Username,
-                Email = body.Email
+                Email = body.Email,
+                Type = UserModel.UserType.Area
             };
 
             var result = await _userRepository.AddUser(user, body.Password);

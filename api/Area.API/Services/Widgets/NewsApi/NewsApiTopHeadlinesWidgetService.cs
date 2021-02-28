@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Area.API.Constants;
 using Area.API.Exceptions.Http;
 using Area.API.Extensions;
 using Area.API.Models;
@@ -19,8 +20,7 @@ namespace Area.API.Services.Widgets.NewsApi
 
         public NewsApiTopHeadlinesWidgetService(IConfiguration configuration)
         {
-            var newsApiConf = configuration.GetSection("WidgetApiKeys").GetSection("NewsApi");
-            var apiKey = newsApiConf?["ApiKey"];
+            var apiKey = configuration[AuthConstants.NewsApi.Key];
 
             if (apiKey != null)
                 _client = new NewsApiClient(apiKey);

@@ -8,3 +8,5 @@ INSERT INTO public."__EFMigrationsHistory" ("MigrationId", "ProductVersion") VAL
 INSERT INTO public."__EFMigrationsHistory" ("MigrationId", "ProductVersion") VALUES ('20210217182944_AddIdentity', '5.0.0');
 INSERT INTO public."__EFMigrationsHistory" ("MigrationId", "ProductVersion") VALUES ('20210223203330_AddUserDeviceModel', '5.0.0');
 INSERT INTO public."__EFMigrationsHistory" ("MigrationId", "ProductVersion") VALUES ('20210224170552_DeviceIdAsUint', '5.0.0');
+INSERT INTO public."__EFMigrationsHistory" ("MigrationId", "ProductVersion") VALUES ('20210224234127_DateTimeToLongInt', '5.0.0');
+INSERT INTO public."__EFMigrationsHistory" ("MigrationId", "ProductVersion") VALUES ('20210227193602_AddExternalUserType', '5.0.0');

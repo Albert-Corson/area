@@ -142,7 +142,8 @@ namespace Area.API.Controllers
         )]
         [SwaggerResponse((int) HttpStatusCode.NotFound, "The widget doesn't exist")]
         public StatusModel SubscribeWidget(
-            [FromRoute] [Required] [Range(1, int.MaxValue)] [SwaggerParameter("The widget's ID")]
+            [FromRoute, Required, Range(1, int.MaxValue)]
+            [SwaggerParameter("The widget's ID")]
             int? widgetId
         )
         {
