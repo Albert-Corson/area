@@ -2,10 +2,13 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using System.Web;
 using Area.AcceptanceTests.Collections;
 using Area.AcceptanceTests.Fixtures;
+using Area.AcceptanceTests.Models.Requests;
 using Area.AcceptanceTests.Models.Responses;
 using Area.AcceptanceTests.Utilities;
+using Newtonsoft.Json;
 using Xunit;
 using Xunit.Priority;
 
@@ -51,11 +54,25 @@ namespace Area.AcceptanceTests.Tests
         [Fact, Priority(3)]
         public async Task SignInServiceById()
         {
-            var response = await AreaApi.SignInServiceById(_service.Id);
+            var form = new ExternalAuthModel {
+                State = "test",
+                RedirectUrl = "http://google.fr"
+            };
+            var response = await AreaApi.SignInServiceById(_service.Id, form);
 
-            Assert.True(response.Content.Successful);
-            Assert.Null(response.Content.Error);
-            Assert.True(response.Status == HttpStatusCode.Accepted || response.Status == HttpStatusCode.OK);
+            Assert.True(response.StatusCode == HttpStatusCode.Found || response.StatusCode == HttpStatusCode.OK);
+
+            var queryParams = HttpUtility.ParseQueryString(response.Headers.Location.Query);
+            var state = queryParams.Get("state");
+
+            if (response.Headers.Location.ToString().StartsWith(form.RedirectUrl)) {
+                Assert.Equal(form.State, state);
+                Assert.Equal("true", queryParams.Get("successful"));
+            } else {
+                var recoveredForm = JsonConvert.DeserializeObject<ExternalAuthModel>(HttpUtility.UrlDecode(state));
+                Assert.Equal(form.State, recoveredForm.State);
+                Assert.Equal(new Uri(form.RedirectUrl), new Uri(recoveredForm.RedirectUrl));
+            }
         }
 
         [Fact, Priority(10)]

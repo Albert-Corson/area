@@ -1,18 +1,19 @@
 using System;
 using System.Collections.Generic;
 using Area.API.Exceptions.Http;
-using Area.API.Extensions;
+using Area.API.Models;
 using Area.API.Repositories;
 using Area.API.Services.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace Area.API.Services
 {
     public class ServiceManagerService
     {
         private readonly ILogger _logger;
-        private readonly IDictionary<string, IServiceService> _service;
+        private readonly IDictionary<string, IServiceService> _services;
         private readonly ServiceRepository _serviceRepository;
         private readonly UserRepository _userRepository;
 
@@ -25,47 +26,50 @@ namespace Area.API.Services
             _serviceRepository = serviceRepository;
             _userRepository = userRepository;
             _logger = loggerFactory.CreateLogger("Service manager");
-            _service = new Dictionary<string, IServiceService> {
+            _services = new Dictionary<string, IServiceService> {
                 {imgur.Name, imgur},
                 {spotify.Name, spotify}
             };
         }
 
-        public Uri? SignInServiceById(HttpContext context, int serviceId)
+        public bool TrySignInServiceById(int serviceId, ServiceAuthStateModel state, out string? urlOrError)
         {
             var serviceName = _serviceRepository.GetService(serviceId)?.Name;
 
-            if (serviceName == null)
-                throw new NotFoundHttpException("This service does not exist");
-            if (!_service.TryGetValue(serviceName, out var service))
-                return null;
+            if (serviceName == null) {
+                urlOrError = "Service not available";
+                return false;
+            }
 
-            if (!context.User.TryGetUserId(out var userId))
-                return null;
+            if (!_services.TryGetValue(serviceName, out var service)) {
+                urlOrError = null;
+                return true;
+            }
 
-            var uri = service.SignIn(userId);
-            return uri;
+            var stateStr = JsonConvert.SerializeObject(state);
+            urlOrError = service.SignIn(stateStr)?.ToString() ?? "Unable to authenticate, please try again later.";
+            return true;
         }
 
-        public bool HandleServiceSignInCallbackById(HttpContext context, int serviceId)
+        public bool HandleServiceSignInCallbackById(HttpContext context, int serviceId,
+            ServiceAuthStateModel state)
         {
             var serviceName = _serviceRepository.GetService(serviceId)?.Name;
 
-            if (serviceName == null || !_service.TryGetValue(serviceName, out var service)) {
+            if (serviceName == null || !_services.TryGetValue(serviceName, out var service)) {
                 _logger.LogError($"Received signin callback with an invalid {{serviceId}} ({serviceId})");
                 return false;
             }
 
-            var userId = service.GetUserIdFromCallbackContext(context);
-            if (userId == null || !_userRepository.UserExists(userId))
+            if (!_userRepository.UserExists(state.UserId))
                 return false;
 
-            _userRepository.RemoveServiceCredentials(userId.Value, serviceId);
+            _userRepository.RemoveServiceCredentials(state.UserId, serviceId);
 
             var jsonTokens = service.HandleSignInCallback(context);
             if (jsonTokens == null)
                 return false;
-            _userRepository.AddServiceCredentials(userId.Value, serviceId, jsonTokens);
+            _userRepository.AddServiceCredentials(state.UserId, serviceId, jsonTokens);
             return true;
         }
     }

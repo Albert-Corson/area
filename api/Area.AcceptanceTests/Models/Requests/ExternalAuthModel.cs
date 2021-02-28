@@ -6,7 +6,7 @@ namespace Area.AcceptanceTests.Models.Requests
     public class ExternalAuthModel
     {
         [JsonProperty("redirect_url")]
-        public Uri RedirectUrl { get; set; } = null!;
+        public string RedirectUrl { get; set; } = null!;
 
         [JsonProperty("state")]
         public string? State { get; set; }

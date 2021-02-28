@@ -168,8 +168,7 @@ namespace Area.API.Controllers
         {
             var authRequestBody = JsonConvert.DeserializeObject<ExternalAuthModel>(HttpUtility.UrlDecode(state));
 
-            var urlBuild = new UriBuilder(authRequestBody.RedirectUrl);
-            var query = HttpUtility.ParseQueryString(urlBuild.Query);
+            var query = HttpUtility.ParseQueryString(authRequestBody.RedirectUrl.Query);
 
             if (authRequestBody.State != null)
                 query["state"] = authRequestBody.State;
@@ -191,8 +190,8 @@ namespace Area.API.Controllers
                query["error"] = "Authentication canceled";
             }
 
-            urlBuild.Query = query.ToString();
-            return new RedirectResult(urlBuild.ToString());
+            authRequestBody.RedirectUrl.Query = query.ToString();
+            return new RedirectResult(authRequestBody.RedirectUrl.ToString());
         }
     }
 }

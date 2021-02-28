@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
+using System.Web;
 using Area.API.Constants;
 using Area.API.Exceptions.Http;
 using Area.API.Extensions;
@@ -12,6 +13,7 @@ using Area.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Area.API.Controllers
@@ -90,21 +92,41 @@ namespace Area.API.Controllers
 ## If the service doesn't have sign-in capabilities, an empty success response is returned (a.k.a without `data`).
 ## Otherwise an authentication URL is returned as `data` to redirect the user to"
         )]
-        public ResponseModel<string?> SignInService(
+        public RedirectResult SignInService(
             [FromRoute] [Required] [Range(1, int.MaxValue)] [SwaggerParameter("Service's ID")]
-            int? serviceId
+            int? serviceId,
+            [FromBody]
+            [SwaggerSchema("Required information to redirect the user back to the client once the operation in done")]
+            ExternalAuthModel body
         )
         {
-            var redirect = _serviceManager.SignInServiceById(HttpContext, serviceId!.Value);
-
-            if (redirect == null)
-                return new ResponseModel<string?>();
-
-            Response.StatusCode = (int) HttpStatusCode.Accepted;
-
-            return new ResponseModel<string?> {
-                Data = redirect.ToString()
+            var state = new ServiceAuthStateModel {
+                State = body.State,
+                RedirectUrl = body.RedirectUrl
             };
+
+            string? urlOrError = null;
+            var signedIn = false;
+
+            if (User.TryGetUserId(out state.UserId)) {
+                signedIn = _serviceManager.TrySignInServiceById(serviceId!.Value, state, out urlOrError);
+                if (signedIn && urlOrError != null)
+                    return new RedirectResult(urlOrError);
+            }
+
+            var queryParams = HttpUtility.ParseQueryString(body.RedirectUrl.Query);
+
+            queryParams["state"] = body.State;
+            if (!signedIn) {
+                queryParams["successful"] = "false";
+                queryParams["error"] = urlOrError ?? "Unauthorized";
+            } else {
+                queryParams["successful"] = "true";
+            }
+
+            body.RedirectUrl.Query = queryParams.ToString();
+
+            return new RedirectResult(body.RedirectUrl.ToString());
         }
 
         [HttpDelete(RouteConstants.Services.SignOutService)]
@@ -129,20 +151,42 @@ namespace Area.API.Controllers
         [AllowAnonymous]
         [ApiExplorerSettings(IgnoreApi = true)]
         [Produces("text/html")]
-        public ContentResult SignInServiceCallback(
+        public IActionResult SignInServiceCallback(
             [FromRoute] [Required] [Range(1, int.MaxValue)]
-            int? serviceId
+            int? serviceId,
+            [FromQuery]
+            string state
         )
         {
+            ServiceAuthStateModel serviceAuthState;
+
             try {
-                if (_serviceManager.HandleServiceSignInCallbackById(HttpContext, serviceId!.Value))
-                    return Content("<h1>Success! You can now close this page!</h1>", "text/html");
+                serviceAuthState = JsonConvert.DeserializeObject<ServiceAuthStateModel>(HttpUtility.UrlDecode(state));
             } catch {
-                // ignore
+                Response.StatusCode = (int) HttpStatusCode.InternalServerError;
+                return Content("<h1>An unexpected error has occured, please try again later</h1>", "text/html");
             }
 
-            Response.StatusCode = (int) HttpStatusCode.InternalServerError;
-            return Content("<h1>An error has occured, please try again later</h1>", "text/html");
+            bool failed;
+            var queryParams = HttpUtility.ParseQueryString(serviceAuthState.RedirectUrl.Query);
+            queryParams["state"] = serviceAuthState.State;
+
+            try {
+                failed = !_serviceManager.HandleServiceSignInCallbackById(HttpContext, serviceId!.Value, serviceAuthState);
+            } catch {
+                failed = true;
+            }
+
+            if (failed) {
+                queryParams["successful"] = "false";
+                queryParams["error"] = "Unable to sign-in, please try again later.";
+            } else {
+                queryParams["successful"] = "true";
+            }
+
+            serviceAuthState.RedirectUrl.Query = queryParams.ToString();
+
+            return new RedirectResult(serviceAuthState.RedirectUrl.ToString());
         }
     }
 }
