@@ -88,5 +88,8 @@ namespace Area.AcceptanceTests
 
         public async Task<HttpResponseMessage> SignInWithFacebook(ExternalAuthModel form) =>
             await Client.RawPostAsync(RouteConstants.Auth.SignInWithFacebook, form);
+
+        public async Task<HttpResponseMessage> SignInWithGoogle(ExternalAuthModel form) =>
+            await Client.RawPostAsync(RouteConstants.Auth.SignInWithGoogle, form);
     }
 }

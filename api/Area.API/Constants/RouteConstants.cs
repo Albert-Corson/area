@@ -17,6 +17,8 @@ namespace Area.API.Constants
             public const string ExchangeCode = Root + "/code";
             public const string SignInWithFacebook = Root + "/facebook";
             public const string SignInWithFacebookCallback = SignInWithFacebook + "/callback";
+            public const string SignInWithGoogle = Root + "/google";
+            public const string SignInWithGoogleCallback = SignInWithGoogle + "/callback";
         }
 
         public static class Users
