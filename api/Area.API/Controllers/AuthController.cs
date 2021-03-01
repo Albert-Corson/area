@@ -244,7 +244,7 @@ namespace Area.API.Controllers
             try {
                 UserInfo userInfo = await _google.GetUserInfoAsync(new NameValueCollection {{nameof(code), code}}, cancellationToken);
 
-                var authResult = await _authService.AuthenticateExternalUserAsync(userInfo, UserModel.UserType.Facebook);
+                var authResult = await _authService.AuthenticateExternalUserAsync(userInfo, UserModel.UserType.Google);
 
                 if (authResult.Successful) {
                     query["code"] = authResult.Code;
