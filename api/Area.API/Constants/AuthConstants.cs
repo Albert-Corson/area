@@ -25,6 +25,14 @@ namespace Area.API.Constants
             public const string RedirectUri = Base + ":" + nameof(RedirectUri);
         }
 
+        public static class Google
+        {
+            public const string Base = nameof(Google);
+            public const string ClientId = Base + ":" + nameof(ClientId);
+            public const string ClientSecret = Base + ":" + nameof(ClientSecret);
+            public const string RedirectUri = Base + ":" + nameof(RedirectUri);
+        }
+
         public static class Imgur
         {
             public const string Base = nameof(Imgur);

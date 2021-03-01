@@ -13,7 +13,7 @@ namespace Area.API.Models.Table
             Facebook,
             Google
         }
-        
+
         public class RoleModel : IdentityRole<int>
         { }
 

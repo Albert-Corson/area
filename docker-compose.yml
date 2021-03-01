@@ -4,9 +4,11 @@ services:
   server:
     build: ./api
     restart: on-failure
+    depends_on:
+      - db
     env_file:
-     - ./database/postgres.env
-     - ./api/secret.env
+      - ./database/postgres.env
+      - ./api/secret.env
     environment:
       - POSTGRES_HOST=area-postgres
       - POSTGRES_PORT=5432

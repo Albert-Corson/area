@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
@@ -6,6 +7,22 @@ namespace Area.AcceptanceTests.Models.Responses
 {
     public class WidgetModel : AboutDotJsonModel.WidgetModel
     {
+        private bool Equals(WidgetModel other) => base.Equals(other) && Frequency == other.Frequency && Service.Equals(other.Service) && Params.Equals(other.Params);
+
+        public override bool Equals(object? obj)
+        {
+            if (ReferenceEquals(null, obj))
+                return false;
+            if (ReferenceEquals(this, obj))
+                return true;
+            return obj.GetType() == GetType() && Equals((WidgetModel) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(base.GetHashCode(), Frequency, Service, Params);
+        }
+
         public void Copy(WidgetModel other)
         {
             base.Copy(other);
