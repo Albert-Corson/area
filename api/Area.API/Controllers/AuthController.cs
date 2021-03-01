@@ -176,7 +176,8 @@ namespace Area.API.Controllers
         {
             var authRequestBody = JsonConvert.DeserializeObject<ExternalAuthModel>(HttpUtility.UrlDecode(state));
 
-            var query = HttpUtility.ParseQueryString(authRequestBody.RedirectUrl.Query);
+            var redirectUrl = new UriBuilder(authRequestBody.RedirectUrl);
+            var query = HttpUtility.ParseQueryString(redirectUrl.Query);
 
             if (authRequestBody.State != null)
                 query["state"] = authRequestBody.State;
@@ -198,8 +199,8 @@ namespace Area.API.Controllers
                query["error"] = "Authentication canceled";
             }
 
-            authRequestBody.RedirectUrl.Query = query.ToString();
-            return new RedirectResult(authRequestBody.RedirectUrl.ToString());
+            redirectUrl.Query = query.ToString();
+            return new RedirectResult(redirectUrl.ToString());
         }
 
         [HttpPost(RouteConstants.Auth.SignInWithGoogle)]
@@ -236,7 +237,8 @@ namespace Area.API.Controllers
         {
             var authRequestBody = JsonConvert.DeserializeObject<ExternalAuthModel>(HttpUtility.UrlDecode(state));
 
-            var query = HttpUtility.ParseQueryString(authRequestBody.RedirectUrl.Query);
+            var redirectUrl = new UriBuilder(authRequestBody.RedirectUrl);
+            var query = HttpUtility.ParseQueryString(redirectUrl.Query);
 
             if (authRequestBody.State != null)
                 query["state"] = authRequestBody.State;
@@ -258,8 +260,8 @@ namespace Area.API.Controllers
                 query["error"] = "Authentication canceled";
             }
 
-            authRequestBody.RedirectUrl.Query = query.ToString();
-            return new RedirectResult(authRequestBody.RedirectUrl.ToString());
+            redirectUrl.Query = query.ToString();
+            return new RedirectResult(redirectUrl.ToString());
         }
     }
 }

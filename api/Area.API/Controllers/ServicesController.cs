@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -114,7 +115,8 @@ namespace Area.API.Controllers
                     return new RedirectResult(urlOrError);
             }
 
-            var queryParams = HttpUtility.ParseQueryString(body.RedirectUrl.Query);
+            var redirectUrl = new UriBuilder(body.RedirectUrl);
+            var queryParams = HttpUtility.ParseQueryString(redirectUrl.Query);
 
             queryParams["state"] = body.State;
             if (!signedIn) {
@@ -124,9 +126,9 @@ namespace Area.API.Controllers
                 queryParams["successful"] = "true";
             }
 
-            body.RedirectUrl.Query = queryParams.ToString();
+            redirectUrl.Query = queryParams.ToString();
 
-            return new RedirectResult(body.RedirectUrl.ToString());
+            return new RedirectResult(redirectUrl.ToString());
         }
 
         [HttpDelete(RouteConstants.Services.SignOutService)]
@@ -168,7 +170,8 @@ namespace Area.API.Controllers
             }
 
             bool failed;
-            var queryParams = HttpUtility.ParseQueryString(serviceAuthState.RedirectUrl.Query);
+            var redirectUrl = new UriBuilder(serviceAuthState.RedirectUrl);
+            var queryParams = HttpUtility.ParseQueryString(redirectUrl.Query);
             queryParams["state"] = serviceAuthState.State;
 
             try {
@@ -184,9 +187,9 @@ namespace Area.API.Controllers
                 queryParams["successful"] = "true";
             }
 
-            serviceAuthState.RedirectUrl.Query = queryParams.ToString();
+            redirectUrl.Query = queryParams.ToString();
 
-            return new RedirectResult(serviceAuthState.RedirectUrl.ToString());
+            return new RedirectResult(redirectUrl.ToString());
         }
     }
 }

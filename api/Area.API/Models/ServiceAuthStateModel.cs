@@ -9,8 +9,7 @@ namespace Area.API.Models
         public int UserId;
 
         [JsonProperty("redirect_url", Required = Required.Always)]
-        [JsonConverter(typeof(UriBuilderJsonConverter))]
-        public UriBuilder RedirectUrl { get; set; } = null!;
+        public string RedirectUrl { get; set; } = null!;
 
         [JsonProperty("state")]
         public string? State { get; set; }
