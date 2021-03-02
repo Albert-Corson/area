@@ -14,13 +14,19 @@ enum Action {
 interface RefreshableWidget extends Widget {
   hours?: number;
   minutes?: number;
-  interval?: NodeJS.Timeout;
+  interval?: number | NodeJS.Timeout;
+}
+
+export interface Interval {
+  hours: number;
+  minutes: number;
 }
 
 export class WidgetStore {
   @observable private _widgets: RefreshableWidget[] = [];
   @observable private _subscribedWidgets: RefreshableWidget[] = [];
   @observable private _currentWidget: RefreshableWidget | null = null;
+  @observable private _currentInterval: Interval;
 
   constructor(private _rootStore: RootStore) {
     makeAutoObservable(this)
@@ -132,6 +138,10 @@ export class WidgetStore {
         runInAction(() => {
           this._subscribedWidgets = json.data
 
+          this._subscribedWidgets.map((_, i) => {
+            this.setRefreshDelay(i, 0, 1)
+          })
+
           this._rootStore.grid.setBlocks(json.data)
         })
 
@@ -195,8 +205,6 @@ export class WidgetStore {
       Authorization: `Bearer ${this._rootStore.user.userJWT?.accessToken}`,
     }
 
-    console.log(`Bearer ${this._rootStore.user.userJWT?.accessToken}`)
-
     const results = await Promise.all(
       this._subscribedWidgets.map((widget) => {
         return absFetch({
@@ -237,6 +245,8 @@ export class WidgetStore {
 
     const json = await res.json()
 
+    console.log(json)
+
     runInAction(() => {
       const widget = this._subscribedWidgets.filter(widget => widget.id === widgetId)[0]
       widget.params = json.data
@@ -246,17 +256,36 @@ export class WidgetStore {
   }
 
   @action
-  public setRefreshDelay = (widgetIndex: number, hours: number, minutes: number): void => {
-    if (widgetIndex < 0 || widgetIndex >= this._subscribedWidgets.length) return
+  public setRefreshDelay = (): void => {
+    if (!this._currentWidget) return
 
-    this.subscribedWidgets[widgetIndex].hours = hours
+    const widgetIndex = this._subscribedWidgets.indexOf(this._currentWidget)
+
+    if (widgetIndex < 0) return
+
+    const {hours, minutes} = this._currentInterval
+
+    runInAction(() => {
+      this.subscribedWidgets[widgetIndex].hours = hours
     
-    this.subscribedWidgets[widgetIndex].minutes = minutes
-
-    this.subscribedWidgets[widgetIndex].interval = setInterval(() => {
-      this.updateWidget(widgetIndex, {})
-    }, hours * 3600000 + minutes * 60000)
+      this.subscribedWidgets[widgetIndex].minutes = minutes
+  
+      if (this.subscribedWidgets[widgetIndex].interval) {
+        clearInterval(this.subscribedWidgets[widgetIndex].interval as number)
+      }
+  
+      this.subscribedWidgets[widgetIndex].interval = setInterval(() => {
+        this.updateParameter(this.subscribedWidgets[widgetIndex].id)
+      }, hours * 3600000 + minutes * 60000)
+    })
   }
 
+  public get currentInterval(): Interval {
+    return this._currentInterval
+  }
 
+  @action
+  public setCurrentInterval = (interval: Interval): void => {
+    this._currentInterval = interval
+  }
 }
