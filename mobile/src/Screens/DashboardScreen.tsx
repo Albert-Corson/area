@@ -13,6 +13,7 @@ import WidgetListContainer from '../Components/WidgetListContainer'
 import Widget from '../Components/Widget'
 import GradientFlatButton from '../Components/GradientFlatButton'
 import Animated, {useAnimatedStyle, useSharedValue, withSpring} from 'react-native-reanimated'
+import * as Device from 'expo-device'
 
 interface Props {
   navigation: StackNavigationProp<RootStackParamList>;
@@ -87,7 +88,12 @@ const WidgetsScreen = observer(({navigation}: Props): JSX.Element => {
       <SafeAreaView style={styles.safeView}>
         {topBar}
         <Animated.View style={opacityStyle}>
-          <WidgetListContainer containerStyle={styles.container}>
+          <WidgetListContainer containerStyle={[
+            styles.container,
+            {
+              marginLeft: Device.modelName === 'iPad' ? 20 : 10
+            }
+          ]}>
             {store.grid.blocks.map((widget, index) => (
               <DraggableContainer
                 key={widget.id || `fillBlock${index}`}
@@ -130,8 +136,6 @@ const styles = StyleSheet.create({
     width: 'auto',
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
-
-    marginHorizontal: 8,
 
     flexDirection: 'row',
     flexWrap: 'wrap',
