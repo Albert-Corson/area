@@ -213,6 +213,8 @@ export class WidgetStore {
       Authorization: `Bearer ${this._rootStore.user.userJWT?.accessToken}`,
     }
 
+    console.log(`Bearer ${this._rootStore.user.userJWT?.accessToken}`)
+
     const results = await Promise.all(
       this._subscribedWidgets.map((widget) => {
         return absFetch({
@@ -245,6 +247,8 @@ export class WidgetStore {
     const headers = {
       Authorization: `Bearer ${this._rootStore.user.userJWT?.accessToken}`,
     }
+<<<<<<< HEAD
+=======
 
     const res = await absFetch({
       route: `/widgets/${widgetId}`,
@@ -257,6 +261,27 @@ export class WidgetStore {
       const widget = this._subscribedWidgets.filter(widget => widget.id === widgetId)[0]
       widget.params = json.data
 
+      this._rootStore.grid.setBlocks(this._subscribedWidgets)
+    })
+  }
+
+  @action
+  public setRefreshDelay = (widgetIndex: number, hours: number, minutes: number): void => {
+    if (widgetIndex < 0 || widgetIndex >= this._subscribedWidgets.length) return
+>>>>>>> fix: widget now refresh on query submition
+
+    const res = await absFetch({
+      route: `/widgets/${widgetId}`,
+      headers
+    })
+
+    const json = await res.json()
+
+    runInAction(() => {
+      const widget = this._subscribedWidgets.filter(widget => widget.id === widgetId)[0]
+      widget.params = json.data
+
+<<<<<<< HEAD
       this._rootStore.grid.setBlocks(this._subscribedWidgets)
     })
   }
@@ -284,6 +309,11 @@ export class WidgetStore {
         this.updateParameter(this.subscribedWidgets[widgetIndex].id)
       }, (hours * 3600000 + minutes * 60000) + DEBOUNCE)
     })
+=======
+    this.subscribedWidgets[widgetIndex].interval = setInterval(() => {
+      this.updateWidget(widgetIndex, {})
+    }, hours * 3600000 + minutes * 60000)
+>>>>>>> fix: widget now refresh on query submition
   }
 
   public get currentInterval(): Interval {
