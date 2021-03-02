@@ -12,6 +12,7 @@ import GradientFlatButton from './GradientFlatButton'
 import TextInput from './TextInput'
 import RootStoreContext from '../Stores/RootStore'
 import {pure} from 'recompose'
+import InsetShadowContainer from './InsetShadowContainer'
 
 interface Props {
   item: WidgetType;
@@ -128,9 +129,9 @@ const Widget = observer(({item, size, subscribed = true}: Props): JSX.Element =>
         {container}
 
       </DoubleTap>
-      <ModalContainer visible={showModal} containerStyle={{height: 250, justifyContent: 'center'}}>
+      <ModalContainer visible={showModal} containerStyle={{height: 175, justifyContent: 'center'}}>
         <FlatList
-          style={{height: 100, marginBottom: 10}}
+          style={{height: 50}}
           data={queries}
           renderItem={({item, index}) => (
             <TextInput
@@ -147,7 +148,7 @@ const Widget = observer(({item, size, subscribed = true}: Props): JSX.Element =>
           )}
           keyExtractor={(_, index) => `query_${index}`}
         />
-        <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-around', width: 300}}>
+        <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-evenly', width: 300}}>
           <GradientFlatButton
             width={200} 
             value="Save" 
