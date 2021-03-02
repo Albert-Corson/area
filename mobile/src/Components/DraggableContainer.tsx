@@ -174,11 +174,11 @@ const DraggableContainer = observer(({
                   dragStyle,
                 ]}
                 >
-                  <TouchableOpacity style={styles.deleteBtn} onPress={deleteWidget}>
+                  <TouchableOpacity style={[styles.badgeBtn, styles.deleteBtn]} onPress={deleteWidget}>
                     <Entypo name="cross" size={15} color="#e6e6e9" />
                   </TouchableOpacity>
 
-                  <TouchableOpacity style={[styles.deleteBtn, styles.clockBtn]} onPress={() => store.grid.openTimePicker(index)}>
+                  <TouchableOpacity style={[styles.badgeBtn, styles.clockBtn]} onPress={() => store.grid.openTimePicker(index)}>
                     <Entypo name="clock" size={15} color="#e6e6e9" />
                   </TouchableOpacity>
 
@@ -237,26 +237,33 @@ const styles = StyleSheet.create({
   container: {
     margin: 15,
   },
-  deleteBtn: {
+  badgeBtn: {
+
     width: 20,
     height: 20,
     borderRadius: 20,
-
     zIndex: 1000,
 
     position: 'absolute',
-
-    right: -10,
-    top: -10,
     margin: 5,
-
-    backgroundColor: '#f04e4677',
-
     justifyContent: 'center',
     alignItems: 'center',
   },
+  deleteBtn: {
+    right: -10,
+    top: -10,
+
+    backgroundColor: '#f04e4677',
+  },
   clockBtn: {
     left: -10,
+    top: -10,
+
+    backgroundColor: '#2B2B2BCC',
+  },
+  modBtn: {
+    bottom: -10,
+    right: -10,
 
     backgroundColor: '#2B2B2BCC',
   },
