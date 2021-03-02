@@ -15,6 +15,14 @@ interface RefreshableWidget extends Widget {
   hours?: number;
   minutes?: number;
   interval?: number | NodeJS.Timeout;
+<<<<<<< HEAD
+=======
+}
+
+export interface Interval {
+  hours: number;
+  minutes: number;
+>>>>>>> add: timer selection functionnal
 }
 
 export interface Interval {
@@ -213,8 +221,6 @@ export class WidgetStore {
       Authorization: `Bearer ${this._rootStore.user.userJWT?.accessToken}`,
     }
 
-    console.log(`Bearer ${this._rootStore.user.userJWT?.accessToken}`)
-
     const results = await Promise.all(
       this._subscribedWidgets.map((widget) => {
         return absFetch({
@@ -257,6 +263,8 @@ export class WidgetStore {
 
     const json = await res.json()
 
+    console.log(json)
+
     runInAction(() => {
       const widget = this._subscribedWidgets.filter(widget => widget.id === widgetId)[0]
       widget.params = json.data
@@ -266,6 +274,7 @@ export class WidgetStore {
   }
 
   @action
+<<<<<<< HEAD
   public setRefreshDelay = (widgetIndex: number, hours: number, minutes: number): void => {
     if (widgetIndex < 0 || widgetIndex >= this._subscribedWidgets.length) return
 >>>>>>> fix: widget now refresh on query submition
@@ -294,6 +303,15 @@ export class WidgetStore {
 
     if (widgetIndex < 0) return
 
+=======
+  public setRefreshDelay = (): void => {
+    if (!this._currentWidget) return
+
+    const widgetIndex = this._subscribedWidgets.indexOf(this._currentWidget)
+
+    if (widgetIndex < 0) return
+
+>>>>>>> add: timer selection functionnal
     const {hours, minutes} = this._currentInterval
 
     runInAction(() => {
@@ -307,6 +325,7 @@ export class WidgetStore {
   
       this.subscribedWidgets[widgetIndex].interval = setInterval(() => {
         this.updateParameter(this.subscribedWidgets[widgetIndex].id)
+<<<<<<< HEAD
       }, (hours * 3600000 + minutes * 60000) + DEBOUNCE)
     })
 =======
@@ -314,6 +333,10 @@ export class WidgetStore {
       this.updateWidget(widgetIndex, {})
     }, hours * 3600000 + minutes * 60000)
 >>>>>>> fix: widget now refresh on query submition
+=======
+      }, hours * 3600000 + minutes * 60000)
+    })
+>>>>>>> add: timer selection functionnal
   }
 
   public get currentInterval(): Interval {
