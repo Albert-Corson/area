@@ -213,8 +213,6 @@ export class WidgetStore {
       Authorization: `Bearer ${this._rootStore.user.userJWT?.accessToken}`,
     }
 
-    console.log(`Bearer ${this._rootStore.user.userJWT?.accessToken}`)
-
     const results = await Promise.all(
       this._subscribedWidgets.map((widget) => {
         return absFetch({
@@ -254,6 +252,8 @@ export class WidgetStore {
     })
 
     const json = await res.json()
+
+    console.log(json)
 
     runInAction(() => {
       const widget = this._subscribedWidgets.filter(widget => widget.id === widgetId)[0]
