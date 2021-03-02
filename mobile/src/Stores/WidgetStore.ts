@@ -61,8 +61,6 @@ export class WidgetStore {
       queryString += `${i !== 0 ? '&' : ''}${key}=${queryParams[key]}`
     })
 
-    console.log(`/widgets/${widgetId}?${queryString}`)
-
     try {
       const res = await absFetch({
         route: `/widgets/${widgetId}?${queryString}`,
@@ -72,11 +70,12 @@ export class WidgetStore {
       })
       const json: Response<RefreshableWidget> = await res.json()
 
-      console.log(json)
       if (json.successful) {
         const widget = this._widgets.filter(widget => widget.id === widgetId)[0]
 
-        runInAction(() => this._widgets[this._widgets.indexOf(widget)] = json.data)
+        runInAction(() => {
+          this._widgets[this._widgets.indexOf(widget)] = json.data
+        })
 
         return true
       }
@@ -132,6 +131,7 @@ export class WidgetStore {
       if (json.successful) {
         runInAction(() => {
           this._subscribedWidgets = json.data
+
           this._rootStore.grid.setBlocks(json.data)
         })
 
@@ -182,7 +182,6 @@ export class WidgetStore {
         Authorization: `Bearer ${this._rootStore.user.userJWT?.accessToken}`,
       },
     })
-    console.log(res.headers)
     const json: Response = await res.json()
 
     if (json.successful) {
@@ -195,6 +194,8 @@ export class WidgetStore {
     const headers = {
       Authorization: `Bearer ${this._rootStore.user.userJWT?.accessToken}`,
     }
+
+    console.log(`Bearer ${this._rootStore.user.userJWT?.accessToken}`)
 
     const results = await Promise.all(
       this._subscribedWidgets.map((widget) => {
@@ -211,13 +212,35 @@ export class WidgetStore {
 
     runInAction(() => {
       this._subscribedWidgets.forEach((widget, i) => {
-        if (!json[i].successful)
+        if (!json[i].successful) {
           return widget
+        }
           
         widget.params = json[i].data
   
         return widget
       })
+      this._rootStore.grid.setBlocks(this._subscribedWidgets)
+    })
+  }
+
+  @action
+  public updateParameter = async (widgetId: number): Promise<void> => {
+    const headers = {
+      Authorization: `Bearer ${this._rootStore.user.userJWT?.accessToken}`,
+    }
+
+    const res = await absFetch({
+      route: `/widgets/${widgetId}`,
+      headers
+    })
+
+    const json = await res.json()
+
+    runInAction(() => {
+      const widget = this._subscribedWidgets.filter(widget => widget.id === widgetId)[0]
+      widget.params = json.data
+
       this._rootStore.grid.setBlocks(this._subscribedWidgets)
     })
   }
@@ -231,7 +254,7 @@ export class WidgetStore {
     this.subscribedWidgets[widgetIndex].minutes = minutes
 
     this.subscribedWidgets[widgetIndex].interval = setInterval(() => {
-      this.updateWidget(widgetIndex)
+      this.updateWidget(widgetIndex, {})
     }, hours * 3600000 + minutes * 60000)
   }
 
