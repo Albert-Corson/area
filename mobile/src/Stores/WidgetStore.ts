@@ -213,6 +213,8 @@ export class WidgetStore {
       Authorization: `Bearer ${this._rootStore.user.userJWT?.accessToken}`,
     }
 
+    console.log(`Bearer ${this._rootStore.user.userJWT?.accessToken}`)
+
     const results = await Promise.all(
       this._subscribedWidgets.map((widget) => {
         return absFetch({
@@ -228,7 +230,6 @@ export class WidgetStore {
 
     runInAction(() => {
       this._subscribedWidgets.forEach((widget, i) => {
-        if (widget.service.name === 'Spotify') console.log(json[i])
         if (!json[i].successful) {
           return widget
         }
