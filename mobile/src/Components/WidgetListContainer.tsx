@@ -27,6 +27,7 @@ const WidgetListContainer = ({children, containerStyle, bounce = true}: Props): 
   return (
     <InsetShadow shadowColor="#A6ABBD">
       <ScrollView
+        contentContainerStyle={[containerStyle, {height: 'auto'}]}
         showsVerticalScrollIndicator={false}
         bounces={bounce}
         refreshControl={
@@ -35,11 +36,9 @@ const WidgetListContainer = ({children, containerStyle, bounce = true}: Props): 
             onRefresh={onRefresh}
           />
         }>
-        <View style={containerStyle}>
 
-          {children}
+        {children}
 
-        </View>
       </ScrollView>
     </InsetShadow>
   )

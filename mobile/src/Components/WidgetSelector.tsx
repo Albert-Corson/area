@@ -62,26 +62,29 @@ const WidgetSelector = observer(({store, navigation}: WidgetSelectorProps): JSX.
 
 
   return (
-    <Animated.View style={opacityStyle}>
-      <WidgetListContainer containerStyle={[styles.container, styles.selector]} bounce={false}>
-        <ServiceLoginPrompt
-          onPress={onPromptPress}
-          onCancel={onPromptCancel}
-          service={store.widget.currentWidget?.service || null}
-        />
-        {!availableWidgets.length && (
-          <Text style={styles.title}>{'No new widget available, you got\'em all!'}</Text>
-        )}
-        {availableWidgets.map((widget, index) => (
-          <StaticContainer
-            key={index}
-            onTap={onTap}
-            index={index}
-            renderItem={() => <Widget item={widget} subscribed={false} />}
-          />
-        ))}
-      </WidgetListContainer>
-    </Animated.View>
+    <>
+      <Animated.View style={opacityStyle}>
+        <WidgetListContainer containerStyle={[styles.container, styles.selector]} bounce={false}>
+          {!availableWidgets.length && (
+            <Text style={styles.title}>{'No new widget available, you got\'em all!'}</Text>
+          )}
+          {availableWidgets.map((widget, index) => (
+            <StaticContainer
+              key={index}
+              onTap={onTap}
+              index={index}
+              renderItem={() => <Widget item={widget} subscribed={false} />}
+            />
+          ))}
+        </WidgetListContainer>
+      </Animated.View>
+
+      <ServiceLoginPrompt
+        onPress={onPromptPress}
+        onCancel={onPromptCancel}
+        service={store.widget.currentWidget?.service || null}
+      />
+    </>
   )
 })
 
