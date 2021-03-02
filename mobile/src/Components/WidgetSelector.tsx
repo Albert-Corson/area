@@ -42,12 +42,12 @@ const WidgetSelector = observer(({store, navigation}: WidgetSelectorProps): JSX.
   }
 
   const onPromptPress = async () => {
-    const authUrl = await store.widget.serviceAuthentication()
+    //const authUrl = await store.widget.serviceAuthentication()
 
     opacity.value = withSpring(1)
-
+    
     navigation.navigate('ServiceAuth', {
-      authUrl: authUrl ?? '',
+      authUrl: `/services/${store.widget.currentWidget?.service.id}/auth`,
       widgetId: store.widget.currentWidget?.id ?? -1
     })
 

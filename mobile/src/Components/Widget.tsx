@@ -41,7 +41,7 @@ const Widget = observer(({item, size, subscribed = true}: Props): JSX.Element =>
 
     if (!length) return str
 
-    return str.length > length ? `${str.slice(0, length)}...` : str
+    return str && str.length > length ? `${str.slice(0, length)}...` : str
   }
 
   const onTap = (): void => {
@@ -54,7 +54,6 @@ const Widget = observer(({item, size, subscribed = true}: Props): JSX.Element =>
     if (modifying || !subscribed || !queries.length) return
 
     setShowModal(true)
-    console.log(queries)
   }
 
   const content: JSX.Element | boolean = showText && (
@@ -152,12 +151,13 @@ const Widget = observer(({item, size, subscribed = true}: Props): JSX.Element =>
           <GradientFlatButton
             width={200} 
             value="Save" 
-            onPress={() => {
+            onPress={async () => {
               const map = new Map(Object.keys(modifyingQuery)
                 .filter((key: any) => modifyingQuery[key]?.length)
                 .map((key: any) => [queries[key].name, modifyingQuery[key]]))
 
-              widgetStore.updateWidget(item.id, Object.fromEntries(map))
+              await widgetStore.updateWidget(item.id, Object.fromEntries(map))
+              widgetStore.updateParameter(item.id)
               setShowModal(false)
             }}
           />
