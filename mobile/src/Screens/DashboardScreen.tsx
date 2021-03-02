@@ -90,7 +90,7 @@ const WidgetsScreen = observer(({navigation}: Props): JSX.Element => {
           <WidgetListContainer containerStyle={styles.container}>
             {store.grid.blocks.map((widget, index) => (
               <DraggableContainer
-                key={index}
+                key={widget.id || `fillBlock${index}`}
                 index={index}
               >
                 <Widget
