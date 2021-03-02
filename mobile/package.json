@@ -43,6 +43,7 @@
     "react-native-web": "~0.13.12",
     "react-native-webview": "11.0.0",
     "reanimated-bottom-sheet": "^1.0.0-alpha.22",
+    "recompose": "^0.30.0",
     "rn-double-click": "^1.0.3"
   },
   "devDependencies": {

@@ -53,18 +53,30 @@ export class WidgetStore {
     return !values.includes(false)
   };
 
-  public updateWidget = async (index: number): Promise<boolean> => {
+  @action
+  public updateWidget = async (widgetId: number, queryParams: Record<string, string>): Promise<boolean> => {
+    let queryString = ''
+
+    Object.keys(queryParams).map((key, i) => {
+      queryString += `${i !== 0 ? '&' : ''}${key}=${queryParams[key]}`
+    })
+
+    console.log(`/widgets/${widgetId}?${queryString}`)
+
     try {
       const res = await absFetch({
-        route: `/widgets/${index}`,
+        route: `/widgets/${widgetId}?${queryString}`,
         headers: {
           Authorization: `Bearer ${this._rootStore.user.userJWT?.accessToken}`,
         },
       })
       const json: Response<RefreshableWidget> = await res.json()
 
+      console.log(json)
       if (json.successful) {
-        runInAction(() => this._widgets[index] = json.data)
+        const widget = this._widgets.filter(widget => widget.id === widgetId)[0]
+
+        runInAction(() => this._widgets[this._widgets.indexOf(widget)] = json.data)
 
         return true
       }
@@ -162,10 +174,15 @@ export class WidgetStore {
     const res = await absFetch({
       route: `/services/${this._currentWidget.service.id}`,
       method: 'post',
+      body: JSON.stringify({
+        serviceId: this._currentWidget.service.id,
+        redirect_url: 'xhttps://imgur.com/',
+      }),
       headers: {
         Authorization: `Bearer ${this._rootStore.user.userJWT?.accessToken}`,
       },
     })
+    console.log(res.headers)
     const json: Response = await res.json()
 
     if (json.successful) {
@@ -194,6 +211,9 @@ export class WidgetStore {
 
     runInAction(() => {
       this._subscribedWidgets.forEach((widget, i) => {
+        if (!json[i].successful)
+          return widget
+          
         widget.params = json[i].data
   
         return widget
@@ -214,4 +234,6 @@ export class WidgetStore {
       this.updateWidget(widgetIndex)
     }, hours * 3600000 + minutes * 60000)
   }
+
+
 }
