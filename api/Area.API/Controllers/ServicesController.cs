@@ -26,13 +26,15 @@ namespace Area.API.Controllers
         private readonly ServiceManagerService _serviceManager;
         private readonly ServiceRepository _serviceRepository;
         private readonly UserRepository _userRepository;
+        private readonly AuthService _authService;
 
         public ServicesController(ServiceManagerService serviceManager, ServiceRepository serviceRepository,
-            UserRepository userRepository)
+            UserRepository userRepository, AuthService authService)
         {
             _serviceManager = serviceManager;
             _serviceRepository = serviceRepository;
             _userRepository = userRepository;
+            _authService = authService;
         }
 
         [HttpGet(RouteConstants.Services.GetServices)]
@@ -85,7 +87,7 @@ namespace Area.API.Controllers
             };
         }
 
-        [HttpPost(RouteConstants.Services.SignInService)]
+        [HttpGet(RouteConstants.Services.SignInService)]
         [SwaggerOperation(
             Summary = "Sign-in a user to a service",
             Description =
@@ -93,14 +95,35 @@ namespace Area.API.Controllers
 ## If the service doesn't have sign-in capabilities, an empty success response is returned (a.k.a without `data`).
 ## Otherwise an authentication URL is returned as `data` to redirect the user to"
         )]
+        [AllowAnonymous]
         public RedirectResult SignInService(
             [FromRoute] [Required] [Range(1, int.MaxValue)] [SwaggerParameter("Service's ID")]
             int? serviceId,
-            [FromBody]
-            [SwaggerSchema("Required information to redirect the user back to the client once the operation in done")]
-            ExternalAuthModel body
+            // [FromBody]
+            // [SwaggerSchema("Required information to redirect the user back to the client once the operation in done")]
+            // ExternalAuthModel body
+
+            [FromQuery(Name = "redirect_url")]
+            [Required]
+            string? temp_redirectUrl,
+
+            [FromQuery(Name = "state")]
+            string? temp_state,
+
+            [FromQuery(Name = "token")]
+            [Required]
+            string? temp_bearer            
         )
         {
+            if (!_authService.TryGetPrincipalFromToken(temp_bearer!, out var principal)) {
+                throw new UnauthorizedHttpException();
+            }
+
+            var body = new ExternalAuthModel {
+                RedirectUrl = temp_redirectUrl!,
+                State = temp_state
+            };
+
             var state = new ServiceAuthStateModel {
                 State = body.State,
                 RedirectUrl = body.RedirectUrl
@@ -109,7 +132,7 @@ namespace Area.API.Controllers
             string? urlOrError = null;
             var signedIn = false;
 
-            if (User.TryGetUserId(out state.UserId)) {
+            if (principal/*User*/.TryGetUserId(out state.UserId)) {
                 signedIn = _serviceManager.TrySignInServiceById(serviceId!.Value, state, out urlOrError);
                 if (signedIn && urlOrError != null)
                     return new RedirectResult(urlOrError);
