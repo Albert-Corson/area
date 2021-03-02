@@ -12,6 +12,7 @@ import GradientFlatButton from './GradientFlatButton'
 import TextInput from './TextInput'
 import RootStoreContext from '../Stores/RootStore'
 import {pure} from 'recompose'
+import InsetShadowContainer from './InsetShadowContainer'
 
 interface Props {
   item: WidgetType;
