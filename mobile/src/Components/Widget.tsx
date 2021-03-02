@@ -1,12 +1,17 @@
-import React, {useRef, useState} from 'react'
-import {View, Text, StyleSheet, ImageBackground, TouchableOpacity} from 'react-native'
+import React, {useState, useContext} from 'react'
+import {View, Text, StyleSheet, ImageBackground, FlatList} from 'react-native'
 import {Widget as WidgetType} from '../Types/Widgets'
 import {observer} from 'mobx-react-lite'
 import {BlurView} from 'expo-blur'
 import {Size} from '../Types/Block'
 import {Video} from 'expo-av'
-import {FontAwesome} from '@expo/vector-icons'
 import DoubleTap from './DoubleTap'
+import ModalContainer from './ModalContainer'
+import FlatButton from './FlatButton'
+import GradientFlatButton from './GradientFlatButton'
+import TextInput from './TextInput'
+import RootStoreContext from '../Stores/RootStore'
+import {pure} from 'recompose'
 
 interface Props {
   item: WidgetType;
@@ -14,18 +19,21 @@ interface Props {
   size: Size;
 }
 
-const sizes = {
+const sizes: Record<Size, number> = {
   [Size.normal]: 70,
   [Size.extended]: 250,
   [Size.full]: 500,
 }
 
-const DOUBLE_PRESS_DELAY = 400
-
 const Widget = observer(({item, size, subscribed = true}: Props): JSX.Element => {
   const [showText, setShowText] = useState<boolean>(true)
+  const [showModal, setShowModal] = useState<boolean>(false)
+  const [modifyingQuery, setModifyingQuery] = useState<Record<number, string>>({})
   const display = item.params?.item ?? (item.params?.items?.length ? item.params.items[0] : {})
-  const queries = item?.params?.params || []
+  const queries = Array.isArray(item?.params) ? item?.params : item?.params?.params || []
+  const modifying = useContext(RootStoreContext).grid.modifying
+
+  const widgetStore = useContext(RootStoreContext).widget
 
   const truncateString = (str: string): string => {
     const length = sizes[size]
@@ -42,9 +50,10 @@ const Widget = observer(({item, size, subscribed = true}: Props): JSX.Element =>
   }
 
   const onDoubleTap = () => {
-    if (!queries.length) return
+    if (modifying || !subscribed || !queries.length) return
 
-    // open query modal
+    setShowModal(true)
+    console.log(queries)
   }
 
   const content: JSX.Element | boolean = showText && (
@@ -108,20 +117,64 @@ const Widget = observer(({item, size, subscribed = true}: Props): JSX.Element =>
   )
 
   return (
-    <DoubleTap
-      onPress={onTap}
-      onDoublePress={onDoubleTap}
-      delay={200}
-      activeOpacity={1}
-    >
+    <>
+      <DoubleTap
+        onPress={onTap}
+        onDoublePress={onDoubleTap}
+        delay={200}
+        activeOpacity={1}
+      >
 
-      {container}
+        {container}
 
-    </DoubleTap>
+      </DoubleTap>
+      <ModalContainer visible={showModal} containerStyle={{height: 250, justifyContent: 'center'}}>
+        <FlatList
+          style={{height: 100, marginBottom: 10}}
+          data={queries}
+          renderItem={({item, index}) => (
+            <TextInput
+              containerStyle={{width: '100%', marginVertical: 15}}
+              placeholder={item.name}
+              value={modifyingQuery[index]}
+              onChange={(text) => {
+                const cpy = {...modifyingQuery}
+
+                cpy[index] = text
+                setModifyingQuery(cpy)
+              }}
+            />
+          )}
+          keyExtractor={(_, index) => `query_${index}`}
+        />
+        <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-around', width: 300}}>
+          <GradientFlatButton
+            width={200} 
+            value="Save" 
+            onPress={() => {
+              const map = new Map(Object.keys(modifyingQuery)
+                .filter((key: any) => modifyingQuery[key]?.length)
+                .map((key: any) => [queries[key].name, modifyingQuery[key]]))
+
+              widgetStore.updateWidget(item.id, Object.fromEntries(map))
+              setShowModal(false)
+            }}
+          />
+          <FlatButton 
+            width={75} 
+            value="Cancel" 
+            onPress={() => {
+              setModifyingQuery({})
+              setShowModal(false)
+            }}
+          />
+        </View>
+      </ModalContainer>
+    </>
   )
 })
 
-export default Widget
+export default pure(Widget)
 
 const styles = StyleSheet.create({
   contentContainer: {
