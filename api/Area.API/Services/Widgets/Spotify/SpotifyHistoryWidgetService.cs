@@ -29,7 +29,7 @@ namespace Area.API.Services.Widgets.Spotify
             return SpotifyClient != null;
         }
 
-        public void CallWidgetApi(IEnumerable<ParamModel> widgetCallParams,
+        public void CallWidgetApi(IEnumerable<ParamModel> _,
             ref WidgetCallResponseModel response)
         {
             var task = SpotifyClient!.Player.GetRecentlyPlayed();

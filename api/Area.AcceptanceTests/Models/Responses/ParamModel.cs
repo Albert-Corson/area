@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -7,7 +9,7 @@ namespace Area.AcceptanceTests.Models.Responses
 {
     public class ParamModel
     {
-        private bool Equals(ParamModel other) => Name == other.Name && Type == other.Type && Value == other.Value && Required == other.Required;
+        private bool Equals(ParamModel other) => Name == other.Name && Type == other.Type && Value == other.Value && AllowedValues?.Count() == other.AllowedValues?.Count();
 
         public override bool Equals(object? obj)
         {
@@ -20,14 +22,15 @@ namespace Area.AcceptanceTests.Models.Responses
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Name, (int) Type, Value, Required);
+            return HashCode.Combine(Name, (int) Type, Value, AllowedValues);
         }
 
         public enum ParamType
         {
             [EnumMember(Value = "string")] String,
             [EnumMember(Value = "integer")] Integer,
-            [EnumMember(Value = "boolean")] Boolean
+            [EnumMember(Value = "boolean")] Boolean,
+            [EnumMember(Value = "enum")] Enum
         }
 
         public static bool operator!=(ParamModel self, ParamModel other)
@@ -38,7 +41,7 @@ namespace Area.AcceptanceTests.Models.Responses
         public static bool operator==(ParamModel self, ParamModel other)
         {
             return self.Name == other.Name
-                && self.Required == other.Required
+                && self.AllowedValues?.Count() == other.AllowedValues?.Count()
                 && self.Type == other.Type
                 && self.Value == other.Value;
         }
@@ -53,7 +56,7 @@ namespace Area.AcceptanceTests.Models.Responses
         [JsonProperty("value", Required = Newtonsoft.Json.Required.DisallowNull)]
         public string? Value { get; set; }
 
-        [JsonProperty("required", Required = Newtonsoft.Json.Required.Always)]
-        public bool Required { get; set; }
+        [JsonProperty("allowed_values", Required = Required.DisallowNull)]
+        public IEnumerable<EnumValueModel>? AllowedValues { get; set; }
     }
 }

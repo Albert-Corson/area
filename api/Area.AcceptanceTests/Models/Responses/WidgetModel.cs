@@ -41,12 +41,6 @@ namespace Area.AcceptanceTests.Models.Responses
             if (self.Params.Count != other.Params.Count)
                 return false;
 
-            foreach (var param in self.Params) {
-                var otherParam = other.Params.FirstOrDefault(model => model.Name == param.Name);
-                if (otherParam != param)
-                    return false;
-            }
-            
             return self as AboutDotJsonModel.WidgetModel == other
                 && self.Frequency == other.Frequency
                 && self.Service == other.Service;

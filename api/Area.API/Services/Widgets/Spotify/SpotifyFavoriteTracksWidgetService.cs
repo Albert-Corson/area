@@ -33,15 +33,7 @@ namespace Area.API.Services.Widgets.Spotify
         public void CallWidgetApi(IEnumerable<ParamModel> widgetCallParams,
             ref WidgetCallResponseModel response)
         {
-            var timeRangeStr = widgetCallParams.GetValue("time_range");
-
-            var timeRange = timeRangeStr switch {
-                "long_term" => PersonalizationTopRequest.TimeRange.LongTerm,
-                "medium_term" => PersonalizationTopRequest.TimeRange.MediumTerm,
-                "short_term" => PersonalizationTopRequest.TimeRange.ShortTerm,
-                _ => throw new BadRequestHttpException(
-                    $"Query parameter `time_range` has an invalid value `{timeRangeStr}`. Expected long_term|medium_term|short_term")
-            };
+            var timeRange = widgetCallParams.GetEnumValue<PersonalizationTopRequest.TimeRange>("time_range");
 
             var task = SpotifyClient!.Personalization.GetTopTracks(new PersonalizationTopRequest {
                 TimeRangeParam = timeRange

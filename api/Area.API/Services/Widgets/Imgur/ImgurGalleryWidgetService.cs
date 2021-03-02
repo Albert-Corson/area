@@ -28,10 +28,7 @@ namespace Area.API.Services.Widgets.Imgur
                 throw new InternalServerErrorHttpException();
             var galleryEndpoint = new GalleryEndpoint(Imgur.Client);
 
-            var sectionStr = widgetCallParams.GetValue("section");
-            if (!Enum.TryParse<GallerySection>(sectionStr, true, out var section))
-                throw new BadRequestHttpException(
-                    $"Query parameter `sort` has an invalid value `{sectionStr}`. Expected hot|top|user");
+            var section = widgetCallParams.GetEnumValue<GallerySection>("section");
 
             var task = galleryEndpoint.GetGalleryAsync(section);
             task.Wait();

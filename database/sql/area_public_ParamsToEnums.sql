@@ -1,0 +1,9 @@
+INSERT INTO public."ParamsToEnums" ("ParamId", "EnumId") VALUES (2, 1);
+INSERT INTO public."ParamsToEnums" ("ParamId", "EnumId") VALUES (5, 2);
+INSERT INTO public."ParamsToEnums" ("ParamId", "EnumId") VALUES (1, 3);
+INSERT INTO public."ParamsToEnums" ("ParamId", "EnumId") VALUES (11, 4);
+INSERT INTO public."ParamsToEnums" ("ParamId", "EnumId") VALUES (9, 4);
+INSERT INTO public."ParamsToEnums" ("ParamId", "EnumId") VALUES (8, 6);
+INSERT INTO public."ParamsToEnums" ("ParamId", "EnumId") VALUES (10, 5);
+INSERT INTO public."ParamsToEnums" ("ParamId", "EnumId") VALUES (6, 7);
+INSERT INTO public."ParamsToEnums" ("ParamId", "EnumId") VALUES (7, 7);

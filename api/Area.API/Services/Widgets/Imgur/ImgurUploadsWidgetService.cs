@@ -29,7 +29,7 @@ namespace Area.API.Services.Widgets.Imgur
 
         public string Name { get; } = "Imgur uploads";
 
-        public void CallWidgetApi(IEnumerable<ParamModel> widgetCallParams,
+        public void CallWidgetApi(IEnumerable<ParamModel> _,
             ref WidgetCallResponseModel response)
         {
             if (Imgur.Client == null || _oAuth2Token == null)

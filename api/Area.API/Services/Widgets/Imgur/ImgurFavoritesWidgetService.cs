@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Area.API.Exceptions.Http;
 using Area.API.Extensions;
@@ -38,9 +39,7 @@ namespace Area.API.Services.Widgets.Imgur
 
             Imgur.Client.SetOAuth2Token(_oAuth2Token);
 
-            var sort = widgetCallParams.GetValue("sort") == "newest"
-                ? AccountGallerySortOrder.Newest
-                : AccountGallerySortOrder.Oldest;
+            var sort = widgetCallParams.GetEnumValue<AccountGallerySortOrder>("sort");
 
             var task = new AccountEndpoint(Imgur.Client).GetAccountGalleryFavoritesAsync(sort: sort);
             task.Wait();

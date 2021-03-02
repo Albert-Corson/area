@@ -31,24 +31,12 @@ namespace Area.API.Services.Widgets.NewsApi
         public void CallWidgetApi(IEnumerable<ParamModel> widgetCallParams,
             ref WidgetCallResponseModel response)
         {
-            var countryStr = widgetCallParams.GetValue("country");
-            var categoryStr = widgetCallParams.GetValue("category");
-            var languageStr = widgetCallParams.GetValue("language");
 
-            var topHeadlinesRequest = new TopHeadlinesRequest();
-
-            if (!string.IsNullOrWhiteSpace(countryStr) && Enum.TryParse<Countries>(countryStr, true, out var country))
-                topHeadlinesRequest.Country = country;
-
-            if (!string.IsNullOrWhiteSpace(categoryStr) &&
-                Enum.TryParse<Categories>(categoryStr, true, out var category))
-                topHeadlinesRequest.Category = category;
-
-            if (!string.IsNullOrWhiteSpace(languageStr) &&
-                Enum.TryParse<Languages>(languageStr, true, out var language))
-                topHeadlinesRequest.Language = language;
-            else
-                topHeadlinesRequest.Language = Languages.EN;
+            var topHeadlinesRequest = new TopHeadlinesRequest {
+                Country = widgetCallParams.GetEnumValue<Countries>("country"),
+                Category = widgetCallParams.GetEnumValue<Categories>("category"),
+                Language = widgetCallParams.GetEnumValue<Languages>("language")
+            };
 
             var news = _client?.GetTopHeadlines(topHeadlinesRequest);
 

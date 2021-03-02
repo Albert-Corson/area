@@ -24,7 +24,7 @@ namespace Area.API.Services.Widgets.CatApi
 
         public string Name { get; } = "Random cat images";
 
-        public void CallWidgetApi(IEnumerable<ParamModel> widgetCallParams,
+        public void CallWidgetApi(IEnumerable<ParamModel> _,
             ref WidgetCallResponseModel response)
         {
             try {

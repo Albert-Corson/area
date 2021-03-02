@@ -28,12 +28,25 @@ namespace Area.API.DbContexts
                     });
                 modelBuilder.Entity<UserWidgetModel>()
                     .HasOne(userWidgetModel => userWidgetModel.User)
-                    .WithMany(userModel => userModel!.Widgets)
+                    .WithMany(userModel => userModel.Widgets)
                     .HasForeignKey(userWidgetModel => userWidgetModel.UserId);
                 modelBuilder.Entity<UserWidgetModel>()
                     .HasOne(userWidget => userWidget.Widget)
-                    .WithMany(widget => widget!.Users)
+                    .WithMany(widget => widget.Users)
                     .HasForeignKey(userWidget => userWidget.WidgetId);
+            }
+
+            // Many-to-many between params and enums
+            {
+                modelBuilder.Entity<ParamEnumModel>()
+                    .HasKey(model => new {
+                        model.ParamId,
+                        model.EnumId
+                    });
+                modelBuilder.Entity<ParamEnumModel>()
+                    .HasOne(model => model.Param)
+                    .WithMany(model => model.Enums)
+                    .HasForeignKey(model => model.ParamId);
             }
 
             // A user owns many service tokens

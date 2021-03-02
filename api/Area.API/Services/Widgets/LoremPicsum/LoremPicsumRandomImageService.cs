@@ -16,13 +16,8 @@ namespace Area.API.Services.Widgets.LoremPicsum
         public void CallWidgetApi(IEnumerable<ParamModel> widgetCallParams,
             ref WidgetCallResponseModel response)
         {
-            var width = widgetCallParams.GetValue("width");
-            var height = widgetCallParams.GetValue("height");
-
-            if (height == null || width == null) {
-                var name = height == null ? "height" : "width";
-                throw new BadRequestHttpException($"The query parameter `{name}` is invalid");
-            }
+            var width = widgetCallParams.GetValue<int>("width");
+            var height = widgetCallParams.GetValue<int>("height");
 
             var url = $"https://picsum.photos/{width}/{height}";
 

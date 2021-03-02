@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Area.AcceptanceTests.Collections;
 using Area.AcceptanceTests.Fixtures;
@@ -27,14 +26,14 @@ namespace Area.AcceptanceTests.Tests
             AreaApi.SubscribeWidgetById(IMGUR_GALLERY).Wait();
         }
 
-        private static void CheckParamValue(IEnumerable<ParamModel> parameters, string value = "hot")
+        private static void CheckParam(IEnumerable<ParamModel> parameters, string value = "Hot")
         {
             var param = parameters.Single(model => model.Name == "section");
             Assert.Equal(value, param.Value);
         }
 
         [Fact, Priority(1)]
-        public void PreCallParamValueChecks()
+        public void PreCallParamsChecks()
         {
             var widget = AreaApi.GetWidgets().Result.Content.Data!
                 .Single(model => model.Id == IMGUR_GALLERY);
@@ -42,7 +41,7 @@ namespace Area.AcceptanceTests.Tests
                 .Single(model => model.Id == IMGUR_GALLERY);
 
             Assert.True(widget == myWidget);
-            CheckParamValue(widget.Params);
+            CheckParam(widget.Params);
         }
 
         [Fact, Priority(2)]
@@ -51,36 +50,50 @@ namespace Area.AcceptanceTests.Tests
             var response = await AreaApi.CallWidgetById(IMGUR_GALLERY);
 
             AssertExtension.SuccessfulApiResponse(response);
-            CheckParamValue(response.Content.Data!.CallParams);
+            CheckParam(response.Content.Data!.CallParams);
         }
         
         [Fact, Priority(3)]
-        public void PostCallWithoutParamValueChecks()
+        public void PostCallWithoutParamsChecks()
         {
-            PreCallParamValueChecks();
+            PreCallParamsChecks();
         }
-        
+
         [Fact, Priority(4)]
         public async Task CallWithParams()
         {
-            var response = await AreaApi.CallWidgetById(IMGUR_GALLERY, "?section=top");
+            var response = await AreaApi.CallWidgetById(IMGUR_GALLERY, "?section=Top");
         
             AssertExtension.SuccessfulApiResponse(response);
-            CheckParamValue(response.Content.Data!.CallParams, "top");
-            Thread.Sleep(1000);
+            CheckParam(response.Content.Data!.CallParams, "Top");
         }
-        
+
         [Fact, Priority(5)]
-        public void PostCallWithParamValueChecks()
+        public void PostCallWithParamsChecks()
         {
             var widget = AreaApi.GetWidgets().Result.Content.Data!
                 .Single(model => model.Id == IMGUR_GALLERY);
             var myWidget = AreaApi.GetMyWidgets().Result.Content.Data!
                 .Single(model => model.Id == IMGUR_GALLERY);
         
-            Assert.True(widget != myWidget);
-            CheckParamValue(widget.Params);
-            CheckParamValue(myWidget.Params, "top");
+            Assert.True(widget == myWidget);
+            CheckParam(widget.Params);
+            CheckParam(myWidget.Params, "Top");
+        }
+
+        [Fact, Priority(6)]
+        public async Task AnotherCallWithoutParams()
+        {
+            var response = await AreaApi.CallWidgetById(IMGUR_GALLERY);
+
+            AssertExtension.SuccessfulApiResponse(response);
+            CheckParam(response.Content.Data!.CallParams, "Top");
+        }
+
+        [Fact, Priority(5)]
+        public void PostAnotherCallWithoutParamsChecks()
+        {
+            PostCallWithParamsChecks();
         }
     }
 }
