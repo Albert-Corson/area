@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Area.API.Exceptions.Http;
@@ -89,12 +90,7 @@ namespace Area.API.Services
             IEnumerable<ParamModel> widgetParams)
         {
             List<ParamModel> parameters = new List<ParamModel>();
-            parameters.AddRange(userParams.Select(model => new ParamModel {
-                Name = model.Param.Name,
-                Required = model.Param.Required,
-                Type = model.Param.Type,
-                Value = model.Value
-            }));
+            parameters.AddRange(userParams.Select(model => new ParamModel(model)));
             parameters.AddRange(widgetParams
                 .Where(model => !parameters.Exists(param => param.Name == model.Name)));
             return parameters;
@@ -104,39 +100,76 @@ namespace Area.API.Services
             ICollection<UserParamModel> userParams, IQueryCollection queryParams)
         {
             List<ParamModel> callParams = new List<ParamModel>();
-            
+
             foreach (var (key, value) in queryParams) {
                 var userParam = userParams.FirstOrDefault(model => model.Param.WidgetId == widgetId && model.Param.Name == key);
+                var defaultParam = userParam != null
+                    ? null
+                    : defaultParams.FirstOrDefault(model => model.Name == key);
+
+                if (userParam != null || defaultParam != null)
+                    ValidateAndConvertParam(defaultParam ?? userParam!.Param, key, value);
+
                 if (userParam != null) {
                     userParam.Value = value;
-                } else {
-                    var defaultParam = defaultParams.FirstOrDefault(model => model.Name == key);
-                    if (defaultParam?.Required == false) {
-                        userParams.Add(new UserParamModel {
-                            Value = value,
-                            ParamId = defaultParam.Id,
-                            Param = defaultParam
-                        });
-                    } else if (defaultParam?.Required == true) {
-                        callParams.Add(defaultParam);
-                    }
+                    callParams.Add(new ParamModel(userParam));
+                } else if (defaultParam != null) {
+                    userParams.Add(new UserParamModel {
+                        Value = value,
+                        ParamId = defaultParam.Id,
+                    });
+                    callParams.Add(new ParamModel(defaultParam) {
+                        Value = value
+                    });
                 }
             }
 
             callParams.AddRange(from userParam in userParams
-                where userParam.Param == null || userParam.Param.WidgetId == widgetId
-                select new ParamModel(userParam));
+                where userParam.Param?.WidgetId == widgetId && !queryParams.ContainsKey(userParam.Param.Name)
+                select new ParamModel(userParam) {
+                    ConvertedValue = ConvertParam(userParam.Param.Type, userParam.Value)
+                });
 
             foreach (var defaultParam in defaultParams) {
                 var contains = callParams.FirstOrDefault(model => model.Id == defaultParam.Id) != null;
-                if (defaultParam.Required != true && !contains)
-                    callParams.Add(defaultParam);
-                else if (!contains)
-                    throw new BadRequestHttpException(
-                        $"Missing query parameter `{defaultParam.Name}` of type `{defaultParam.Type}`");
+                if (contains)
+                    continue;
+                defaultParam.ConvertedValue = ConvertParam(defaultParam.Type, defaultParam.Value);
+                callParams.Add(defaultParam);
             }
-
+            
             return callParams;
+        }
+
+        private static object? ConvertParam(ParamModel.ParamType type, string? value)
+        {
+            switch (type) {
+                case ParamModel.ParamType.Integer:
+                    if (!int.TryParse(value, out var integer))
+                        return null;
+                    return integer;
+                case ParamModel.ParamType.Boolean:
+                    if (!int.TryParse(value, out var boolean))
+                        return null;
+                    return boolean;
+                default:
+                    return value;
+            }
+        }
+
+        private static void ValidateAndConvertParam(ParamModel defaultParam, string key, string value)
+        {
+            object? obj;
+            if (defaultParam.Type != ParamModel.ParamType.Enum)
+                obj = ConvertParam(defaultParam.Type, value);
+            else
+                obj = defaultParam.Enums.FirstOrDefault(model => model.ParamId == defaultParam.Id)
+                    ?.Enum.Values.FirstOrDefault(model => model.Value.Equals(value, StringComparison.OrdinalIgnoreCase));
+
+            if (obj == null)
+                throw new BadRequestHttpException($"Unexpected value for query parameter `{key}`");
+
+            defaultParam.ConvertedValue = obj;
         }
 
         private void ValidateSignInState(IWidgetService widgetService, UserModel user, int serviceId)

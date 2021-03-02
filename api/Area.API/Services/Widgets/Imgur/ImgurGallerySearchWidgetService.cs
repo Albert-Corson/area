@@ -28,10 +28,7 @@ namespace Area.API.Services.Widgets.Imgur
                 throw new InternalServerErrorHttpException();
             var galleryEndpoint = new GalleryEndpoint(Imgur.Client);
 
-            var sortStr = widgetCallParams.GetValue("sort");
-            if (!Enum.TryParse<GallerySortOrder>(sortStr, true, out var sort))
-                throw new BadRequestHttpException(
-                    $"Query parameter `sort` has an invalid value `{sortStr}`. Expected time|viral|top");
+            var sort = widgetCallParams.GetEnumValue<GallerySortOrder>("sort");
 
             var task = galleryEndpoint.SearchGalleryAsync(widgetCallParams.GetValue("query"), sort);
             task.Wait();

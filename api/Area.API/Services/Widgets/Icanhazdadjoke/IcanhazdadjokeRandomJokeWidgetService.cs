@@ -11,7 +11,7 @@ namespace Area.API.Services.Widgets.Icanhazdadjoke
     {
         public string Name { get; } = "Random dad joke";
 
-        public void CallWidgetApi(IEnumerable<ParamModel> widgetCallParams,
+        public void CallWidgetApi(IEnumerable<ParamModel> _,
             ref WidgetCallResponseModel response)
         {
             var client = new DadJokeClient("Area Epitech school project", "https://github.com/Albert-Corson");

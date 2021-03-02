@@ -35,7 +35,7 @@ namespace Area.API.Repositories
             var queryable = asNoTracking ? Database.Users.AsNoTracking() : Database.Users.AsQueryable();
             queryable = includeChildren
                 ? queryable
-                    .Include(model => model.WidgetParams).ThenInclude(model => model.Param)
+                    .Include(model => model.WidgetParams).ThenInclude(model => model.Param).ThenInclude(model => model.Enums).ThenInclude(model => model.Enum)
                 : queryable;
 
             if (userId == null && username == null && email == null && passwd == null)

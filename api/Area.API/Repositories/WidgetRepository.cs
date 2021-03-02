@@ -22,7 +22,7 @@ namespace Area.API.Repositories
             var queryable = asNoTracking ? Database.Widgets.AsNoTracking() : Database.Widgets.AsQueryable();
 
             return includeChildren
-                ? queryable.Include(model => model.Params)
+                ? queryable.Include(model => model.Params).ThenInclude(model => model.Enums).ThenInclude(model => model.Enum)
                     .Include(model => model.Service)
                 : queryable;
         }
@@ -35,7 +35,7 @@ namespace Area.API.Repositories
 
             return includeChildren
                 ? queryable
-                    .Include(model => model.Params)
+                    .Include(model => model.Params).ThenInclude(model => model.Enums).ThenInclude(model => model.Enum)
                     .Include(model => model.Service)
                 : queryable;
         }
@@ -45,7 +45,7 @@ namespace Area.API.Repositories
             var queryable = asNoTracking ? Database.Widgets.AsNoTracking() : Database.Widgets.AsQueryable();
 
             queryable = includeParams
-                ? queryable.Include(model => model.Params)
+                ? queryable.Include(model => model.Params).ThenInclude(model => model.Enums).ThenInclude(model => model.Enum)
                 : queryable;
 
             return queryable.FirstOrDefault(model => model.Id == widgetId);
@@ -64,7 +64,7 @@ namespace Area.API.Repositories
                 ? queryable.Include(model => model.Widget)
                     .ThenInclude(model => model!.Service)
                     .Include(model => model.Widget)
-                    .ThenInclude(model => model!.Params)
+                    .ThenInclude(model => model!.Params).ThenInclude(model => model.Enums).ThenInclude(model => model.Enum)
                 : queryable;
 
 

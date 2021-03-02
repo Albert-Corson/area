@@ -32,14 +32,10 @@ namespace Area.API.Services.Widgets.NewsApi
             ref WidgetCallResponseModel response)
         {
             var everythingRequest = new EverythingRequest {
-                From = DateTime.Now.Subtract(TimeSpan.FromDays(31)),
-                Q = widgetCallParams.GetValue("query")
+                From = DateTime.Now.Subtract(TimeSpan.FromDays(21)),
+                Q = widgetCallParams.GetValue("query"),
+                Language = widgetCallParams.GetEnumValue<Languages>("language")
             };
-
-            var languageStr = widgetCallParams.GetValue("language");
-            if (!string.IsNullOrWhiteSpace(languageStr) &&
-                Enum.TryParse<Languages>(languageStr, true, out var language))
-                everythingRequest.Language = language;
 
             var news = _client?.GetEverything(everythingRequest);
 
