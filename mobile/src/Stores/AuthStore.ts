@@ -144,7 +144,7 @@ export class AuthStore {
   };
 
   @action
-  public logout = async (): Promise<boolean> => {
+  public logout = async (): Promise<void> => {
     const res = await absFetch({
       route: '/auth/revoke',
       method: 'delete'
@@ -152,10 +152,6 @@ export class AuthStore {
 
     const json: Response = await res.json()
 
-    if (json.successful || res.status === 401) {
-      this._rootStore.user.removeCurrentUser()
-      return true
-    }
-    return false
+    this._rootStore.user.removeCurrentUser()
   }
 }

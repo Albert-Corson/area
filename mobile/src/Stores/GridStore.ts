@@ -15,8 +15,7 @@ export class GridStore {
 
   @observable private _blocks: Array<Widget> = [];
 
-  @observable private _timePickerVisible = false;
-  @observable private _timePickerModifyer: number | undefined;
+  private _timePickerVisible = false;
 
   constructor(private _rootStore: RootStore) {
     makeAutoObservable(this)
@@ -124,29 +123,12 @@ export class GridStore {
     return this._blocks[blockIndex].unactive ? !this._blocks[blockIndex].unactive : this._modifying
   };
 
-  @action
-  public modifyRefreshDelay = (hours: number, minutes: number): void => {
-    this._timePickerVisible = false
-
-
-    this._rootStore.widget.setRefreshDelay(this._timePickerModifyer!, hours, minutes)
-    /*
-    logic
-    */
-
-    this._timePickerModifyer = undefined
-  }
-
-  @action
-  public openTimePicker = (index: number): void => {
+  public openTimePicker = (): void => {
     this._timePickerVisible = true
-    this._timePickerModifyer = index
   }
 
-  @action
   public closeTimePicker = (): void => {
     this._timePickerVisible = false
-    this._timePickerModifyer = undefined
   }
 
   public isTimePickerVisible = (): boolean => this._timePickerVisible === true
