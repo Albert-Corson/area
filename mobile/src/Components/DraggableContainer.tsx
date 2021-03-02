@@ -1,4 +1,4 @@
-import React, {useContext, useRef, useState} from 'react'
+import React, {useContext, useRef, useState, useEffect} from 'react'
 import {
   Dimensions, StyleSheet, View, TouchableOpacity,
 } from 'react-native'
@@ -26,6 +26,7 @@ import DropShadowContainer from './DropShadowContainer'
 import {TimePicker} from 'react-native-simple-time-picker'
 import ModalContainer from './ModalContainer'
 import FlatButton from './FlatButton'
+import {pure} from 'recompose'
 
 type Event = GestureHandlerGestureEventNativeEvent & PanGestureHandlerEventExtra;
 
@@ -36,7 +37,7 @@ interface Props {
 
 const DraggableContainer = observer(({
   index,
-  children = <></>,
+  children,
 }: Props): JSX.Element => {
   const store = useContext(RootStoreContext)
   // drag
@@ -51,7 +52,7 @@ const DraggableContainer = observer(({
   const gridSize = store.grid.blocks.length
   const modifying = store.grid.isBlockMutable(index)
 
-  const [refreshDelay, setRefreshDelay] = useState<{hours: number; minutes: number}>({hours: 0, minutes: 10})
+  const item = store.widget.subscribedWidgets[index]
 
   const SIZE = Dimensions.get('window').width / 2.5
   const MARGIN = (SIZE * (2.5 - 2.14)) / 4
@@ -118,7 +119,8 @@ const DraggableContainer = observer(({
   }
 
   const changeRefreshTime = () => {
-    store.grid.modifyRefreshDelay(refreshDelay.hours, refreshDelay.minutes)
+    store.widget.setRefreshDelay()
+    store.grid.closeTimePicker()
   }
 
   const dragStyle = useAnimatedStyle(() => ({
@@ -178,7 +180,11 @@ const DraggableContainer = observer(({
                     <Entypo name="cross" size={15} color="#e6e6e9" />
                   </TouchableOpacity>
 
-                  <TouchableOpacity style={[styles.badgeBtn, styles.clockBtn]} onPress={() => store.grid.openTimePicker(index)}>
+                  <TouchableOpacity style={[styles.badgeBtn, styles.clockBtn]} onPress={() => {
+                    store.grid.openTimePicker()
+                    store.widget.currentWidget = item
+                    store.widget.setCurrentInterval({hours: item.hours || 0, minutes: item.minutes || 1})
+                  }}>
                     <Entypo name="clock" size={15} color="#e6e6e9" />
                   </TouchableOpacity>
 
@@ -197,8 +203,8 @@ const DraggableContainer = observer(({
         )}
       </DropShadowContainer>
       <ModalContainer visible={store.grid.isTimePickerVisible()} containerStyle={{height: 300, maxWidth: 350}}>
-        <View style={[styles.timePickerContainer]}>
-          <TimePicker value={refreshDelay} onChange={setRefreshDelay} />
+        <View style={styles.timePickerContainer}>
+          <TimePicker value={store.widget.currentInterval} onChange={store.widget.setCurrentInterval} />
         </View>
         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
           <FlatButton 
@@ -219,7 +225,7 @@ const DraggableContainer = observer(({
   )
 })
 
-export default DraggableContainer
+export default pure(DraggableContainer)
 
 const styles = StyleSheet.create({
   timePickerContainer: {

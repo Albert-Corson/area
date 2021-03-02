@@ -45,7 +45,7 @@ const Widget = observer(({item, size, subscribed = true}: Props): JSX.Element =>
   }
 
   const onTap = (): void => {
-    if (!subscribed) return
+    if (!subscribed || !display.image) return
 
     setShowText(!showText)
   }
