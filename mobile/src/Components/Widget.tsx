@@ -18,6 +18,7 @@ interface Props {
   item: WidgetType;
   subscribed?: boolean;
   size: Size;
+  display: Record<string, string | number>;
 }
 
 const sizes: Record<Size, number> = {
@@ -26,11 +27,10 @@ const sizes: Record<Size, number> = {
   [Size.full]: 500,
 }
 
-const Widget = observer(({item, size, subscribed = true}: Props): JSX.Element => {
+const Widget = observer(({item, size, subscribed = true, display}: Props): JSX.Element => {
   const [showText, setShowText] = useState<boolean>(true)
   const [showModal, setShowModal] = useState<boolean>(false)
   const [modifyingQuery, setModifyingQuery] = useState<Record<number, string>>({})
-  const display = item.params?.item ?? (item.params?.items?.length ? item.params.items[0] : {})
   const queries = Array.isArray(item?.params) ? item?.params : item?.params?.params || []
   const modifying = useContext(RootStoreContext).grid.modifying
 
