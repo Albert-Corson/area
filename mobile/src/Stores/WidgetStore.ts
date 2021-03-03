@@ -15,14 +15,6 @@ interface RefreshableWidget extends Widget {
   hours?: number;
   minutes?: number;
   interval?: number | NodeJS.Timeout;
-<<<<<<< HEAD
-=======
-}
-
-export interface Interval {
-  hours: number;
-  minutes: number;
->>>>>>> add: timer selection functionnal
 }
 
 export interface Interval {

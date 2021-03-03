@@ -12,13 +12,12 @@ import GradientFlatButton from './GradientFlatButton'
 import TextInput from './TextInput'
 import RootStoreContext from '../Stores/RootStore'
 import {pure} from 'recompose'
-import InsetShadowContainer from './InsetShadowContainer'
 
 interface Props {
   item: WidgetType;
   subscribed?: boolean;
   size: Size;
-  display: Record<string, string>;
+  display: Record<string, any>;
 }
 
 const sizes: Record<Size, number> = {
