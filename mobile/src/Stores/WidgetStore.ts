@@ -15,14 +15,6 @@ interface RefreshableWidget extends Widget {
   hours?: number;
   minutes?: number;
   interval?: number | NodeJS.Timeout;
-<<<<<<< HEAD
-=======
-}
-
-export interface Interval {
-  hours: number;
-  minutes: number;
->>>>>>> add: timer selection functionnal
 }
 
 export interface Interval {
@@ -253,8 +245,6 @@ export class WidgetStore {
     const headers = {
       Authorization: `Bearer ${this._rootStore.user.userJWT?.accessToken}`,
     }
-<<<<<<< HEAD
-=======
 
     const res = await absFetch({
       route: `/widgets/${widgetId}`,
@@ -274,28 +264,6 @@ export class WidgetStore {
   }
 
   @action
-<<<<<<< HEAD
-  public setRefreshDelay = (widgetIndex: number, hours: number, minutes: number): void => {
-    if (widgetIndex < 0 || widgetIndex >= this._subscribedWidgets.length) return
->>>>>>> fix: widget now refresh on query submition
-
-    const res = await absFetch({
-      route: `/widgets/${widgetId}`,
-      headers
-    })
-
-    const json = await res.json()
-
-    runInAction(() => {
-      const widget = this._subscribedWidgets.filter(widget => widget.id === widgetId)[0]
-      widget.params = json.data
-
-<<<<<<< HEAD
-      this._rootStore.grid.setBlocks(this._subscribedWidgets)
-    })
-  }
-
-  @action
   public setRefreshDelay = (): void => {
     if (!this._currentWidget) return
 
@@ -303,15 +271,6 @@ export class WidgetStore {
 
     if (widgetIndex < 0) return
 
-=======
-  public setRefreshDelay = (): void => {
-    if (!this._currentWidget) return
-
-    const widgetIndex = this._subscribedWidgets.indexOf(this._currentWidget)
-
-    if (widgetIndex < 0) return
-
->>>>>>> add: timer selection functionnal
     const {hours, minutes} = this._currentInterval
 
     runInAction(() => {
@@ -325,18 +284,8 @@ export class WidgetStore {
   
       this.subscribedWidgets[widgetIndex].interval = setInterval(() => {
         this.updateParameter(this.subscribedWidgets[widgetIndex].id)
-<<<<<<< HEAD
       }, (hours * 3600000 + minutes * 60000) + DEBOUNCE)
     })
-=======
-    this.subscribedWidgets[widgetIndex].interval = setInterval(() => {
-      this.updateWidget(widgetIndex, {})
-    }, hours * 3600000 + minutes * 60000)
->>>>>>> fix: widget now refresh on query submition
-=======
-      }, hours * 3600000 + minutes * 60000)
-    })
->>>>>>> add: timer selection functionnal
   }
 
   public get currentInterval(): Interval {
