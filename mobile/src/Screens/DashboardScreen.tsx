@@ -15,9 +15,21 @@ import GradientFlatButton from '../Components/GradientFlatButton'
 import Animated, {useAnimatedStyle, useSharedValue, withSpring} from 'react-native-reanimated'
 import * as Device from 'expo-device'
 import {pure} from 'recompose'
+import {Widget as WidgetType} from '../Types/Widgets'
 
 interface Props {
   navigation: StackNavigationProp<RootStackParamList>;
+}
+
+const parseWidgetDisplayItems = (item: WidgetType): any => {
+  if (item.params?.item) return item.params.item
+
+  if (item.params?.items?.length) {
+    const max = item.params?.items?.length
+    
+    return item.params.items[~~(Math.random() * (max))]
+  }
+  return {}
 }
 
 const WidgetsScreen = observer(({navigation}: Props): JSX.Element => {
@@ -104,6 +116,7 @@ const WidgetsScreen = observer(({navigation}: Props): JSX.Element => {
                   item={widget}
                   subscribed={!store.grid.modifying}
                   size={store.grid.getBlockSize(index)}
+                  display={parseWidgetDisplayItems(widget)}
                 />
               </DraggableContainer>
             ))}
