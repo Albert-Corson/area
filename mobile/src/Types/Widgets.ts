@@ -1,4 +1,4 @@
-import { Parameters } from './API';
+import {Parameters} from './API'
 import {Block} from './Block'
 
 export interface Service {

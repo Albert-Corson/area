@@ -228,6 +228,7 @@ export class WidgetStore {
 
     runInAction(() => {
       this._subscribedWidgets.forEach((widget, i) => {
+        if (widget.service.name === 'Spotify') console.log(json[i])
         if (!json[i].successful) {
           return widget
         }
@@ -252,8 +253,6 @@ export class WidgetStore {
     })
 
     const json = await res.json()
-
-    console.log(json)
 
     runInAction(() => {
       const widget = this._subscribedWidgets.filter(widget => widget.id === widgetId)[0]
