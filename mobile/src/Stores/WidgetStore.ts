@@ -22,6 +22,8 @@ export interface Interval {
   minutes: number;
 }
 
+const DEBOUNCE = 500
+
 export class WidgetStore {
   @observable private _widgets: RefreshableWidget[] = [];
   @observable private _subscribedWidgets: RefreshableWidget[] = [];
@@ -138,8 +140,14 @@ export class WidgetStore {
         runInAction(() => {
           this._subscribedWidgets = json.data
 
-          this._subscribedWidgets.map((_, i) => {
-            this.setRefreshDelay(i, 0, 1)
+          this._subscribedWidgets.map((widget) => {
+            if (widget.interval) return
+            
+            widget.hours = 0
+            widget.minutes = 10
+            setInterval(() => {
+              this.updateParameter(widget.id)
+            }, (10 * 60000) + DEBOUNCE)
           })
 
           this._rootStore.grid.setBlocks(json.data)
@@ -276,7 +284,7 @@ export class WidgetStore {
   
       this.subscribedWidgets[widgetIndex].interval = setInterval(() => {
         this.updateParameter(this.subscribedWidgets[widgetIndex].id)
-      }, hours * 3600000 + minutes * 60000)
+      }, (hours * 3600000 + minutes * 60000) + DEBOUNCE)
     })
   }
 
