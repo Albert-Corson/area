@@ -18,7 +18,7 @@ interface Props {
   item: WidgetType;
   subscribed?: boolean;
   size: Size;
-  display: Record<string, string | number>;
+  display: Record<string, string>;
 }
 
 const sizes: Record<Size, number> = {
@@ -45,7 +45,7 @@ const Widget = observer(({item, size, subscribed = true, display}: Props): JSX.E
   }
 
   const onTap = (): void => {
-    if (!subscribed || !display.image) return
+    if (!subscribed || !display?.image) return
 
     setShowText(!showText)
   }
@@ -60,11 +60,11 @@ const Widget = observer(({item, size, subscribed = true, display}: Props): JSX.E
     <BlurView intensity={100} style={[styles.centerContent, styles.fullSize]}>
       <View style={styles.contentContainer}>
         <Text style={[styles.text, styles.title, {}]}>
-          {truncateString(display.header ?? item.name)}
+          {truncateString(display?.header ?? item.name)}
         </Text>
 
         {(() => {
-          const body = (display.artists ?? display.genres)?.map((item: string, i: number) => (
+          const body = (display?.artists ?? (display?.genres || []))?.map((item: string, i: number) => (
             <Text style={styles.text} key={i}>
               {truncateString(item)}
             </Text>
@@ -74,13 +74,13 @@ const Widget = observer(({item, size, subscribed = true, display}: Props): JSX.E
             return body
           }
 
-          if (!display.content && !display.description && subscribed) {
+          if (!display?.content && !display?.description && subscribed) {
             return null
           }
 
           return (
             <Text style={styles.text}>
-              {truncateString(display.content || display.description || item.description)}
+              {truncateString(display?.content || display?.description || item.description)}
             </Text>
           )
         })()}
@@ -90,12 +90,12 @@ const Widget = observer(({item, size, subscribed = true, display}: Props): JSX.E
 
   const container: JSX.Element = (
     <>
-      {display.image ? (
+      {display?.image ? (
         <>
-          {display.image.includes('.mp4') ? (
+          {display?.image.includes('.mp4') ? (
             <Video
               style={[styles.widget, styles.fullSize]}
-              source={{uri: display.image}}
+              source={{uri: display?.image}}
               shouldPlay={true}
               isLooping={true}
               volume={0}
@@ -103,7 +103,7 @@ const Widget = observer(({item, size, subscribed = true, display}: Props): JSX.E
               {content}
             </Video>
           ) : (
-            <ImageBackground style={[styles.widget, styles.fullSize]} source={{uri: display.image}}>
+            <ImageBackground style={[styles.widget, styles.fullSize]} source={{uri: display?.image}}>
               {content}
             </ImageBackground>
           )}
