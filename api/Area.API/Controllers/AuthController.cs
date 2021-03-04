@@ -165,7 +165,7 @@ namespace Area.API.Controllers
             ExternalAuthModel body
             )
         {
-            var state = HttpUtility.UrlEncode(JsonConvert.SerializeObject(body));
+            var state = JsonConvert.SerializeObject(body);
 
             return new RedirectResult(await _facebook.GetLoginLinkUriAsync(state, cancellationToken));
         }
@@ -179,7 +179,7 @@ namespace Area.API.Controllers
             [FromQuery] string state
         )
         {
-            var authRequestBody = JsonConvert.DeserializeObject<ExternalAuthModel>(HttpUtility.UrlDecode(state));
+            var authRequestBody = JsonConvert.DeserializeObject<ExternalAuthModel>(state);
 
             var redirectUrl = new UriBuilder(authRequestBody.RedirectUrl);
             var query = HttpUtility.ParseQueryString(redirectUrl.Query);
@@ -222,7 +222,7 @@ namespace Area.API.Controllers
             ExternalAuthModel body
             )
         {
-            var state = HttpUtility.UrlEncode(JsonConvert.SerializeObject(body));
+            var state = JsonConvert.SerializeObject(body);
 
             return new RedirectResult(await _google.GetLoginLinkUriAsync(state, cancellationToken));
         }
@@ -236,7 +236,7 @@ namespace Area.API.Controllers
             [FromQuery] string state
         )
         {
-            var authRequestBody = JsonConvert.DeserializeObject<ExternalAuthModel>(HttpUtility.UrlDecode(state));
+            var authRequestBody = JsonConvert.DeserializeObject<ExternalAuthModel>(state);
 
             var redirectUrl = new UriBuilder(authRequestBody.RedirectUrl);
             var query = HttpUtility.ParseQueryString(redirectUrl.Query);
@@ -297,7 +297,7 @@ namespace Area.API.Controllers
             [FromQuery] string state
         )
         {
-            var authRequestBody = JsonConvert.DeserializeObject<ExternalAuthModel>(HttpUtility.UrlDecode(state));
+            var authRequestBody = JsonConvert.DeserializeObject<ExternalAuthModel>(state);
 
             var redirectUrl = new UriBuilder(authRequestBody.RedirectUrl);
             var query = HttpUtility.ParseQueryString(redirectUrl.Query);
