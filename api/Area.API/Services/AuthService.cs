@@ -46,18 +46,18 @@ namespace Area.API.Services
             public bool Successful => Error == null;
         }
         
-        public async Task<AuthenticationResult> AuthenticateExternalUserAsync(UserInfo userInfo, UserModel.UserType type)
+        public async Task<AuthenticationResult> AuthenticateExternalUserAsync(string email, UserModel.UserType type)
         {
             string claimType = type.ToString();
             IdentityResult? identityResult = null;
             string? code = null;
 
-            var user = _userRepository.GetUser(email: userInfo.Email, type: type,
+            var user = _userRepository.GetUser(email: email, type: type,
                 asNoTracking: false);
             if (user == null) {
                 user = new UserModel {
-                    UserName = userInfo.Email,
-                    Email = userInfo.Email,
+                    UserName = email,
+                    Email = email,
                     Type = type
                 };
                 identityResult = await _userRepository.AddUser(user);
