@@ -181,7 +181,7 @@
         "summary": "Sign-in/register with Facebook",
         "description": "Redirect the user to this endpoint to let them sign-in/register with Facebook. The user will be redirected back to the client with an authentication code once done.",
         "requestBody": {
-          "description": "Mandatory information to be able to redirect the url back to the client once the operation is done",
+          "description": "Mandatory information to be able to redirect the user back to the client once the operation is done",
           "content": {
             "application/json-patch+json": {
               "schema": {
@@ -232,7 +232,7 @@
         "summary": "Sign-in/register with Google",
         "description": "Redirect the user to this endpoint to let them sign-in/register with Google. The user will be redirected back to the client with an authentication code once done.",
         "requestBody": {
-          "description": "Mandatory information to be able to redirect the url back to the client once the operation is done",
+          "description": "Mandatory information to be able to redirect the user back to the client once the operation is done",
           "content": {
             "application/json-patch+json": {
               "schema": {
@@ -271,6 +271,57 @@
           },
           "302": {
             "description": "Redirection to Google's sign-in page"
+          }
+        }
+      }
+    },
+    "/api/auth/microsoft": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Sign-in/register with Microsoft",
+        "description": "Redirect the user to this endpoint to let them sign-in/register with Microsoft. The user will be redirected back to the client with an authentication code once done.",
+        "requestBody": {
+          "description": "Mandatory information to be able to redirect the user back to the client once the operation is done",
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExternalAuth"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExternalAuth"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExternalAuth"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExternalAuth"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server Error"
+          },
+          "302": {
+            "description": "Redirection to Microsoft's sign-in page"
           }
         }
       }

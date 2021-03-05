@@ -33,6 +33,14 @@ namespace Area.API.Constants
             public const string RedirectUri = Base + ":" + nameof(RedirectUri);
         }
 
+        public static class Microsoft
+        {
+            public const string Base = nameof(Microsoft);
+            public const string ClientId = Base + ":" + nameof(ClientId);
+            public const string ClientSecret = Base + ":" + nameof(ClientSecret);
+            public const string AuthRedirectUri = Base + ":" + nameof(AuthRedirectUri);
+        }
+
         public static class Imgur
         {
             public const string Base = nameof(Imgur);

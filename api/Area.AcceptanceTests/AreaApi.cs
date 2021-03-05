@@ -91,5 +91,8 @@ namespace Area.AcceptanceTests
 
         public async Task<HttpResponseMessage> SignInWithGoogle(ExternalAuthModel form) =>
             await Client.RawPostAsync(RouteConstants.Auth.SignInWithGoogle, form);
+
+        public async Task<HttpResponseMessage> SignInWithMicrosoft(ExternalAuthModel form) =>
+            await Client.RawPostAsync(RouteConstants.Auth.SignInWithMicrosoft, form);
     }
 }

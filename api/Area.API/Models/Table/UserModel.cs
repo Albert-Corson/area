@@ -11,7 +11,8 @@ namespace Area.API.Models.Table
         public enum UserType {
             Area,
             Facebook,
-            Google
+            Google,
+            Microsoft
         }
 
         public class RoleModel : IdentityRole<int>
