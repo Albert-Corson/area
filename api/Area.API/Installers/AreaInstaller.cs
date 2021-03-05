@@ -48,6 +48,7 @@ namespace Area.API.Installers
 
             services.AddScoped<ImgurService>();
             services.AddScoped<SpotifyService>();
+            services.AddScoped<MicrosoftService>();
 
             return services;
         }

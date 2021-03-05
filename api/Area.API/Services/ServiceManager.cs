@@ -15,13 +15,15 @@ namespace Area.API.Services
         public ServiceManager(ILoggerFactory loggerFactory,
             UserRepository userRepository,
             ImgurService imgur,
-            SpotifyService spotify)
+            SpotifyService spotify,
+            MicrosoftService microsoft)
         {
             _userRepository = userRepository;
             _logger = loggerFactory.CreateLogger("Service manager");
             _services = new Dictionary<int, IService> {
                 {imgur.Id, imgur},
-                {spotify.Id, spotify}
+                {spotify.Id, spotify},
+                {microsoft.Id, microsoft}
             };
         }
 
