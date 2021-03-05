@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Area.API.Exceptions.Http;
 using Area.API.Extensions;
@@ -10,16 +9,16 @@ using Imgur.API.Enums;
 
 namespace Area.API.Services.Widgets.Imgur
 {
-    public class ImgurGalleryWidgetService : IWidgetService
+    public class ImgurGalleryWidget : IWidget
     {
-        public ImgurGalleryWidgetService(ImgurServiceService imgur)
+        public ImgurGalleryWidget(ImgurService imgur)
         {
             Imgur = imgur;
         }
 
-        private ImgurServiceService Imgur { get; }
+        private ImgurService Imgur { get; }
 
-        public string Name { get; } = "Imgur public gallery";
+        public int Id { get; } = 1;
 
         public void CallWidgetApi(IEnumerable<ParamModel> widgetCallParams,
             ref WidgetCallResponseModel response)
@@ -35,7 +34,7 @@ namespace Area.API.Services.Widgets.Imgur
             if (!task.IsCompletedSuccessfully)
                 throw new InternalServerErrorHttpException("Could not reach Imgur");
 
-            response.Items = ImgurServiceService.WidgetResponseItemsFromGallery(task.Result);
+            response.Items = ImgurService.WidgetResponseItemsFromGallery(task.Result);
         }
     }
 }

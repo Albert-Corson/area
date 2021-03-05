@@ -4,38 +4,29 @@ using Area.API.Exceptions.Http;
 using Area.API.Extensions;
 using Area.API.Models;
 using Area.API.Models.Table;
-using Area.API.Models.Table.Owned;
 using Area.API.Models.Widgets;
 using Area.API.Services.Services;
 using SpotifyAPI.Web;
 
 namespace Area.API.Services.Widgets.Spotify
 {
-    public class SpotifyFavoriteArtistsWidgetService : IWidgetService
+    public class SpotifyFavoriteArtistsWidget : IWidget
     {
-        public SpotifyFavoriteArtistsWidgetService(SpotifyServiceService spotify)
+        public SpotifyFavoriteArtistsWidget(SpotifyService spotify)
         {
             SpotifyService = spotify;
         }
 
-        private SpotifyServiceService SpotifyService { get; }
+        private SpotifyService SpotifyService { get; }
 
-        private SpotifyClient? SpotifyClient { get; set; }
-
-        public string Name { get; } = "Spotify favorite artists";
-
-        public bool ValidateServiceAuth(UserServiceTokensModel serviceTokens)
-        {
-            SpotifyClient = SpotifyService.ClientFromJson(serviceTokens.Json!);
-            return SpotifyClient != null;
-        }
+        public int Id { get; } = 6;
 
         public void CallWidgetApi(IEnumerable<ParamModel> widgetCallParams,
             ref WidgetCallResponseModel response)
         {
             var timeRange = widgetCallParams.GetEnumValue<PersonalizationTopRequest.TimeRange>("time_range");
 
-            var task = SpotifyClient!.Personalization.GetTopArtists(new PersonalizationTopRequest {
+            var task = SpotifyService.Client!.Personalization.GetTopArtists(new PersonalizationTopRequest {
                 TimeRangeParam = timeRange
             });
             task.Wait();

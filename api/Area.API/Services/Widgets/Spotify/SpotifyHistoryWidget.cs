@@ -3,36 +3,26 @@ using System.Linq;
 using Area.API.Exceptions.Http;
 using Area.API.Models;
 using Area.API.Models.Table;
-using Area.API.Models.Table.Owned;
 using Area.API.Models.Widgets;
 using Area.API.Services.Services;
-using SpotifyAPI.Web;
 
 namespace Area.API.Services.Widgets.Spotify
 {
-    public class SpotifyHistoryWidgetService : IWidgetService
+    public class SpotifyHistoryWidget : IWidget
     {
-        public SpotifyHistoryWidgetService(SpotifyServiceService spotify)
+        public SpotifyHistoryWidget(SpotifyService spotify)
         {
             SpotifyService = spotify;
         }
 
-        private SpotifyServiceService SpotifyService { get; }
+        private SpotifyService SpotifyService { get; }
 
-        private SpotifyClient? SpotifyClient { get; set; }
-
-        public string Name { get; } = "Spotify history";
-
-        public bool ValidateServiceAuth(UserServiceTokensModel serviceTokens)
-        {
-            SpotifyClient = SpotifyService.ClientFromJson(serviceTokens.Json!);
-            return SpotifyClient != null;
-        }
+        public int Id { get; } = 8;
 
         public void CallWidgetApi(IEnumerable<ParamModel> _,
             ref WidgetCallResponseModel response)
         {
-            var task = SpotifyClient!.Player.GetRecentlyPlayed();
+            var task = SpotifyService.Client!.Player.GetRecentlyPlayed();
             task.Wait();
 
             if (!task.IsCompletedSuccessfully)

@@ -7,6 +7,7 @@ using Area.API.Extensions;
 using Area.API.Models;
 using Area.API.Models.Table;
 using Area.API.Models.Widgets;
+using Area.API.Services.Services;
 using Microsoft.Extensions.Configuration;
 using NewsAPI;
 using NewsAPI.Constants;
@@ -14,11 +15,11 @@ using NewsAPI.Models;
 
 namespace Area.API.Services.Widgets.NewsApi
 {
-    public class NewsApiTopHeadlinesWidgetService : IWidgetService
+    public class NewsApiSearchWidget : IWidget
     {
         private readonly NewsApiClient? _client;
 
-        public NewsApiTopHeadlinesWidgetService(IConfiguration configuration)
+        public NewsApiSearchWidget(IConfiguration configuration)
         {
             var apiKey = configuration[AuthConstants.NewsApi.Key];
 
@@ -26,19 +27,18 @@ namespace Area.API.Services.Widgets.NewsApi
                 _client = new NewsApiClient(apiKey);
         }
 
-        public string Name { get; } = "Top headlines";
+        public int Id { get; } = 10;
 
         public void CallWidgetApi(IEnumerable<ParamModel> widgetCallParams,
             ref WidgetCallResponseModel response)
         {
-
-            var topHeadlinesRequest = new TopHeadlinesRequest {
-                Country = widgetCallParams.GetEnumValue<Countries>("country"),
-                Category = widgetCallParams.GetEnumValue<Categories>("category"),
+            var everythingRequest = new EverythingRequest {
+                From = DateTime.Now.Subtract(TimeSpan.FromDays(21)),
+                Q = widgetCallParams.GetValue("query"),
                 Language = widgetCallParams.GetEnumValue<Languages>("language")
             };
 
-            var news = _client?.GetTopHeadlines(topHeadlinesRequest);
+            var news = _client?.GetEverything(everythingRequest);
 
             if (news == null)
                 throw new InternalServerErrorHttpException("Could not reach NewsApi");

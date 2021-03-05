@@ -10,11 +10,11 @@ using Microsoft.Extensions.Configuration;
 
 namespace Area.API.Services.Widgets.CatApi
 {
-    public class CatApiRandomImagesWidgetService : IWidgetService
+    public class CatApiRandomImagesWidget : IWidget
     {
         private readonly string _apiKey;
 
-        public CatApiRandomImagesWidgetService(IConfiguration configuration)
+        public CatApiRandomImagesWidget(IConfiguration configuration)
         {
             _apiKey = configuration[AuthConstants.CatApi.Key];
             Client = new CatClient();
@@ -22,7 +22,7 @@ namespace Area.API.Services.Widgets.CatApi
 
         private CatClient Client { get; }
 
-        public string Name { get; } = "Random cat images";
+        public int Id { get; } = 11;
 
         public void CallWidgetApi(IEnumerable<ParamModel> _,
             ref WidgetCallResponseModel response)
