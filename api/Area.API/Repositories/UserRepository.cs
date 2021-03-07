@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Area.API.DbContexts;
+using Area.API.Models.Request;
 using Area.API.Models.Table;
 using Area.API.Models.Table.ManyToMany;
 using Area.API.Models.Table.Owned;
@@ -103,6 +104,11 @@ namespace Area.API.Repositories
             _database.Users.Remove(user);
         }
 
+        public async Task<IdentityResult>ChangePassword(UserModel user, ChangePasswordModel changePassword)
+        {
+            return await _userManager.ChangePasswordAsync(user, changePassword.Old, changePassword.New);
+        }
+
         public bool AddWidgetSubscription(int userId, int widgetId)
         {
             var dbSet = _database.Set<UserWidgetModel>();
@@ -174,6 +180,18 @@ namespace Area.API.Repositories
             if (device == null)
                 return false;
             user!.Devices.Remove(device);
+            return true;
+        }
+
+        public bool RemoveDevices(int userId)
+        {
+            var user = GetUser(userId, asNoTracking: false);
+
+            if (user == null)
+            {
+                return false;
+            }
+            user!.Devices.Clear();
             return true;
         }
     }

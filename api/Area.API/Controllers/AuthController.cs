@@ -16,6 +16,7 @@ using Area.API.Repositories;
 using Area.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Graph;
@@ -87,6 +88,30 @@ namespace Area.API.Controllers
                     AccessToken = await _authService.GenerateAccessToken(user.Id, HttpContext.Connection.RemoteIpAddress)
                 }
             };
+        }
+
+        [HttpPost(RouteConstants.Auth.ChangePassword)]
+        [SwaggerOperation(
+            Summary = "Change pawword",
+            Description = "## Allow the user to change his passowrd"
+        )]
+        public async Task<StatusModel> ChangePassword(
+            ChangePasswordModel body
+        )
+        {
+            User.TryGetUser(_userRepository, out var user);
+
+            IdentityResult res = await _userRepository.ChangePassword(user, body);
+            if (res.Succeeded == false)
+            {
+                throw new InternalServerErrorHttpException("Can't change password");
+            }
+
+            if (body.ResetDevices)
+            {
+                _userRepository.RemoveDevices(user.Id);
+            }
+            return new StatusModel(true);
         }
 
         [HttpPost(RouteConstants.Auth.RefreshAccessToken)]
