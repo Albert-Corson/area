@@ -96,15 +96,17 @@ namespace Area.API.Controllers
             Description = "## Allow the user to change his passowrd"
         )]
         public async Task<StatusModel> ChangePassword(
+            [FromBody]
             ChangePasswordModel body
         )
         {
-            User.TryGetUser(_userRepository, out var user);
+            User.TryGetUserId(out var userId);
+            var user = _userRepository.GetUser(userId, asNoTracking: false)!;
 
             IdentityResult res = await _userRepository.ChangePassword(user, body);
             if (res.Succeeded == false)
             {
-                throw new InternalServerErrorHttpException("Can't change password");
+                throw new BadRequestHttpException("Can't change password");
             }
 
             if (body.ResetDevices)
