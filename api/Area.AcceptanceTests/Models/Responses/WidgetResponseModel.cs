@@ -23,11 +23,8 @@ namespace Area.AcceptanceTests.Models.Responses
         [JsonProperty("params", Required = Required.Always)]
         public IEnumerable<ParamModel> CallParams { get; set;  } = null!;
 
-        [JsonProperty("items", Required = Required.DisallowNull)]
-        public IEnumerable<TItem>? Items { get; set; }
-
-        [JsonProperty("item", Required = Required.DisallowNull)]
-        public TItem? Item { get; set; }
+        [JsonProperty("items", Required = Required.Always)]
+        public IEnumerable<TItem> Items { get; set; } = null!;
     }
 
     public class WidgetResponseModel : WidgetResponseModel<WidgetResponseItemModel>

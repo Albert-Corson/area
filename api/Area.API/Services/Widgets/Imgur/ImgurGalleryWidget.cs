@@ -20,8 +20,7 @@ namespace Area.API.Services.Widgets.Imgur
 
         public int Id { get; } = 1;
 
-        public void CallWidgetApi(IEnumerable<ParamModel> widgetCallParams,
-            ref WidgetCallResponseModel response)
+        public IEnumerable<WidgetCallResponseItemModel> CallWidgetApi(IEnumerable<ParamModel> widgetCallParams)
         {
             if (Imgur.Client == null)
                 throw new InternalServerErrorHttpException();
@@ -34,7 +33,7 @@ namespace Area.API.Services.Widgets.Imgur
             if (!task.IsCompletedSuccessfully)
                 throw new InternalServerErrorHttpException("Could not reach Imgur");
 
-            response.Items = ImgurService.WidgetResponseItemsFromGallery(task.Result);
+            return ImgurService.WidgetResponseItemsFromGallery(task.Result);
         }
     }
 }

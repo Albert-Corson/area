@@ -20,7 +20,7 @@ namespace Area.API.Services.Widgets.Microsoft
 
         public int Id { get; } = 14;
 
-        public void CallWidgetApi(IEnumerable<ParamModel> _, ref WidgetCallResponseModel response)
+        public IEnumerable<WidgetCallResponseItemModel> CallWidgetApi(IEnumerable<ParamModel> _)
         {
             var messages = Microsoft.Client!.Me.Messages
                 .Request()
@@ -30,7 +30,7 @@ namespace Area.API.Services.Widgets.Microsoft
                 .GetAsync()
                 .Await();
 
-            response.Items = from it in messages where !(it is EventMessageResponse) select new MicrosoftEmailModel(it);
+            return from it in messages where !(it is EventMessageResponse) select new MicrosoftEmailModel(it);
         }
     }
 }

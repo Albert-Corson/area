@@ -93,10 +93,7 @@ namespace Area.API.Services
                 user.WidgetParams,
                 context.Request.Query);
 
-            var response = new WidgetCallResponseModel(widgetCallParams);
-
-            widgetService.CallWidgetApi(widgetCallParams, ref response);
-            return response;
+            return new WidgetCallResponseModel(widgetCallParams, widgetService.CallWidgetApi(widgetCallParams));
         }
 
         public static List<ParamModel> BuildUserWidgetCallParams(IEnumerable<UserParamModel> userParams,

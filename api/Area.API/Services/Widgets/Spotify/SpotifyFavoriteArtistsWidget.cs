@@ -21,8 +21,7 @@ namespace Area.API.Services.Widgets.Spotify
 
         public int Id { get; } = 6;
 
-        public void CallWidgetApi(IEnumerable<ParamModel> widgetCallParams,
-            ref WidgetCallResponseModel response)
+        public IEnumerable<WidgetCallResponseItemModel> CallWidgetApi(IEnumerable<ParamModel> widgetCallParams)
         {
             var timeRange = widgetCallParams.GetEnumValue<PersonalizationTopRequest.TimeRange>("time_range");
 
@@ -34,7 +33,7 @@ namespace Area.API.Services.Widgets.Spotify
             if (!task.IsCompletedSuccessfully)
                 throw new InternalServerErrorHttpException("Couldn't reach Spotify");
 
-            response.Items = task.Result.Items?.Select(artist => new SpotifyArtistModel(artist)) ??
+            return task.Result.Items?.Select(artist => new SpotifyArtistModel(artist)) ??
                 new List<SpotifyArtistModel>();
         }
     }

@@ -19,8 +19,7 @@ namespace Area.API.Services.Widgets.Spotify
 
         public int Id { get; } = 8;
 
-        public void CallWidgetApi(IEnumerable<ParamModel> _,
-            ref WidgetCallResponseModel response)
+        public IEnumerable<WidgetCallResponseItemModel> CallWidgetApi(IEnumerable<ParamModel> _)
         {
             var task = SpotifyService.Client!.Player.GetRecentlyPlayed();
             task.Wait();
@@ -28,7 +27,7 @@ namespace Area.API.Services.Widgets.Spotify
             if (!task.IsCompletedSuccessfully)
                 throw new InternalServerErrorHttpException("Couldn't reach Spotify");
 
-            response.Items = task.Result.Items?.Select(item => new SpotifyTrackModel(item.Track)) ??
+            return task.Result.Items?.Select(item => new SpotifyTrackModel(item.Track)) ??
                 new List<SpotifyTrackModel>();
         }
     }

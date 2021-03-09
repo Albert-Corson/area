@@ -22,8 +22,7 @@ namespace Area.API.Services.Widgets.Imgur
 
         public int Id { get; } = 3;
 
-        public void CallWidgetApi(IEnumerable<ParamModel> _,
-            ref WidgetCallResponseModel response)
+        public IEnumerable<WidgetCallResponseItemModel> CallWidgetApi(IEnumerable<ParamModel> _)
         {
             if (Imgur.Client == null || _oAuth2Token == null)
                 throw new InternalServerErrorHttpException();
@@ -53,7 +52,7 @@ namespace Area.API.Services.Widgets.Imgur
                 });
             }
 
-            response.Items = items;
+            return items;
         }
     }
 }

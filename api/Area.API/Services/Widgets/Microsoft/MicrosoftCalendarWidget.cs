@@ -21,7 +21,7 @@ namespace Area.API.Services.Widgets.Microsoft
 
         public int Id { get; } = 13;
 
-        public void CallWidgetApi(IEnumerable<ParamModel> widgetCallParams, ref WidgetCallResponseModel response)
+        public IEnumerable<WidgetCallResponseItemModel> CallWidgetApi(IEnumerable<ParamModel> widgetCallParams)
         {
             var today = DateTime.Today.ToUniversalTime();
             var options = new List<Option> {
@@ -35,7 +35,7 @@ namespace Area.API.Services.Widgets.Microsoft
                 .GetAsync()
                 .Await();
 
-            response.Items = events.Select(ev => new MicrosoftEventModel(ev));
+            return events.Select(ev => new MicrosoftEventModel(ev));
         }
     }
 }

@@ -8,6 +8,6 @@ namespace Area.API.Services.Widgets
     {
         public int Id { get; }
 
-        public void CallWidgetApi(IEnumerable<ParamModel> widgetCallParams, ref WidgetCallResponseModel response);
+        public IEnumerable<WidgetCallResponseItemModel> CallWidgetApi(IEnumerable<ParamModel> widgetCallParams);
     }
 }

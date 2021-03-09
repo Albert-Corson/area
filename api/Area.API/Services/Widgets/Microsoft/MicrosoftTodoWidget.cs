@@ -20,7 +20,7 @@ namespace Area.API.Services.Widgets.Microsoft
 
         public int Id { get; } = 15;
 
-        public void CallWidgetApi(IEnumerable<ParamModel> widgetCallParams, ref WidgetCallResponseModel response)
+        public IEnumerable<WidgetCallResponseItemModel> CallWidgetApi(IEnumerable<ParamModel> widgetCallParams)
         {
             var taskLists = Microsoft.Client!.Me.Todo.Lists.Request().GetAsync().Await();
 
@@ -40,7 +40,7 @@ namespace Area.API.Services.Widgets.Microsoft
                     select new MicrosoftTodoModel(it));
             }
 
-            response.Items = list;
+            return list;
         }
     }
 }

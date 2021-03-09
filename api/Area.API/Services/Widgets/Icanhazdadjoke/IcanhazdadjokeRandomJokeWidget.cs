@@ -12,8 +12,7 @@ namespace Area.API.Services.Widgets.Icanhazdadjoke
     {
         public int Id { get; } = 12;
 
-        public void CallWidgetApi(IEnumerable<ParamModel> _,
-            ref WidgetCallResponseModel response)
+        public IEnumerable<WidgetCallResponseItemModel> CallWidgetApi(IEnumerable<ParamModel> _)
         {
             var client = new DadJokeClient("Area Epitech school project", "https://github.com/Albert-Corson");
 
@@ -23,8 +22,10 @@ namespace Area.API.Services.Widgets.Icanhazdadjoke
             if (!task.IsCompletedSuccessfully || task.Result.Status != (int) HttpStatusCode.OK)
                 throw new InternalServerErrorHttpException("Could not reach icanhazdadjoke");
 
-            response.Item = new WidgetCallResponseItemModel {
-                Content = task.Result.Joke
+            return new[] {
+                new WidgetCallResponseItemModel {
+                    Content = task.Result.Joke
+                }
             };
         }
     }

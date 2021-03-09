@@ -29,8 +29,7 @@ namespace Area.API.Services.Widgets.NewsApi
 
         public int Id { get; } = 10;
 
-        public void CallWidgetApi(IEnumerable<ParamModel> widgetCallParams,
-            ref WidgetCallResponseModel response)
+        public IEnumerable<WidgetCallResponseItemModel> CallWidgetApi(IEnumerable<ParamModel> widgetCallParams)
         {
             var everythingRequest = new EverythingRequest {
                 From = DateTime.UtcNow.Subtract(TimeSpan.FromDays(21)),
@@ -45,7 +44,7 @@ namespace Area.API.Services.Widgets.NewsApi
             if (news.Status != Statuses.Ok)
                 throw new BadRequestHttpException(news.Error.Message);
 
-            response.Items = news.Articles.Select(article => new NewsApiArticleModel(article));
+            return news.Articles.Select(article => new NewsApiArticleModel(article));
         }
     }
 }

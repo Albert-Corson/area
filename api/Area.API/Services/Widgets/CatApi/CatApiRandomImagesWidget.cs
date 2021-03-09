@@ -24,8 +24,7 @@ namespace Area.API.Services.Widgets.CatApi
 
         public int Id { get; } = 11;
 
-        public void CallWidgetApi(IEnumerable<ParamModel> _,
-            ref WidgetCallResponseModel response)
+        public IEnumerable<WidgetCallResponseItemModel> CallWidgetApi(IEnumerable<ParamModel> _)
         {
             try {
                 var request = new GetRequestBuilder()
@@ -37,7 +36,7 @@ namespace Area.API.Services.Widgets.CatApi
                 if (images == null)
                     throw new InternalServerErrorHttpException("Could not reach The Cat Api");
 
-                response.Items = images.Select(image => new WidgetCallResponseItemModel {
+                return images.Select(image => new WidgetCallResponseItemModel {
                     Image = image.Url,
                     Link = image.SourceUrl
                 });

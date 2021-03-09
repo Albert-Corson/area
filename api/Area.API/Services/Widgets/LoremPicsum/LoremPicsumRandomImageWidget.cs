@@ -14,8 +14,7 @@ namespace Area.API.Services.Widgets.LoremPicsum
     {
         public int Id { get; } = 4;
 
-        public void CallWidgetApi(IEnumerable<ParamModel> widgetCallParams,
-            ref WidgetCallResponseModel response)
+        public IEnumerable<WidgetCallResponseItemModel> CallWidgetApi(IEnumerable<ParamModel> widgetCallParams)
         {
             var width = widgetCallParams.GetValue<int>("width");
             var height = widgetCallParams.GetValue<int>("height");
@@ -40,9 +39,11 @@ namespace Area.API.Services.Widgets.LoremPicsum
             if (locationHeaderParameter == null || !(locationHeaderParameter.Value is string location))
                 throw new InternalServerErrorHttpException();
 
-            response.Item = new WidgetCallResponseItemModel {
-                Image = location,
-                Link = location
+            return new[] {
+                new WidgetCallResponseItemModel {
+                    Image = location,
+                    Link = location
+                }
             };
         }
     }
