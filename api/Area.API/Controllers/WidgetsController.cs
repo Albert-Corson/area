@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Area.API.Constants;
 using Area.API.Exceptions.Http;
 using Area.API.Extensions;
@@ -107,13 +108,13 @@ namespace Area.API.Controllers
 ## The API's request result is interpolated into a its corresponding data scheme (inheriting from `WidgetCallResponse`) and returned"
         )]
         [SwaggerResponse((int) HttpStatusCode.NotFound, "The widget doesn't exist")]
-        public ResponseModel<WidgetCallResponseModel> CallWidget(
+        public async Task<ResponseModel<WidgetCallResponseModel>> CallWidget(
             [FromRoute] [Required] [Range(1, int.MaxValue)] [SwaggerParameter("The widget's ID")]
             int? widgetId
         )
         {
             return new ResponseModel<WidgetCallResponseModel> {
-                Data = _widgetManager.CallWidgetById(HttpContext, widgetId!.Value)
+                Data = await _widgetManager.CallWidgetByIdAsync(HttpContext, widgetId!.Value)
             };
         }
 

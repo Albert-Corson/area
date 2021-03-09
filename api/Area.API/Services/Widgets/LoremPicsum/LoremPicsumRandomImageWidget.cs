@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Area.API.Exceptions.Http;
 using Area.API.Extensions;
 using Area.API.Models;
 using Area.API.Models.Table;
-using Area.API.Services.Services;
 using RestSharp;
 
 namespace Area.API.Services.Widgets.LoremPicsum
@@ -14,7 +14,8 @@ namespace Area.API.Services.Widgets.LoremPicsum
     {
         public int Id { get; } = 4;
 
-        public IEnumerable<WidgetCallResponseItemModel> CallWidgetApi(IEnumerable<ParamModel> widgetCallParams)
+        public async Task<IEnumerable<WidgetCallResponseItemModel>> CallWidgetApiAsync(
+            IEnumerable<ParamModel> widgetCallParams)
         {
             var width = widgetCallParams.GetValue<int>("width");
             var height = widgetCallParams.GetValue<int>("height");
@@ -27,7 +28,7 @@ namespace Area.API.Services.Widgets.LoremPicsum
                 ThrowOnAnyError = false
             };
             var request = new RestRequest(Method.GET);
-            var restResponse = client.Execute(request);
+            var restResponse = await client.ExecuteAsync(request);
             if (restResponse.ResponseStatus != ResponseStatus.Completed)
                 throw new InternalServerErrorHttpException();
 

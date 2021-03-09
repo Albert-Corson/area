@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Area.API.Exceptions.Http;
 using Area.API.Extensions;
 using Area.API.Models;
@@ -69,7 +70,7 @@ namespace Area.API.Services
             };
         }
 
-        public WidgetCallResponseModel CallWidgetById(HttpContext context, int widgetId)
+        public async Task<WidgetCallResponseModel> CallWidgetByIdAsync(HttpContext context, int widgetId)
         {
             if (!context.User.TryGetUserId(out var userId))
                 throw new InternalServerErrorHttpException(); // this means that the JWT falsely validated
@@ -93,7 +94,9 @@ namespace Area.API.Services
                 user.WidgetParams,
                 context.Request.Query);
 
-            return new WidgetCallResponseModel(widgetCallParams, widgetService.CallWidgetApi(widgetCallParams));
+            var items = await widgetService.CallWidgetApiAsync(widgetCallParams);
+
+            return new WidgetCallResponseModel(widgetCallParams, items);
         }
 
         public static List<ParamModel> BuildUserWidgetCallParams(IEnumerable<UserParamModel> userParams,

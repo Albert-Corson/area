@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Area.API.Exceptions.Http;
 using Area.API.Extensions;
 using Area.API.Models;
@@ -20,7 +21,8 @@ namespace Area.API.Services.Widgets.Imgur
 
         public int Id { get; } = 1;
 
-        public IEnumerable<WidgetCallResponseItemModel> CallWidgetApi(IEnumerable<ParamModel> widgetCallParams)
+        public async Task<IEnumerable<WidgetCallResponseItemModel>> CallWidgetApiAsync(
+            IEnumerable<ParamModel> widgetCallParams)
         {
             if (Imgur.Client == null)
                 throw new InternalServerErrorHttpException();
@@ -28,12 +30,9 @@ namespace Area.API.Services.Widgets.Imgur
 
             var section = widgetCallParams.GetEnumValue<GallerySection>("section");
 
-            var task = galleryEndpoint.GetGalleryAsync(section);
-            task.Wait();
-            if (!task.IsCompletedSuccessfully)
-                throw new InternalServerErrorHttpException("Could not reach Imgur");
+            var result = await galleryEndpoint.GetGalleryAsync(section);
 
-            return ImgurService.WidgetResponseItemsFromGallery(task.Result);
+            return ImgurService.WidgetResponseItemsFromGallery(result);
         }
     }
 }

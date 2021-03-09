@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Area.API.Models;
 using Area.API.Models.Table;
 using Area.API.Models.Widgets;
 using Area.API.Services.Services;
 using Microsoft.Graph;
-using Swan;
 
 namespace Area.API.Services.Widgets.Microsoft
 {
@@ -21,7 +21,8 @@ namespace Area.API.Services.Widgets.Microsoft
 
         public int Id { get; } = 13;
 
-        public IEnumerable<WidgetCallResponseItemModel> CallWidgetApi(IEnumerable<ParamModel> widgetCallParams)
+        public async Task<IEnumerable<WidgetCallResponseItemModel>> CallWidgetApiAsync(
+            IEnumerable<ParamModel> widgetCallParams)
         {
             var today = DateTime.Today.ToUniversalTime();
             var options = new List<Option> {
@@ -29,11 +30,10 @@ namespace Area.API.Services.Widgets.Microsoft
                 new QueryOption("enddatetime", today.AddDays(7).ToString("s"))
             };
 
-            var events = Microsoft.Client!.Me.CalendarView
+            var events = await Microsoft.Client!.Me.CalendarView
                 .Request(options)
                 .Select("subject,bodyPreview,organizer,attendees,start,end,location,webLink")
-                .GetAsync()
-                .Await();
+                .GetAsync();
 
             return events.Select(ev => new MicrosoftEventModel(ev));
         }
