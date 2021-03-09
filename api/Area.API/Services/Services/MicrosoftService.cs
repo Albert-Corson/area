@@ -15,7 +15,11 @@ namespace Area.API.Services.Services
     public class MicrosoftService : IService
     {
         private readonly AuthorizationCodeProvider _microsoftProvider;
-        private readonly IEnumerable<string> _scopes = new[] {"user.read"};
+        private readonly IEnumerable<string> _scopes = new[] {
+            "Mail.Read",
+            "Calendars.Read",
+            "Tasks.Read"
+        };
 
         public MicrosoftService(IConfiguration configuration)
         {

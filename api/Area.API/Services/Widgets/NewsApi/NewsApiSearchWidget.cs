@@ -33,7 +33,7 @@ namespace Area.API.Services.Widgets.NewsApi
             ref WidgetCallResponseModel response)
         {
             var everythingRequest = new EverythingRequest {
-                From = DateTime.Now.Subtract(TimeSpan.FromDays(21)),
+                From = DateTime.UtcNow.Subtract(TimeSpan.FromDays(21)),
                 Q = widgetCallParams.GetValue("query"),
                 Language = widgetCallParams.GetEnumValue<Languages>("language")
             };

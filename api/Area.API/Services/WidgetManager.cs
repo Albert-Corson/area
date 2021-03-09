@@ -13,6 +13,7 @@ using Area.API.Services.Widgets.CatApi;
 using Area.API.Services.Widgets.Icanhazdadjoke;
 using Area.API.Services.Widgets.Imgur;
 using Area.API.Services.Widgets.LoremPicsum;
+using Area.API.Services.Widgets.Microsoft;
 using Area.API.Services.Widgets.NewsApi;
 using Area.API.Services.Widgets.Spotify;
 using Microsoft.AspNetCore.Http;
@@ -41,7 +42,10 @@ namespace Area.API.Services
             NewsApiTopHeadlinesWidget newsApiTopHeadlines,
             NewsApiSearchWidget newsApiSearch,
             CatApiRandomImagesWidget catApiRandomImages,
-            IcanhazdadjokeRandomJokeWidget icanhazdadjokeRandomJoke)
+            IcanhazdadjokeRandomJokeWidget icanhazdadjokeRandomJoke,
+            MicrosoftCalendarWidget microsoftCalendarWidget,
+            MicrosoftTodoWidget microsoftTodoWidget,
+            MicrosoftUnreadEmailsWidget microsoftUnreadEmailsWidget)
         {
             _userRepository = userRepository;
             _widgetRepository = widgetRepository;
@@ -58,7 +62,10 @@ namespace Area.API.Services
                 {newsApiTopHeadlines.Id, newsApiTopHeadlines},
                 {newsApiSearch.Id, newsApiSearch},
                 {catApiRandomImages.Id, catApiRandomImages},
-                {icanhazdadjokeRandomJoke.Id, icanhazdadjokeRandomJoke}
+                {icanhazdadjokeRandomJoke.Id, icanhazdadjokeRandomJoke},
+                {microsoftCalendarWidget.Id, microsoftCalendarWidget},
+                {microsoftTodoWidget.Id, microsoftTodoWidget},
+                {microsoftUnreadEmailsWidget.Id, microsoftUnreadEmailsWidget}
             };
         }
 

@@ -11,7 +11,7 @@ namespace Area.AcceptanceTests.Models.Responses
         public uint Id { get; set; }
 
         [JsonProperty("last_used", Required = Required.Always)]
-        public long LastUsed { get; set; } = DateTime.Now.Ticks;
+        public long LastUsed { get; set; } = DateTime.UtcNow.Ticks;
 
         [JsonProperty("country", Required = Required.Always)]
         public string Country { get; set; } = "Unknown";

@@ -5,6 +5,7 @@ using Area.API.Services.Widgets.CatApi;
 using Area.API.Services.Widgets.Icanhazdadjoke;
 using Area.API.Services.Widgets.Imgur;
 using Area.API.Services.Widgets.LoremPicsum;
+using Area.API.Services.Widgets.Microsoft;
 using Area.API.Services.Widgets.NewsApi;
 using Area.API.Services.Widgets.Spotify;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,6 +39,9 @@ namespace Area.API.Installers
             services.AddScoped<NewsApiSearchWidget>();
             services.AddScoped<CatApiRandomImagesWidget>();
             services.AddScoped<IcanhazdadjokeRandomJokeWidget>();
+            services.AddScoped<MicrosoftCalendarWidget>();
+            services.AddScoped<MicrosoftTodoWidget>();
+            services.AddScoped<MicrosoftUnreadEmailsWidget>();
 
             return services;
         }
