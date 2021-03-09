@@ -14,24 +14,23 @@ interface Props {
 }
 
 const ServiceAuthScreen = observer(({navigation, route}: Props): JSX.Element => {
-  const widgetStore = useContext(RootStoreContext).widget
   const userStore = useContext(RootStoreContext).user
-  const {authUrl, widgetId} = route.params
-
-  const onMessage = async () => {
-    if (widgetId >= 0) {
-      await widgetStore.subscribeToWidget(widgetId)
-    }
-    navigation.goBack()
-  }
+  const {authUrl, callback, tokenRequired, method} = route.params
 
   return (
     <SafeAreaView style={{height: '100%'}}>
       <WebView
-        javaScriptEnabled={true}
-        injectedJavaScript={'window.ReactNativeWebView.postMessage(document.body.innerHTML)'}
-        source={{uri: `http://${API_HOST}:${API_PORT}/api${authUrl}?token=${userStore.userJWT?.accessToken}&redirect_url=https://google.com`}}
-        onMessage={onMessage}>
+        source={{
+          uri: `
+            http://${API_HOST}:${API_PORT}
+            /api${authUrl}?
+            ${tokenRequired ? `${userStore.userJWT?.accessToken}&` : ''}
+            redirect_url=https://google.com
+          `,
+          method,
+        }}
+        onNavigationStateChange={callback}
+      >
       </WebView>
     </SafeAreaView>
   )

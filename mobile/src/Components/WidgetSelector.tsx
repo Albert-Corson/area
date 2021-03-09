@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useContext} from 'react'
 import {observer} from 'mobx-react-lite'
 import {View, Text, StyleSheet} from 'react-native'
 import {State, TapGestureHandlerGestureEvent} from 'react-native-gesture-handler'
@@ -10,6 +10,8 @@ import {StackNavigationProp} from '@react-navigation/stack'
 import {RootStackParamList} from '../Navigation/StackNavigator'
 import ServiceLoginPrompt from './ServiceLoginPrompt'
 import Animated, {useAnimatedStyle, useSharedValue, withSpring} from 'react-native-reanimated'
+import {WebViewNavigation} from 'react-native-webview'
+import RootStoreContext from '../Stores/RootStore'
 
 interface WidgetSelectorProps {
   store: RootStore;
@@ -19,6 +21,7 @@ interface WidgetSelectorProps {
 const WidgetSelector = observer(({store, navigation}: WidgetSelectorProps): JSX.Element => {
   const {availableWidgets} = store.widget
   const opacity = useSharedValue<number>(1)
+  const widgetStore = useContext(RootStoreContext).widget
 
   const opacityStyle = useAnimatedStyle(() => ({
     opacity: opacity.value
@@ -42,13 +45,25 @@ const WidgetSelector = observer(({store, navigation}: WidgetSelectorProps): JSX.
   }
 
   const onPromptPress = async () => {
-    //const authUrl = await store.widget.serviceAuthentication()
-
     opacity.value = withSpring(1)
     
+    const widgetId = (store.widget.currentWidget?.id ?? -1)
+
     navigation.navigate('ServiceAuth', {
       authUrl: `/services/${store.widget.currentWidget?.service.id}/auth`,
-      widgetId: store.widget.currentWidget?.id ?? -1
+      tokenRequired: true,
+      method: 'get',
+      callback: async (state: WebViewNavigation) => {
+        const match = state.url.match(/.*successful=(true|false)/)
+    
+        console.log(widgetId)
+        if (!match) return
+    
+        if (match[1] === 'true' && widgetId >= 0) {
+          await widgetStore.subscribeToWidget(widgetId)
+        }
+        navigation.navigate('Dashboard')
+      },
     })
 
     store.widget.currentWidget = null

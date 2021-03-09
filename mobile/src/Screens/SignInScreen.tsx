@@ -1,3 +1,4 @@
+/* eslint-disable react/display-name */
 import React, {useContext} from 'react'
 import {
   View,
@@ -15,10 +16,37 @@ import GradientFlatButton from '../Components/GradientFlatButton'
 import {Form as styles} from '../StyleSheets/Form'
 import {RootStackParamList} from '../Navigation/StackNavigator'
 import RootStoreContext from '../Stores/RootStore'
+import FlatButton from '../Components/FlatButton'
+import {FontAwesome, FontAwesome5} from '@expo/vector-icons'
 
 interface Props {
   navigation: StackNavigationProp<RootStackParamList>;
 }
+
+interface buttonDefinition {
+  icon: () => JSX.Element;
+  color: string;
+  url: string;
+}
+
+const SOCIAL_BTNS: buttonDefinition[] = [
+  {
+    url: '/auth/facebook',
+    icon: () => <FontAwesome name="facebook" size={17} color="#666666" />,
+    color: '#4267B280',
+
+  },
+  {
+    url: '/auth/google',
+    icon: () => <FontAwesome name="google" size={17} color="#666666" />,
+    color: '#DB443780'
+  },
+  {
+    url: '/auth/microsoft',
+    icon: () => <FontAwesome5 name="microsoft" size={17} color="#666666" />,
+    color: '#73737380'
+  },
+]
 
 const SignInScreen = observer(({navigation}: Props): JSX.Element => {
   const store = useContext(RootStoreContext)
@@ -58,6 +86,22 @@ const SignInScreen = observer(({navigation}: Props): JSX.Element => {
                 }
               }}
             />
+            <View style={{flexDirection: 'row', justifyContent: 'space-around', width: 335, margin: 5}}>
+              {SOCIAL_BTNS.map((btn, i) => (
+                <FlatButton
+                  key={i}
+                  height={50}
+                  width={100}
+                  containerStyle={{borderRadius: 15, backgroundColor: btn.color}}
+                  value={btn.icon}
+                  onPress={() => navigation.navigate('ServiceAuth', {
+                    authUrl: btn.url, 
+                    callback: console.log,
+                    method: 'post'
+                  })}
+                />
+              ))}
+            </View>
             <TextButton
               value="Register"
               style={{fontSize: 19}}

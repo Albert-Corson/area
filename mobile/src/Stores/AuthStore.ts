@@ -112,8 +112,6 @@ export class AuthStore {
       }),
     })
 
-    this.password = ''
-
     try {
       const body = await res.json()
 
@@ -121,6 +119,11 @@ export class AuthStore {
         this.error = body.error ?? 'Error occured'
         return false
       }
+
+      this.password = ''
+      this.email = ''
+      this.username = ''
+      this.error = ''
 
       this._rootStore.user.loadUser()
 
