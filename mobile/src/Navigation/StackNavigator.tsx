@@ -20,6 +20,7 @@ export type RootStackParamList = {
     callback: (e: WebViewNavigation) => void;
     tokenRequired?: boolean;
     method: 'post' | 'get';
+    body?: string;
   };
 };
 

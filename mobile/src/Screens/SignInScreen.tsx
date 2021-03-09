@@ -18,6 +18,7 @@ import {RootStackParamList} from '../Navigation/StackNavigator'
 import RootStoreContext from '../Stores/RootStore'
 import FlatButton from '../Components/FlatButton'
 import {FontAwesome, FontAwesome5} from '@expo/vector-icons'
+import {WebViewNavigation} from 'react-native-webview'
 
 interface Props {
   navigation: StackNavigationProp<RootStackParamList>;
@@ -51,6 +52,27 @@ const SOCIAL_BTNS: buttonDefinition[] = [
 const SignInScreen = observer(({navigation}: Props): JSX.Element => {
   const store = useContext(RootStoreContext)
 
+  const onPress = (authUrl: string) => navigation.navigate('ServiceAuth', {
+    authUrl, 
+    callback: async (state: WebViewNavigation) => {
+      const success = state.url.match(/.*successful=(true|false)/)
+      const code = state.url.match(/.*code=([a-zA-Z0-9.-_]*).*/)
+
+      if (!success || !code) return
+
+      if (success[1] === 'true' && await store.auth.askForTokens(code[1])) {
+        navigation.navigate('Dashboard')
+      } else {
+        navigation.navigate('Login')
+      }
+    },
+    method: 'post',
+    body: JSON.stringify({
+      redirect_url: 'https://google.fr',
+      state: null,
+    }),
+  })
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -79,8 +101,6 @@ const SignInScreen = observer(({navigation}: Props): JSX.Element => {
               width={325}
               containerStyle={{margin: 10}}
               onPress={async () => {
-                // navigation.navigate('Dashboard');
-                // return;
                 if (await store.auth.signIn()) {
                   navigation.navigate('Dashboard')
                 }
@@ -94,11 +114,7 @@ const SignInScreen = observer(({navigation}: Props): JSX.Element => {
                   width={100}
                   containerStyle={{borderRadius: 15, backgroundColor: btn.color}}
                   value={btn.icon}
-                  onPress={() => navigation.navigate('ServiceAuth', {
-                    authUrl: btn.url, 
-                    callback: console.log,
-                    method: 'post'
-                  })}
+                  onPress={() => onPress(btn.url)}
                 />
               ))}
             </View>
