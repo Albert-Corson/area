@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web;
 using Area.API.Constants;
 using Area.API.Exceptions.Http;
@@ -11,6 +12,7 @@ using Area.API.Models;
 using Area.API.Models.Table;
 using Area.API.Repositories;
 using Area.API.Services;
+using Area.API.Services.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,11 +25,11 @@ namespace Area.API.Controllers
     [SwaggerTag("Service-related endpoints")]
     public class ServicesController : ControllerBase
     {
-        private readonly ServiceManagerService _serviceManager;
+        private readonly ServiceManager _serviceManager;
         private readonly ServiceRepository _serviceRepository;
         private readonly UserRepository _userRepository;
 
-        public ServicesController(ServiceManagerService serviceManager, ServiceRepository serviceRepository,
+        public ServicesController(ServiceManager serviceManager, ServiceRepository serviceRepository,
             UserRepository userRepository)
         {
             _serviceManager = serviceManager;
@@ -93,7 +95,7 @@ namespace Area.API.Controllers
 ## If the service doesn't have sign-in capabilities, an empty success response is returned (a.k.a without `data`).
 ## Otherwise an authentication URL is returned as `data` to redirect the user to"
         )]
-        public RedirectResult SignInService(
+        public async Task<RedirectResult> SignInService(
             [FromRoute] [Required] [Range(1, int.MaxValue)] [SwaggerParameter("Service's ID")]
             int? serviceId,
             [FromBody]
@@ -106,29 +108,28 @@ namespace Area.API.Controllers
                 RedirectUrl = body.RedirectUrl
             };
 
-            string? urlOrError = null;
-            var signedIn = false;
-
-            if (User.TryGetUserId(out state.UserId)) {
-                signedIn = _serviceManager.TrySignInServiceById(serviceId!.Value, state, out urlOrError);
-                if (signedIn && urlOrError != null)
-                    return new RedirectResult(urlOrError);
-            }
+            User.TryGetUserId(out state.UserId);
 
             var redirectUrl = new UriBuilder(body.RedirectUrl);
             var queryParams = HttpUtility.ParseQueryString(redirectUrl.Query);
 
             queryParams["state"] = body.State;
-            if (!signedIn) {
+
+            if (_serviceRepository.GetService(serviceId!.Value) == null) {
                 queryParams["successful"] = "false";
-                queryParams["error"] = urlOrError ?? "Unauthorized";
-            } else {
-                queryParams["successful"] = "true";
+                queryParams["error"] = "This service doesn't exist";
+                redirectUrl.Query = queryParams.ToString();
+                return new RedirectResult(redirectUrl.ToString());
             }
 
-            redirectUrl.Query = queryParams.ToString();
+            if (!_serviceManager.TryGetServiceById(serviceId.Value, out var service)) {
+                queryParams["successful"] = "true";
+                redirectUrl.Query = queryParams.ToString();
+                return new RedirectResult(redirectUrl.ToString());
+            }
 
-            return new RedirectResult(redirectUrl.ToString());
+            var serviceUri = await service!.GetSignInUrlAsync(JsonConvert.SerializeObject(state));
+            return new RedirectResult(serviceUri.ToString());
         }
 
         [HttpDelete(RouteConstants.Services.SignOutService)]
@@ -153,11 +154,11 @@ namespace Area.API.Controllers
         [AllowAnonymous]
         [ApiExplorerSettings(IgnoreApi = true)]
         [Produces("text/html")]
-        public IActionResult SignInServiceCallback(
+        public async Task<IActionResult> SignInServiceCallback(
             [FromRoute] [Required] [Range(1, int.MaxValue)]
             int? serviceId,
-            [FromQuery]
-            string state
+            [FromQuery] [Required] string? state,
+            [FromQuery] [Required] string? code
         )
         {
             ServiceAuthStateModel serviceAuthState;
@@ -175,7 +176,7 @@ namespace Area.API.Controllers
             queryParams["state"] = serviceAuthState.State;
 
             try {
-                failed = !_serviceManager.HandleServiceSignInCallbackById(HttpContext, serviceId!.Value, serviceAuthState);
+                failed = !await _serviceManager.HandleServiceSignInCallbackById(serviceId!.Value, serviceAuthState.UserId, code!);
             } catch {
                 failed = true;
             }

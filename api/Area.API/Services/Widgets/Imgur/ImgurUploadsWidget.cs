@@ -3,31 +3,24 @@ using System.Linq;
 using Area.API.Exceptions.Http;
 using Area.API.Models;
 using Area.API.Models.Table;
-using Area.API.Models.Table.Owned;
 using Area.API.Services.Services;
 using Imgur.API.Endpoints.Impl;
 using Imgur.API.Models.Impl;
 
 namespace Area.API.Services.Widgets.Imgur
 {
-    public class ImgurUploadsWidgetService : IWidgetService
+    public class ImgurUploadsWidget : IWidget
     {
         private OAuth2Token? _oAuth2Token;
 
-        public ImgurUploadsWidgetService(ImgurServiceService imgur)
+        public ImgurUploadsWidget(ImgurService imgur)
         {
             Imgur = imgur;
         }
 
-        private ImgurServiceService Imgur { get; }
+        private ImgurService Imgur { get; }
 
-        public bool ValidateServiceAuth(UserServiceTokensModel serviceTokens)
-        {
-            _oAuth2Token = ImgurServiceService.ImgurOAuth2TokenFromJson(serviceTokens.Json!);
-            return _oAuth2Token != null;
-        }
-
-        public string Name { get; } = "Imgur uploads";
+        public int Id { get; } = 3;
 
         public void CallWidgetApi(IEnumerable<ParamModel> _,
             ref WidgetCallResponseModel response)

@@ -7,54 +7,65 @@ using Area.API.Models;
 using Area.API.Models.Table;
 using Area.API.Models.Table.Owned;
 using Area.API.Repositories;
+using Area.API.Services.Services;
 using Area.API.Services.Widgets;
 using Area.API.Services.Widgets.CatApi;
 using Area.API.Services.Widgets.Icanhazdadjoke;
 using Area.API.Services.Widgets.Imgur;
 using Area.API.Services.Widgets.LoremPicsum;
+using Area.API.Services.Widgets.Microsoft;
 using Area.API.Services.Widgets.NewsApi;
 using Area.API.Services.Widgets.Spotify;
 using Microsoft.AspNetCore.Http;
 
 namespace Area.API.Services
 {
-    public class WidgetManagerService
+    public class WidgetManager
     {
         private readonly UserRepository _userRepository;
         private readonly WidgetRepository _widgetRepository;
-        private readonly IDictionary<string, IWidgetService> _widgets;
+        private readonly ServiceManager _serviceManager;
+        private readonly IDictionary<int, IWidget> _widgets;
 
-        public WidgetManagerService(
+        public WidgetManager(
             UserRepository userRepository,
             WidgetRepository widgetRepository,
-            ImgurGalleryWidgetService imgurGallery,
-            ImgurFavoritesWidgetService imgurFavorites,
-            ImgurUploadsWidgetService imgurUploads,
-            ImgurGallerySearchWidgetService imgurGallerySearch,
-            LoremPicsumRandomImageService loremPicsumRandomImage,
-            SpotifyFavoriteArtistsWidgetService spotifyFavoriteArtists,
-            SpotifyFavoriteTracksWidgetService spotifyFavoriteTracks,
-            SpotifyHistoryWidgetService spotifyHistory,
-            NewsApiTopHeadlinesWidgetService newsApiTopHeadlines,
-            NewsApiSearchWidgetService newsApiSearch,
-            CatApiRandomImagesWidgetService catApiRandomImages,
-            IcanhazdadjokeRandomJokeWidgetService icanhazdadjokeRandomJoke)
+            ServiceManager serviceManager,
+            ImgurGalleryWidget imgurGallery,
+            ImgurFavoritesWidget imgurFavorites,
+            ImgurUploadsWidget imgurUploads,
+            ImgurGallerySearchWidget imgurGallerySearch,
+            LoremPicsumRandomImageWidget loremPicsumRandomImageWidget,
+            SpotifyFavoriteArtistsWidget spotifyFavoriteArtists,
+            SpotifyFavoriteTracksWidget spotifyFavoriteTracks,
+            SpotifyHistoryWidget spotifyHistory,
+            NewsApiTopHeadlinesWidget newsApiTopHeadlines,
+            NewsApiSearchWidget newsApiSearch,
+            CatApiRandomImagesWidget catApiRandomImages,
+            IcanhazdadjokeRandomJokeWidget icanhazdadjokeRandomJoke,
+            MicrosoftCalendarWidget microsoftCalendarWidget,
+            MicrosoftTodoWidget microsoftTodoWidget,
+            MicrosoftUnreadEmailsWidget microsoftUnreadEmailsWidget)
         {
             _userRepository = userRepository;
             _widgetRepository = widgetRepository;
-            _widgets = new Dictionary<string, IWidgetService> {
-                {imgurGallery.Name, imgurGallery},
-                {imgurFavorites.Name, imgurFavorites},
-                {imgurUploads.Name, imgurUploads},
-                {loremPicsumRandomImage.Name, loremPicsumRandomImage},
-                {imgurGallerySearch.Name, imgurGallerySearch},
-                {spotifyFavoriteArtists.Name, spotifyFavoriteArtists},
-                {spotifyFavoriteTracks.Name, spotifyFavoriteTracks},
-                {spotifyHistory.Name, spotifyHistory},
-                {newsApiTopHeadlines.Name, newsApiTopHeadlines},
-                {newsApiSearch.Name, newsApiSearch},
-                {catApiRandomImages.Name, catApiRandomImages},
-                {icanhazdadjokeRandomJoke.Name, icanhazdadjokeRandomJoke}
+            _serviceManager = serviceManager;
+            _widgets = new Dictionary<int, IWidget> {
+                {imgurGallery.Id, imgurGallery},
+                {imgurFavorites.Id, imgurFavorites},
+                {imgurUploads.Id, imgurUploads},
+                {loremPicsumRandomImageWidget.Id, loremPicsumRandomImageWidget},
+                {imgurGallerySearch.Id, imgurGallerySearch},
+                {spotifyFavoriteArtists.Id, spotifyFavoriteArtists},
+                {spotifyFavoriteTracks.Id, spotifyFavoriteTracks},
+                {spotifyHistory.Id, spotifyHistory},
+                {newsApiTopHeadlines.Id, newsApiTopHeadlines},
+                {newsApiSearch.Id, newsApiSearch},
+                {catApiRandomImages.Id, catApiRandomImages},
+                {icanhazdadjokeRandomJoke.Id, icanhazdadjokeRandomJoke},
+                {microsoftCalendarWidget.Id, microsoftCalendarWidget},
+                {microsoftTodoWidget.Id, microsoftTodoWidget},
+                {microsoftUnreadEmailsWidget.Id, microsoftUnreadEmailsWidget}
             };
         }
 
@@ -68,11 +79,13 @@ namespace Area.API.Services
                 throw new InternalServerErrorHttpException();
 
             var widget = _widgetRepository.GetWidget(widgetId, true);
-            if (widget == null || !_widgets.TryGetValue(widget.Name!, out var widgetService))
+            if (widget == null || !_widgets.TryGetValue(widget.Id, out var widgetService))
                 throw new NotFoundHttpException("This widget does not exist");
 
+            _serviceManager.TryGetServiceById(widget.ServiceId, out var service);
+
             if (widget.RequiresAuth)
-                ValidateSignInState(widgetService, user, widget.ServiceId);
+                ValidateSignInState(service, user);
 
             var widgetCallParams = BuildWidgetCallParams(
                 widgetId,
@@ -172,16 +185,19 @@ namespace Area.API.Services
             defaultParam.ConvertedValue = obj;
         }
 
-        private void ValidateSignInState(IWidgetService widgetService, UserModel user, int serviceId)
+        private void ValidateSignInState(IService? service, UserModel user)
         {
-            var serviceToken = user.ServiceTokens!.FirstOrDefault(model => model.ServiceId == serviceId);
+            if (service == null)
+                return;
+
+            var serviceToken = user.ServiceTokens!.FirstOrDefault(model => model.ServiceId == service.Id);
 
             if (serviceToken == null)
                 throw new UnauthorizedHttpException("You need to sign-in to the service");
-            if (widgetService.ValidateServiceAuth(serviceToken))
-                return;
-            _userRepository.RemoveServiceCredentials(user.Id, serviceId);
-            throw new UnauthorizedHttpException("You need to sign-in to the service again");
+            else if (!service.SignIn(serviceToken)) {
+                _userRepository.RemoveServiceCredentials(user.Id, service.Id);
+                throw new UnauthorizedHttpException("You need to sign-in to the service again");
+            }
         }
     }
 }

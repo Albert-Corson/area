@@ -42,11 +42,11 @@ namespace Area.API.Models.Table.Owned
         public int UserId { get; set; }
 
         [JsonIgnore]
-        public long FirstUsed { get; set; } = DateTime.Now.Ticks;
+        public long FirstUsed { get; set; } = DateTime.UtcNow.Ticks;
 
         [JsonProperty("last_used", Required = Required.Always)]
-        [SwaggerSchema("Date (seconds since EPOCH) at which the device was last used")]
-        public long LastUsed { get; set; } = DateTime.Now.Ticks;
+        [SwaggerSchema("Date in UTC Linux EPOCH at which the device was last used")]
+        public long LastUsed { get; set; } = DateTime.UtcNow.Ticks;
 
         [JsonProperty("country", Required = Required.Always)]
         [SwaggerSchema("The country associated to the device")]

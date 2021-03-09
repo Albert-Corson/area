@@ -5,13 +5,14 @@ using Area.API.Exceptions.Http;
 using Area.API.Extensions;
 using Area.API.Models;
 using Area.API.Models.Table;
+using Area.API.Services.Services;
 using RestSharp;
 
 namespace Area.API.Services.Widgets.LoremPicsum
 {
-    public class LoremPicsumRandomImageService : IWidgetService
+    public class LoremPicsumRandomImageWidget : IWidget
     {
-        public string Name { get; } = "Lorem Picsum random Image";
+        public int Id { get; } = 4;
 
         public void CallWidgetApi(IEnumerable<ParamModel> widgetCallParams,
             ref WidgetCallResponseModel response)

@@ -1,60 +1,55 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using Area.API.Constants;
 using Area.API.Exceptions.Http;
 using Area.API.Models;
 using Area.API.Models.Services;
+using Area.API.Models.Table.Owned;
 using Imgur.API.Authentication.Impl;
 using Imgur.API.Endpoints.Impl;
 using Imgur.API.Enums;
 using Imgur.API.Models;
 using Imgur.API.Models.Impl;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace Area.API.Services.Services
 {
-    public class ImgurServiceService : IServiceService
+    public class ImgurService : IService
     {
-        public ImgurServiceService(IConfiguration configuration)
+        public ImgurService(IConfiguration configuration)
         {
             var clientId = configuration[AuthConstants.Imgur.ClientId];
             var clientSecret = configuration[AuthConstants.Imgur.ClientSecret];
             Client = new ImgurClient(clientId, clientSecret);
         }
 
-        public ImgurClient? Client { get; }
+        public ImgurClient Client { get; }
 
-        public string Name { get; } = "Imgur";
+        public int Id { get; } = 1;
 
-        public Uri? SignIn(string state)
+        public Task<Uri> GetSignInUrlAsync(string state)
         {
-            if (Client == null)
-                throw new InternalServerErrorHttpException();
             var oAuth2Endpoint = new OAuth2Endpoint(Client);
-            return new Uri(oAuth2Endpoint.GetAuthorizationUrl(OAuth2ResponseType.Code, HttpUtility.UrlEncode(state)));
+            var redirectUrl = oAuth2Endpoint.GetAuthorizationUrl(OAuth2ResponseType.Code, HttpUtility.UrlEncode(state));
+            return Task.FromResult(new Uri(redirectUrl));
         }
 
-        public string? HandleSignInCallback(HttpContext context)
+        public async Task<string?> HandleSignInCallbackAsync(string code)
         {
-            if (!context.Request.Query.TryGetValue("code", out var code))
-                return null;
-
             try {
-                var task = new OAuth2Endpoint(Client).GetTokenByCodeAsync(code);
-                task.Wait();
-                if (!task.IsCompletedSuccessfully || task.Result == null)
-                    return null;
+                var auth2Token = await new OAuth2Endpoint(Client).GetTokenByCodeAsync(code);
+
                 var tokensHolder = new ImgurAuthModel {
-                    AccessToken = task.Result.AccessToken,
-                    TokenType = task.Result.TokenType,
-                    RefreshToken = task.Result.RefreshToken,
-                    AccountUsername = task.Result.AccountUsername,
-                    AccountId = task.Result.AccountId,
-                    ExpiresIn = task.Result.ExpiresIn
+                    AccessToken = auth2Token.AccessToken,
+                    TokenType = auth2Token.TokenType,
+                    RefreshToken = auth2Token.RefreshToken,
+                    AccountUsername = auth2Token.AccountUsername,
+                    AccountId = auth2Token.AccountId,
+                    ExpiresIn = auth2Token.ExpiresIn
                 };
                 return tokensHolder.ToString();
             } catch {
@@ -62,7 +57,17 @@ namespace Area.API.Services.Services
             }
         }
 
-        public static OAuth2Token? ImgurOAuth2TokenFromJson(string json)
+        public bool SignIn(UserServiceTokensModel tokens)
+        {
+            var oAuth2Token = OAuth2TokenFromJson(tokens.Json);
+
+            if (oAuth2Token == null)
+                return false;
+            Client.SetOAuth2Token(oAuth2Token);
+            return true;
+        }
+
+        private static OAuth2Token? OAuth2TokenFromJson(string json)
         {
             try {
                 var holder = JsonConvert.DeserializeObject<ImgurAuthModel>(json);

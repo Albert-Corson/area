@@ -22,10 +22,10 @@ namespace Area.API.Controllers
     {
         private readonly ServiceRepository _serviceRepository;
         private readonly UserRepository _userRepository;
-        private readonly WidgetManagerService _widgetManager;
+        private readonly WidgetManager _widgetManager;
         private readonly WidgetRepository _widgetRepository;
 
-        public WidgetsController(WidgetManagerService widgetManager, WidgetRepository widgetRepository,
+        public WidgetsController(WidgetManager widgetManager, WidgetRepository widgetRepository,
             ServiceRepository serviceRepository, UserRepository userRepository)
         {
             _widgetManager = widgetManager;
@@ -90,7 +90,7 @@ namespace Area.API.Controllers
 
             foreach (var widget in widgets) {
                 var currentParam = widgetParams.Where(model => model.Param.WidgetId == widget.Id);
-                widget.Params = WidgetManagerService.BuildUserWidgetCallParams(currentParam, widget.Params!);
+                widget.Params = WidgetManager.BuildUserWidgetCallParams(currentParam, widget.Params!);
                 widget.RequiresAuth = user.ServiceTokens.FirstOrDefault(model => model.ServiceId == widget.ServiceId) != null;
             }
 

@@ -3,13 +3,14 @@ using System.Net;
 using Area.API.Exceptions.Http;
 using Area.API.Models;
 using Area.API.Models.Table;
+using Area.API.Services.Services;
 using ICanHazDadJoke.NET;
 
 namespace Area.API.Services.Widgets.Icanhazdadjoke
 {
-    public class IcanhazdadjokeRandomJokeWidgetService : IWidgetService
+    public class IcanhazdadjokeRandomJokeWidget : IWidget
     {
-        public string Name { get; } = "Random dad joke";
+        public int Id { get; } = 12;
 
         public void CallWidgetApi(IEnumerable<ParamModel> _,
             ref WidgetCallResponseModel response)

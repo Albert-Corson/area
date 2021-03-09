@@ -10,6 +10,9 @@ namespace Area.API.Models
     [SwaggerSubType(typeof(NewsApiArticleModel))]
     [SwaggerSubType(typeof(SpotifyTrackModel))]
     [SwaggerSubType(typeof(SpotifyArtistModel))]
+    [SwaggerSubType(typeof(MicrosoftEventModel))]
+    [SwaggerSubType(typeof(MicrosoftTodoModel))]
+    [SwaggerSubType(typeof(MicrosoftEmailModel))]
     [SwaggerSchema("Base (generic) interpolation scheme for a widget's invocation result item. At least one of the field must be defined. This scheme can be extended depending on the widget")]
     public class WidgetCallResponseItemModel
     {

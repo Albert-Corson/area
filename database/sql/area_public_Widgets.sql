@@ -10,3 +10,6 @@ INSERT INTO public."Widgets" ("Id", "Name", "Description", "RequiresAuth", "Serv
 INSERT INTO public."Widgets" ("Id", "Name", "Description", "RequiresAuth", "ServiceId", "Frequency") VALUES (12, 'Random dad joke', 'Get a random dad joke', false, 6, 30);
 INSERT INTO public."Widgets" ("Id", "Name", "Description", "RequiresAuth", "ServiceId", "Frequency") VALUES (8, 'Spotify history', 'Get a list of your recently played tracks', true, 3, 150);
 INSERT INTO public."Widgets" ("Id", "Name", "Description", "RequiresAuth", "ServiceId", "Frequency") VALUES (4, 'Lorem Picsum random Image', 'An inspiring image every time you load the widget', false, 2, 120);
+INSERT INTO public."Widgets" ("Id", "Name", "Description", "RequiresAuth", "ServiceId", "Frequency") VALUES (13, 'Microsoft Calendar', 'View your calendar for your next week', true, 7, 0);
+INSERT INTO public."Widgets" ("Id", "Name", "Description", "RequiresAuth", "ServiceId", "Frequency") VALUES (14, 'Microsoft Outlook unread mails', 'Get your most recent unread emails', true, 7, 180);
+INSERT INTO public."Widgets" ("Id", "Name", "Description", "RequiresAuth", "ServiceId", "Frequency") VALUES (15, 'Microsoft Todo list', 'View remaining tasks in your Todo list', true, 7, 120);
