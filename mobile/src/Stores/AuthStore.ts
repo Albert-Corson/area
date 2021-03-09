@@ -142,6 +142,36 @@ export class AuthStore {
   };
 
   @action
+  public askForTokens = async (code: string): Promise<boolean> => {
+    const res = await absFetch({
+      route: '/auth/code',
+      method: 'post',
+      body: JSON.stringify({
+        code,
+      }),
+    })
+
+    const json: Response = await res.json()
+
+    console.log(json, code)
+    try {
+      if (json.successful) {
+        return await this._rootStore.user.storeUser(
+          json.data.refresh_token,
+          json.data.access_token,
+          json.data.expires_in,
+          'Profile',
+        )
+      }
+    } catch (e) {
+      console.warn(e)
+      this.error = 'Error occured'
+    }
+
+    return false
+  };
+
+  @action
   public resetPassword = (): void => {
     console.warn('Not implemented yet')
   };

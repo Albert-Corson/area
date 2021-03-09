@@ -56,7 +56,6 @@ const WidgetSelector = observer(({store, navigation}: WidgetSelectorProps): JSX.
       callback: async (state: WebViewNavigation) => {
         const match = state.url.match(/.*successful=(true|false)/)
     
-        console.log(widgetId)
         if (!match) return
     
         if (match[1] === 'true' && widgetId >= 0) {

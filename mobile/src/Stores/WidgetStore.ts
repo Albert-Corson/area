@@ -254,6 +254,8 @@ export class WidgetStore {
 
     const json = await res.json()
 
+    console.log(json)
+
     runInAction(() => {
       const widget = this._subscribedWidgets.filter(widget => widget.id === widgetId)[0]
       widget.params = json.data
