@@ -19,6 +19,8 @@ namespace Area.API.Constants
             public const string SignInWithFacebookCallback = SignInWithFacebook + "/callback";
             public const string SignInWithGoogle = Root + "/google";
             public const string SignInWithGoogleCallback = SignInWithGoogle + "/callback";
+            public const string SignInWithMicrosoft = Root + "/microsoft";
+            public const string SignInWithMicrosoftCallback = SignInWithMicrosoft + "/callback";
         }
 
         public static class Users

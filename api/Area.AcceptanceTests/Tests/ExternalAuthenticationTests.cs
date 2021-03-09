@@ -55,5 +55,27 @@ namespace Area.AcceptanceTests.Tests
             Assert.Equal(new Uri(form.RedirectUrl), new Uri(recoveredForm.RedirectUrl));
             Assert.Equal(form.State, recoveredForm.State);
         }
+
+        [Fact]
+        public async Task SignInWithMicrosoft()
+        {
+            var areaApi = new AreaApi();
+            var form = new ExternalAuthModel {
+                State = "test abcd",
+                RedirectUrl = "http://google.fr"
+            };
+
+            var response = await areaApi.SignInWithMicrosoft(form);
+
+            Assert.Equal(HttpStatusCode.Found, response.StatusCode);
+            Assert.StartsWith("https://login.microsoftonline.com/common/oauth2/v2.0/authorize", response.Headers.Location.ToString());
+
+            var queryParams = HttpUtility.ParseQueryString(response.Headers.Location.Query);
+            var state = HttpUtility.UrlDecode(queryParams.Get("state"));
+            var recoveredForm = JsonConvert.DeserializeObject<ExternalAuthModel>(state);
+
+            Assert.Equal(new Uri(form.RedirectUrl), new Uri(recoveredForm.RedirectUrl));
+            Assert.Equal(form.State, recoveredForm.State);
+        }
     }
 }

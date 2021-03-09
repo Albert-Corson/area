@@ -1,10 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
-using Area.API.Attributes;
 using Area.API.Constants;
 using Area.API.Exceptions.Http;
 using Area.API.Extensions;
@@ -17,6 +17,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Graph;
+using Microsoft.Graph.Auth;
+using Microsoft.Identity.Client;
 using Newtonsoft.Json;
 using OAuth2.Client.Impl;
 using OAuth2.Configuration;
@@ -34,6 +37,7 @@ namespace Area.API.Controllers
         private readonly UserRepository _userRepository;
         private readonly FacebookClient _facebook;
         private readonly GoogleClient _google;
+        private readonly IConfidentialClientApplication _microsoft;
 
         public AuthController(AuthService authService, UserRepository userRepository, IConfiguration configuration)
         {
@@ -52,6 +56,11 @@ namespace Area.API.Controllers
                 RedirectUri = configuration[AuthConstants.Google.RedirectUri],
                 Scope = "profile email"
             });
+            _microsoft = ConfidentialClientApplicationBuilder
+                .Create(configuration[AuthConstants.Microsoft.ClientId])
+                .WithClientSecret(configuration[AuthConstants.Microsoft.ClientSecret])
+                .WithRedirectUri(configuration[AuthConstants.Microsoft.AuthRedirectUri])
+                .Build();
         }
 
         [HttpPost(RouteConstants.Auth.SignIn)]
@@ -144,23 +153,19 @@ namespace Area.API.Controllers
 
         [HttpPost(RouteConstants.Auth.SignInWithFacebook)]
         [AllowAnonymous]
-        [ValidateModelState(false)]
         [SwaggerOperation(
             Summary = "Sign-in/register with Facebook",
             Description = "Redirect the user to this endpoint to let them sign-in/register with Facebook. The user will be redirected back to the client with an authentication code once done."
         )]
         [SwaggerResponse((int) HttpStatusCode.Found, "Redirection to Facebook's sign-in page")]
-        public async Task<IActionResult> SignInWithFacebook(
+        public async Task<RedirectResult> SignInWithFacebook(
             CancellationToken cancellationToken,
             [FromBody]
-            [SwaggerRequestBody("Mandatory information to be able to redirect the url back to the client once the operation is done")]
+            [SwaggerRequestBody("Mandatory information to be able to redirect the user back to the client once the operation is done")]
             ExternalAuthModel body
             )
         {
-            if (!ModelState.IsValid)
-                return BadRequest();
-
-            var state = HttpUtility.UrlEncode(JsonConvert.SerializeObject(body));
+            var state = JsonConvert.SerializeObject(body);
 
             return new RedirectResult(await _facebook.GetLoginLinkUriAsync(state, cancellationToken));
         }
@@ -174,7 +179,7 @@ namespace Area.API.Controllers
             [FromQuery] string state
         )
         {
-            var authRequestBody = JsonConvert.DeserializeObject<ExternalAuthModel>(HttpUtility.UrlDecode(state));
+            var authRequestBody = JsonConvert.DeserializeObject<ExternalAuthModel>(state);
 
             var redirectUrl = new UriBuilder(authRequestBody.RedirectUrl);
             var query = HttpUtility.ParseQueryString(redirectUrl.Query);
@@ -185,7 +190,7 @@ namespace Area.API.Controllers
             try {
                 UserInfo userInfo = await _facebook.GetUserInfoAsync(new NameValueCollection {{nameof(code), code}}, cancellationToken);
 
-                var authResult = await _authService.AuthenticateExternalUserAsync(userInfo, UserModel.UserType.Facebook);
+                var authResult = await _authService.AuthenticateExternalUserAsync(userInfo.Email, UserModel.UserType.Facebook);
 
                 if (authResult.Successful) {
                     query["code"] = authResult.Code;
@@ -205,23 +210,19 @@ namespace Area.API.Controllers
 
         [HttpPost(RouteConstants.Auth.SignInWithGoogle)]
         [AllowAnonymous]
-        [ValidateModelState(false)]
         [SwaggerOperation(
             Summary = "Sign-in/register with Google",
             Description = "Redirect the user to this endpoint to let them sign-in/register with Google. The user will be redirected back to the client with an authentication code once done."
         )]
         [SwaggerResponse((int) HttpStatusCode.Found, "Redirection to Google's sign-in page")]
-        public async Task<IActionResult> SignInWithGoogle(
+        public async Task<RedirectResult> SignInWithGoogle(
             CancellationToken cancellationToken,
             [FromBody]
-            [SwaggerRequestBody("Mandatory information to be able to redirect the url back to the client once the operation is done")]
+            [SwaggerRequestBody("Mandatory information to be able to redirect the user back to the client once the operation is done")]
             ExternalAuthModel body
             )
         {
-            if (!ModelState.IsValid)
-                return BadRequest();
-
-            var state = HttpUtility.UrlEncode(JsonConvert.SerializeObject(body));
+            var state = JsonConvert.SerializeObject(body);
 
             return new RedirectResult(await _google.GetLoginLinkUriAsync(state, cancellationToken));
         }
@@ -235,7 +236,7 @@ namespace Area.API.Controllers
             [FromQuery] string state
         )
         {
-            var authRequestBody = JsonConvert.DeserializeObject<ExternalAuthModel>(HttpUtility.UrlDecode(state));
+            var authRequestBody = JsonConvert.DeserializeObject<ExternalAuthModel>(state);
 
             var redirectUrl = new UriBuilder(authRequestBody.RedirectUrl);
             var query = HttpUtility.ParseQueryString(redirectUrl.Query);
@@ -246,7 +247,71 @@ namespace Area.API.Controllers
             try {
                 UserInfo userInfo = await _google.GetUserInfoAsync(new NameValueCollection {{nameof(code), code}}, cancellationToken);
 
-                var authResult = await _authService.AuthenticateExternalUserAsync(userInfo, UserModel.UserType.Google);
+                var authResult = await _authService.AuthenticateExternalUserAsync(userInfo.Email, UserModel.UserType.Google);
+
+                if (authResult.Successful) {
+                    query["code"] = authResult.Code;
+                    query["successful"] = "true";
+                } else {
+                    query["error"] = authResult.Error;
+                    query["successful"] = "false";
+                }
+            } catch {
+                query["successful"] = "false";
+                query["error"] = "Authentication canceled";
+            }
+
+            redirectUrl.Query = query.ToString();
+            return new RedirectResult(redirectUrl.ToString());
+        }
+
+        [HttpPost(RouteConstants.Auth.SignInWithMicrosoft)]
+        [AllowAnonymous]
+        [SwaggerOperation(
+            Summary = "Sign-in/register with Microsoft",
+            Description = "Redirect the user to this endpoint to let them sign-in/register with Microsoft. The user will be redirected back to the client with an authentication code once done."
+        )]
+        [SwaggerResponse((int) HttpStatusCode.Found, "Redirection to Microsoft's sign-in page")]
+        public async Task<RedirectResult> SignInWithMicrosoft(
+            CancellationToken cancellationToken,
+            [FromBody]
+            [SwaggerRequestBody("Mandatory information to be able to redirect the user back to the client once the operation is done")]
+            ExternalAuthModel body
+            )
+        {
+            var uri =  await _microsoft.GetAuthorizationRequestUrl(new[] {"user.read"})
+                .WithExtraQueryParameters(new Dictionary<string, string> {
+                    {"state", JsonConvert.SerializeObject(body)}
+                })
+                .ExecuteAsync(cancellationToken);
+
+            return new RedirectResult(uri.ToString());
+        }
+
+        [HttpGet(RouteConstants.Auth.SignInWithMicrosoftCallback)]
+        [AllowAnonymous]
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public async Task<RedirectResult> SignInWithMicrosoftCallback(
+            CancellationToken cancellationToken,
+            [FromQuery] string code,
+            [FromQuery] string state
+        )
+        {
+            var authRequestBody = JsonConvert.DeserializeObject<ExternalAuthModel>(state);
+
+            var redirectUrl = new UriBuilder(authRequestBody.RedirectUrl);
+            var query = HttpUtility.ParseQueryString(redirectUrl.Query);
+
+            if (authRequestBody.State != null)
+                query["state"] = authRequestBody.State;
+
+            try {
+                var provider = new AuthorizationCodeProvider(_microsoft, new[] {"user.read"});
+                await provider.GetAccessTokenByAuthorizationCode(code);
+
+                var userInfo = await new GraphServiceClient(provider).Me.Request().GetAsync(cancellationToken);
+
+                var authResult = await _authService.AuthenticateExternalUserAsync(userInfo.Mail, UserModel.UserType.Microsoft);
 
                 if (authResult.Successful) {
                     query["code"] = authResult.Code;

@@ -15,6 +15,7 @@ namespace Area.AcceptanceTests.Constants
             public const string RefreshAccessToken = Root + "/refresh";
             public const string SignInWithFacebook = Root + "/facebook";
             public const string SignInWithGoogle = Root + "/google";
+            public const string SignInWithMicrosoft = Root + "/microsoft";
         }
 
         public static class Users
