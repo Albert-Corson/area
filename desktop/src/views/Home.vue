@@ -1,18 +1,17 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <Counter />
+    <About />
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue"
-import Counter from "@/components/Counter.vue"
+import About from "@/components/About.vue"
 
 export default Vue.extend({
   name: "Home",
   components: {
-    Counter
+    About
   }
 })
 </script>
