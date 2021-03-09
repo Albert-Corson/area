@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Net;
+using System.Threading.Tasks;
 using Area.API.Exceptions.Http;
 using Area.API.Models;
 using Area.API.Models.Table;
-using Area.API.Services.Services;
 using ICanHazDadJoke.NET;
 
 namespace Area.API.Services.Widgets.Icanhazdadjoke
@@ -12,19 +12,19 @@ namespace Area.API.Services.Widgets.Icanhazdadjoke
     {
         public int Id { get; } = 12;
 
-        public void CallWidgetApi(IEnumerable<ParamModel> _,
-            ref WidgetCallResponseModel response)
+        public async Task<IEnumerable<WidgetCallResponseItemModel>> CallWidgetApiAsync(IEnumerable<ParamModel> _)
         {
             var client = new DadJokeClient("Area Epitech school project", "https://github.com/Albert-Corson");
 
-            var task = client.GetRandomJokeAsync();
-            task.Wait();
+            var result = await client.GetRandomJokeAsync();
 
-            if (!task.IsCompletedSuccessfully || task.Result.Status != (int) HttpStatusCode.OK)
+            if (result.Status != (int) HttpStatusCode.OK)
                 throw new InternalServerErrorHttpException("Could not reach icanhazdadjoke");
 
-            response.Item = new WidgetCallResponseItemModel {
-                Content = task.Result.Joke
+            return new[] {
+                new WidgetCallResponseItemModel {
+                    Content = result.Joke
+                }
             };
         }
     }

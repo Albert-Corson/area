@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using Area.API.Exceptions.Http;
+using System.Threading.Tasks;
 using Area.API.Extensions;
 using Area.API.Models;
 using Area.API.Models.Table;
@@ -21,20 +21,17 @@ namespace Area.API.Services.Widgets.Spotify
 
         public int Id { get; } = 7;
 
-        public void CallWidgetApi(IEnumerable<ParamModel> widgetCallParams,
-            ref WidgetCallResponseModel response)
+        public async Task<IEnumerable<WidgetCallResponseItemModel>> CallWidgetApiAsync(
+            IEnumerable<ParamModel> widgetCallParams)
         {
             var timeRange = widgetCallParams.GetEnumValue<PersonalizationTopRequest.TimeRange>("time_range");
 
-            var task = SpotifyService.Client!.Personalization.GetTopTracks(new PersonalizationTopRequest {
+            var result = await SpotifyService.Client!.Personalization
+                .GetTopTracks(new PersonalizationTopRequest {
                 TimeRangeParam = timeRange
             });
-            task.Wait();
 
-            if (!task.IsCompletedSuccessfully)
-                throw new InternalServerErrorHttpException("Couldn't reach Spotify");
-
-            response.Items = task.Result.Items?.Select(track => new SpotifyTrackModel(track)) ??
+            return result.Items?.Select(track => new SpotifyTrackModel(track)) ??
                 new List<SpotifyTrackModel>();
         }
     }

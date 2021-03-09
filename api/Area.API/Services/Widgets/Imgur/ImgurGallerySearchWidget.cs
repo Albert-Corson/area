@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Area.API.Exceptions.Http;
 using Area.API.Extensions;
 using Area.API.Models;
@@ -20,8 +21,8 @@ namespace Area.API.Services.Widgets.Imgur
 
         public int Id { get; } = 5;
 
-        public void CallWidgetApi(IEnumerable<ParamModel> widgetCallParams,
-            ref WidgetCallResponseModel response)
+        public async Task<IEnumerable<WidgetCallResponseItemModel>> CallWidgetApiAsync(
+            IEnumerable<ParamModel> widgetCallParams)
         {
             if (Imgur.Client == null)
                 throw new InternalServerErrorHttpException();
@@ -29,13 +30,9 @@ namespace Area.API.Services.Widgets.Imgur
 
             var sort = widgetCallParams.GetEnumValue<GallerySortOrder>("sort");
 
-            var task = galleryEndpoint.SearchGalleryAsync(widgetCallParams.GetValue("query"), sort);
-            task.Wait();
+            var result = await galleryEndpoint.SearchGalleryAsync(widgetCallParams.GetValue("query"), sort);
 
-            if (!task.IsCompletedSuccessfully)
-                throw new InternalServerErrorHttpException("Could not reach Imgur");
-
-            response.Items = ImgurService.WidgetResponseItemsFromGallery(task.Result);
+            return ImgurService.WidgetResponseItemsFromGallery(result);
         }
     }
 }

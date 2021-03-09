@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Area.API.Constants;
 using Area.API.Exceptions.Http;
 using Area.API.Models;
@@ -24,8 +25,7 @@ namespace Area.API.Services.Widgets.CatApi
 
         public int Id { get; } = 11;
 
-        public void CallWidgetApi(IEnumerable<ParamModel> _,
-            ref WidgetCallResponseModel response)
+        public Task<IEnumerable<WidgetCallResponseItemModel>> CallWidgetApiAsync(IEnumerable<ParamModel> _)
         {
             try {
                 var request = new GetRequestBuilder()
@@ -37,10 +37,10 @@ namespace Area.API.Services.Widgets.CatApi
                 if (images == null)
                     throw new InternalServerErrorHttpException("Could not reach The Cat Api");
 
-                response.Items = images.Select(image => new WidgetCallResponseItemModel {
+                return Task.FromResult(images.Select(image => new WidgetCallResponseItemModel {
                     Image = image.Url,
                     Link = image.SourceUrl
-                });
+                }));
             } catch {
                 throw new InternalServerErrorHttpException();
             }

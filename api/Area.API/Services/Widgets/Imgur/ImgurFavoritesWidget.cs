@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Area.API.Exceptions.Http;
+using System.Threading.Tasks;
 using Area.API.Extensions;
 using Area.API.Models;
 using Area.API.Models.Table;
@@ -20,18 +20,15 @@ namespace Area.API.Services.Widgets.Imgur
 
         public int Id { get; } = 2;
 
-        public void CallWidgetApi(IEnumerable<ParamModel> widgetCallParams,
-            ref WidgetCallResponseModel response)
+        public async Task<IEnumerable<WidgetCallResponseItemModel>> CallWidgetApiAsync(
+            IEnumerable<ParamModel> widgetCallParams)
         {
             var sort = widgetCallParams.GetEnumValue<AccountGallerySortOrder>("sort");
 
-            var task = new AccountEndpoint(Imgur.Client).GetAccountGalleryFavoritesAsync(sort: sort);
-            task.Wait();
+            var accountEndpoint = new AccountEndpoint(Imgur.Client);
+            var result = await accountEndpoint.GetAccountGalleryFavoritesAsync(sort: sort);
 
-            if (!task.IsCompletedSuccessfully)
-                throw new InternalServerErrorHttpException("Could not reach Imgur");
-
-            response.Items = ImgurService.WidgetResponseItemsFromGallery(task.Result);
+            return ImgurService.WidgetResponseItemsFromGallery(result);
         }
     }
 }

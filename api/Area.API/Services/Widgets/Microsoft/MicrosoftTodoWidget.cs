@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Area.API.Models;
 using Area.API.Models.Table;
 using Area.API.Models.Widgets;
 using Area.API.Services.Services;
-using Microsoft.Graph;
 using Swan;
+using TaskStatus = Microsoft.Graph.TaskStatus;
 
 namespace Area.API.Services.Widgets.Microsoft
 {
@@ -20,9 +21,12 @@ namespace Area.API.Services.Widgets.Microsoft
 
         public int Id { get; } = 15;
 
-        public void CallWidgetApi(IEnumerable<ParamModel> widgetCallParams, ref WidgetCallResponseModel response)
+        public async Task<IEnumerable<WidgetCallResponseItemModel>> CallWidgetApiAsync(
+            IEnumerable<ParamModel> widgetCallParams)
         {
-            var taskLists = Microsoft.Client!.Me.Todo.Lists.Request().GetAsync().Await();
+            var taskLists = await Microsoft.Client!.Me.Todo.Lists
+                .Request()
+                .GetAsync();
 
             var tasks = from it in taskLists
                 select Microsoft.Client!.Me.Todo.Lists[it.Id]
@@ -40,7 +44,7 @@ namespace Area.API.Services.Widgets.Microsoft
                     select new MicrosoftTodoModel(it));
             }
 
-            response.Items = list;
+            return list;
         }
     }
 }
