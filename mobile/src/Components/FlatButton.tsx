@@ -17,13 +17,14 @@ interface Props {
 const FlatButton = ({
   width = 200, height = 50, onPress, value, containerStyle = {}, active = false,
 }: Props): JSX.Element => (
-  <View style={containerStyle}>
+  <View>
     {active ? (
       <InsetShadowContainer>
         <TouchableOpacity
           activeOpacity={0.4}
           style={[
             styles.button,
+            containerStyle,
             {width, height},
           ]}
           onPress={onPress}
@@ -41,6 +42,7 @@ const FlatButton = ({
           activeOpacity={0.4}
           style={[
             styles.button,
+            containerStyle,
             {width, height},
           ]}
           onPress={onPress}

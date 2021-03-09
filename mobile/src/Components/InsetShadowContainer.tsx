@@ -32,6 +32,6 @@ export default InsetShadowContainer
 
 const styles = StyleSheet.create({
   shadowStyle: {
-    borderRadius: 25,
+    borderRadius: 15,
   },
 })
