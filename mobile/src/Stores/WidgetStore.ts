@@ -260,7 +260,7 @@ export class WidgetStore {
       const widget = this._subscribedWidgets.filter(widget => widget.id === widgetId)[0]
       widget.params = json.data
 
-      this._rootStore.grid.setBlocks(this._subscribedWidgets)
+      this._rootStore.grid.setBlock(widget)
     })
   }
 
