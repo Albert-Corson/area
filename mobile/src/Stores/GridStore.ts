@@ -15,8 +15,7 @@ export class GridStore {
 
   @observable private _blocks: Array<Widget> = [];
 
-  @observable private _timePickerVisible = false;
-  @observable private _timePickerModifyer: number | undefined;
+  private _timePickerVisible = false;
 
   constructor(private _rootStore: RootStore) {
     makeAutoObservable(this)
@@ -61,13 +60,47 @@ export class GridStore {
       }).catch(console.log)
   };
 
+  @action
+  private parseWidgetDisplayItems = (item: Widget): any => {
+    if (item.params?.item) return item.params.item
+
+    if (item.params?.items?.length) {
+      const max = item.params?.items?.length
+
+      if (item.currentParam == undefined) {
+        item.currentParam = ~~(Math.random() * (max))
+      }
+
+      return item.params.items[item.currentParam]
+    }
+    return {}
+  }
+
+  @action
   public get blocks(): Widget[] {
-    return this._blocks
+    return this._blocks.map((widget) => {
+      const copy = {...widget}
+      
+      copy.display = this.parseWidgetDisplayItems(widget)
+
+      return copy
+    })
   }
 
   @action
   public setBlocks = (arr: Widget[]): void => {
     this._blocks = arr
+  };
+  
+  @action
+  public setBlock = (widget: Widget): void => {
+    const index = this._blocks.indexOf(widget)
+    const copy = [...this._blocks]
+
+    copy[index] = widget
+    copy[index].currentParam = undefined
+
+    this._blocks = copy
   };
 
   private addEmptyBlock = (blocks: Widget[], index: number): void => {
@@ -124,29 +157,12 @@ export class GridStore {
     return this._blocks[blockIndex].unactive ? !this._blocks[blockIndex].unactive : this._modifying
   };
 
-  @action
-  public modifyRefreshDelay = (hours: number, minutes: number): void => {
-    this._timePickerVisible = false
-
-
-    this._rootStore.widget.setRefreshDelay(this._timePickerModifyer!, hours, minutes)
-    /*
-    logic
-    */
-
-    this._timePickerModifyer = undefined
-  }
-
-  @action
-  public openTimePicker = (index: number): void => {
+  public openTimePicker = (): void => {
     this._timePickerVisible = true
-    this._timePickerModifyer = index
   }
 
-  @action
   public closeTimePicker = (): void => {
     this._timePickerVisible = false
-    this._timePickerModifyer = undefined
   }
 
   public isTimePickerVisible = (): boolean => this._timePickerVisible === true

@@ -1,3 +1,4 @@
+/* eslint-disable react/display-name */
 import React, {useContext} from 'react'
 import {
   View,
@@ -15,13 +16,68 @@ import GradientFlatButton from '../Components/GradientFlatButton'
 import {Form as styles} from '../StyleSheets/Form'
 import {RootStackParamList} from '../Navigation/StackNavigator'
 import RootStoreContext from '../Stores/RootStore'
+import FlatButton from '../Components/FlatButton'
+import {FontAwesome, FontAwesome5} from '@expo/vector-icons'
+import {WebViewNavigation} from 'react-native-webview'
 
 interface Props {
   navigation: StackNavigationProp<RootStackParamList>;
 }
 
+interface buttonDefinition {
+  icon: () => JSX.Element;
+  color: string;
+  url: string;
+}
+
+const SOCIAL_BTNS: buttonDefinition[] = [
+  {
+    url: '/auth/facebook',
+    icon: () => <FontAwesome name="facebook" size={17} color="#666666" />,
+    color: '#4267B280',
+
+  },
+  {
+    url: '/auth/google',
+    icon: () => <FontAwesome name="google" size={17} color="#666666" />,
+    color: '#DB443780'
+  },
+  {
+    url: '/auth/microsoft',
+    icon: () => <FontAwesome5 name="microsoft" size={17} color="#666666" />,
+    color: '#73737380'
+  },
+]
+
 const SignInScreen = observer(({navigation}: Props): JSX.Element => {
   const store = useContext(RootStoreContext)
+
+  const onPress = (authUrl: string) => {
+    navigation.navigate('ServiceAuth', {
+      authUrl, 
+      callback: async (state: WebViewNavigation) => {
+        const success = state.url.match(/.*successful=(true|false)/)
+        const code = state.url.match(/.*code=([a-zA-Z0-9.\-_]*).*/)
+
+        console.log(code, code ? code[1] : '')
+
+        if (!success || success[1] !== 'true' || !code) return
+
+        const successulTokenClaim = await store.auth.askForTokens(code[1])
+
+        if (successulTokenClaim) {
+          navigation.navigate('Dashboard')
+        } else {
+          //navigation.navigate('Login')
+        }
+      },
+      method: 'post',
+      body: JSON.stringify({
+        redirect_url: 'https://google.fr',
+        state: null,
+      }),
+    })
+  }
 
   return (
     <KeyboardAvoidingView
@@ -51,13 +107,23 @@ const SignInScreen = observer(({navigation}: Props): JSX.Element => {
               width={325}
               containerStyle={{margin: 10}}
               onPress={async () => {
-                // navigation.navigate('Dashboard');
-                // return;
                 if (await store.auth.signIn()) {
                   navigation.navigate('Dashboard')
                 }
               }}
             />
+            <View style={{flexDirection: 'row', justifyContent: 'space-around', width: 335, margin: 5}}>
+              {SOCIAL_BTNS.map((btn, i) => (
+                <FlatButton
+                  key={i}
+                  height={50}
+                  width={100}
+                  containerStyle={{borderRadius: 15, backgroundColor: btn.color}}
+                  value={btn.icon}
+                  onPress={() => onPress(btn.url)}
+                />
+              ))}
+            </View>
             <TextButton
               value="Register"
               style={{fontSize: 19}}

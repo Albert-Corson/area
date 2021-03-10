@@ -1,7 +1,7 @@
-import React, {useState, useContext} from 'react'
+import React, {Component} from 'react'
 import {View, Text, StyleSheet, ImageBackground, FlatList} from 'react-native'
 import {Widget as WidgetType} from '../Types/Widgets'
-import {observer} from 'mobx-react-lite'
+import {observer} from 'mobx-react'
 import {BlurView} from 'expo-blur'
 import {Size} from '../Types/Block'
 import {Video} from 'expo-av'
@@ -10,14 +10,20 @@ import ModalContainer from './ModalContainer'
 import FlatButton from './FlatButton'
 import GradientFlatButton from './GradientFlatButton'
 import TextInput from './TextInput'
-import RootStoreContext from '../Stores/RootStore'
-import {pure} from 'recompose'
-import InsetShadowContainer from './InsetShadowContainer'
 
 interface Props {
   item: WidgetType;
   subscribed?: boolean;
-  size: Size;
+  size?: Size;
+  display?: Record<string, any>;
+  widgetStore: any;
+  modifying?: any;
+}
+
+interface State {
+  showText: boolean;
+  showModal: boolean;
+  modifyingQuery: Record<string, string>;
 }
 
 const sizes: Record<Size, number> = {
@@ -26,48 +32,53 @@ const sizes: Record<Size, number> = {
   [Size.full]: 500,
 }
 
-const Widget = observer(({item, size, subscribed = true}: Props): JSX.Element => {
-  const [showText, setShowText] = useState<boolean>(true)
-  const [showModal, setShowModal] = useState<boolean>(false)
-  const [modifyingQuery, setModifyingQuery] = useState<Record<number, string>>({})
-  const display = item.params?.item ?? (item.params?.items?.length ? item.params.items[0] : {})
-  const queries = Array.isArray(item?.params) ? item?.params : item?.params?.params || []
-  const modifying = useContext(RootStoreContext).grid.modifying
+@observer
+class Widget extends Component<Props, State> {
+  queries: any | any[]
 
-  const widgetStore = useContext(RootStoreContext).widget
+  constructor(props: Props) {
+    super(props)
 
-  const truncateString = (str: string): string => {
-    const length = sizes[size]
+    this.state = {
+      showText: true,
+      showModal: false,
+      modifyingQuery: {},
+    }
+
+    this.queries = Array.isArray(props.item?.params) ? props.item?.params : props.item?.params?.params || []
+  }
+
+  truncateString = (str: string): string => {
+    const length: number = sizes[this.props.size ?? Size.normal]
 
     if (!length) return str
 
-    return str.length > length ? `${str.slice(0, length)}...` : str
+    return str && str.length > length ? `${str.slice(0, length)}...` : str
   }
 
-  const onTap = (): void => {
-    if (!subscribed) return
+  onTap = (): void => {
+    if (!this.props.subscribed || !this.props.display?.image) return
 
-    setShowText(!showText)
+    this.setState({showText: !this.state?.showText})
   }
 
-  const onDoubleTap = () => {
-    if (modifying || !subscribed || !queries.length) return
+  onDoubleTap = () => {
+    if (!this.props.subscribed || !this.queries.length) return
 
-    setShowModal(true)
-    console.log(queries)
+    this.setState({showModal: true})
   }
 
-  const content: JSX.Element | boolean = showText && (
+  content: () => JSX.Element | boolean = () => this.state.showText && (
     <BlurView intensity={100} style={[styles.centerContent, styles.fullSize]}>
       <View style={styles.contentContainer}>
         <Text style={[styles.text, styles.title, {}]}>
-          {truncateString(display.header ?? item.name)}
+          {this.truncateString(this.props.display?.header ?? this.props.item.name)}
         </Text>
 
         {(() => {
-          const body = (display.artists ?? display.genres)?.map((item: string, i: number) => (
+          const body = (this.props.display?.artists ?? (this.props.display?.genres || []))?.map((item: string, i: number) => (
             <Text style={styles.text} key={i}>
-              {truncateString(item)}
+              {this.truncateString(item)}
             </Text>
           ))
 
@@ -75,13 +86,13 @@ const Widget = observer(({item, size, subscribed = true}: Props): JSX.Element =>
             return body
           }
 
-          if (!display.content && !display.description && subscribed) {
+          if (!this.props.display?.content && !this.props.display?.description && this.props.subscribed) {
             return null
           }
 
           return (
             <Text style={styles.text}>
-              {truncateString(display.content || display.description || item.description)}
+              {this.truncateString(this.props.display?.content || this.props.display?.description || this.props.item.description)}
             </Text>
           )
         })()}
@@ -89,93 +100,93 @@ const Widget = observer(({item, size, subscribed = true}: Props): JSX.Element =>
     </BlurView>
   )
 
-  const container: JSX.Element = (
+  container: () => JSX.Element = () => (
     <>
-      {display.image ? (
+      {this.props.display?.image ? (
         <>
-          {display.image.includes('.mp4') ? (
+          {this.props.display?.image.includes('.mp4') ? (
             <Video
               style={[styles.widget, styles.fullSize]}
-              source={{uri: display.image}}
+              source={{uri: this.props.display?.image}}
               shouldPlay={true}
               isLooping={true}
               volume={0}
               resizeMode="cover">
-              {content}
+              {this.content()}
             </Video>
           ) : (
-            <ImageBackground style={[styles.widget, styles.fullSize]} source={{uri: display.image}}>
-              {content}
+            <ImageBackground style={[styles.widget, styles.fullSize]} source={{uri: this.props.display?.image}}>
+              {this.content()}
             </ImageBackground>
           )}
         </>
       ) : (
         <View style={[styles.widget, styles.centerContent, styles.fullSize]}>
-          {content}
+          {this.content()}
         </View>
       )}
     </>
   )
 
-  return (
-    <>
-      <DoubleTap
-        onPress={onTap}
-        onDoublePress={onDoubleTap}
-        delay={200}
-        activeOpacity={1}
-      >
-
-        {container}
-
-      </DoubleTap>
-      <ModalContainer visible={showModal} containerStyle={{height: 175, justifyContent: 'center'}}>
-        <FlatList
-          style={{height: 50}}
-          data={queries}
-          renderItem={({item, index}) => (
-            <TextInput
-              containerStyle={{width: '100%', marginVertical: 15}}
-              placeholder={item.name}
-              value={modifyingQuery[index]}
-              onChange={(text) => {
-                const cpy = {...modifyingQuery}
-
-                cpy[index] = text
-                setModifyingQuery(cpy)
+  render(): JSX.Element {
+    return (
+      <>
+        <DoubleTap
+          onPress={this.onTap}
+          onDoublePress={this.onDoubleTap}
+          delay={200}
+          activeOpacity={1}
+        >
+  
+          {this.container()}
+  
+        </DoubleTap>
+        <ModalContainer visible={this.state.showModal} containerStyle={{height: 175, justifyContent: 'center'}}>
+          <FlatList
+            style={{height: 50}}
+            data={this.queries}
+            renderItem={({item, index}) => (
+              <TextInput
+                containerStyle={{width: '100%', marginVertical: 15}}
+                placeholder={item.name}
+                value={this.state.modifyingQuery[index]}
+                onChange={(text) => {
+                  const modifyingQuery = {...this.state.modifyingQuery}
+  
+                  modifyingQuery[index] = text
+                  this.setState({modifyingQuery})
+                }}
+              />
+            )}
+            keyExtractor={(_, index) => `query_${index}`}
+          />
+          <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-evenly', width: 300}}>
+            <GradientFlatButton
+              width={200} 
+              value="Save" 
+              onPress={async () => {
+                const map = new Map(Object.keys(this.state.modifyingQuery)
+                  .filter((key: any) => this.state.modifyingQuery[key]?.length)
+                  .map((key: any) => [this.queries[key].name, this.state.modifyingQuery[key]]))
+  
+                await this.props.widgetStore.updateWidget(this.props.item.id, Object.fromEntries(map))
+                this.props.widgetStore.updateParameter(this.props.item.id)
+                this.setState({showModal: false})
               }}
             />
-          )}
-          keyExtractor={(_, index) => `query_${index}`}
-        />
-        <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-evenly', width: 300}}>
-          <GradientFlatButton
-            width={200} 
-            value="Save" 
-            onPress={() => {
-              const map = new Map(Object.keys(modifyingQuery)
-                .filter((key: any) => modifyingQuery[key]?.length)
-                .map((key: any) => [queries[key].name, modifyingQuery[key]]))
+            <FlatButton 
+              width={75} 
+              value="Cancel" 
+              onPress={() => this.setState({modifyingQuery: {}, showModal: false})}
+            />
+          </View>
+        </ModalContainer>
+      </>
+    )
+  }
+}
 
-              widgetStore.updateWidget(item.id, Object.fromEntries(map))
-              setShowModal(false)
-            }}
-          />
-          <FlatButton 
-            width={75} 
-            value="Cancel" 
-            onPress={() => {
-              setModifyingQuery({})
-              setShowModal(false)
-            }}
-          />
-        </View>
-      </ModalContainer>
-    </>
-  )
-})
-
-export default pure(Widget)
+export default Widget
 
 const styles = StyleSheet.create({
   contentContainer: {

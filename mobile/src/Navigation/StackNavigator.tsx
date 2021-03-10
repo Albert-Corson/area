@@ -7,6 +7,7 @@ import DashboardScreen from '../Screens/DashboardScreen'
 import ProfileScreen from '../Screens/ProfileScreen'
 import RootStoreContext from '../Stores/RootStore'
 import ServiceAuthScreen from '../Screens/ServiceAuthScreen'
+import {WebViewNavigation} from 'react-native-webview/lib/WebViewTypes'
 
 export type RootStackParamList = {
   Login: undefined;
@@ -14,7 +15,13 @@ export type RootStackParamList = {
   Help: undefined;
   Dashboard: undefined;
   Profile: undefined;
-  ServiceAuth: {authUrl: string, widgetId: number};
+  ServiceAuth: {
+    authUrl: string;
+    callback: (e: WebViewNavigation) => void;
+    tokenRequired?: boolean;
+    method: 'post' | 'get';
+    body?: string;
+  };
 };
 
 const Stack = createStackNavigator<RootStackParamList>()

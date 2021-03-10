@@ -1,4 +1,4 @@
-import { Parameters } from './API';
+import {Parameters} from './API'
 import {Block} from './Block'
 
 export interface Service {
@@ -20,4 +20,6 @@ export interface Widget extends Block {
   requires_auth: boolean;
   service: Service;
   params: Parameters
+  currentParam?: number;
+  display?: any;
 }
