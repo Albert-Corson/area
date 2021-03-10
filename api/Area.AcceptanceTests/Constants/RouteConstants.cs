@@ -36,8 +36,8 @@ namespace Area.AcceptanceTests.Constants
             public const string GetServices = Root;
             public const string GetMyServices = Root + "/me";
             public static string GetServiceById(int id) => Root + "/" + id;
-            public static string SignInServiceById(int id) => Root + "/" + id;
-            public static string SignOutServiceById(int id) => Root + "/" + id;
+            public static string SignInServiceById(int id) => Root + "/auth/" + id;
+            public static string SignOutServiceById(int id) => Root + "/auth/" + id;
         }
 
         public static class Widgets
@@ -45,7 +45,9 @@ namespace Area.AcceptanceTests.Constants
             private const string Root = Api + "/widgets";
 
             public const string GetWidgets = Root;
+            public static string GetWidgetsByService(int serviceId) => GetWidgets + $"?serviceId={serviceId}";
             public const string GetMyWidgets = Root + "/me";
+            public static string GetMyWidgetsByService(int serviceId) => GetMyWidgets + $"?serviceId={serviceId}";
             public static string CallWidgetById(int id) => Root + "/" + id;
             public static string SubscribeWidgetById(int id) => Root + "/" + id;
             public static string UnsubscribeWidgetById(int id) => Root + "/" + id;

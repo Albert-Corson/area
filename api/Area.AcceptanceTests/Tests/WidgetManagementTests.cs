@@ -54,7 +54,7 @@ namespace Area.AcceptanceTests.Tests
         {
             var notAuthed = _notAuthed;
 
-            var response = await AreaApi.GetWidgets(notAuthed.Service.Id);
+            var response = await AreaApi.GetWidgetsByService(notAuthed.Service.Id);
 
             AssertExtension.SuccessfulApiResponse(response);
 
@@ -99,7 +99,7 @@ namespace Area.AcceptanceTests.Tests
         [Fact, Priority(6)]
         public async Task GetMyWidgetsFromService()
         {
-            var response = await AreaApi.GetMyWidgets(_notAuthed.Service.Id);
+            var response = await AreaApi.GetMyWidgetsByService(_notAuthed.Service.Id);
 
             AssertExtension.SuccessfulApiResponse(response);
 
@@ -109,7 +109,7 @@ namespace Area.AcceptanceTests.Tests
         [Fact, Priority(7)]
         public async Task GetMyWidgetsFromOtherService()
         {
-            var response = await AreaApi.GetMyWidgets(_otherServiceId);
+            var response = await AreaApi.GetMyWidgetsByService(_otherServiceId);
 
             AssertExtension.SuccessfulApiResponse(response);
             Assert.Empty(response.Content.Data!);

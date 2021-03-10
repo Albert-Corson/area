@@ -87,7 +87,7 @@ namespace Area.API.Controllers
             };
         }
 
-        [HttpPost(RouteConstants.Services.SignInService)]
+        [HttpGet(RouteConstants.Services.SignInService)]
         [SwaggerOperation(
             Summary = "Sign-in a user to a service",
             Description =
@@ -95,41 +95,42 @@ namespace Area.API.Controllers
 ## If the service doesn't have sign-in capabilities, an empty success response is returned (a.k.a without `data`).
 ## Otherwise an authentication URL is returned as `data` to redirect the user to"
         )]
-        public async Task<RedirectResult> SignInService(
+        public async Task<ResponseModel<AuthenticationRedirectModel>> SignInService(
             [FromRoute] [Required] [Range(1, int.MaxValue)] [SwaggerParameter("Service's ID")]
             int? serviceId,
-            [FromBody]
-            [SwaggerSchema("Required information to redirect the user back to the client once the operation in done")]
-            ExternalAuthModel body
+
+            [Required, FromQuery(Name = "redirect_url")]
+            [SwaggerParameter("The URL to redirect the user to once the operation is completed")]
+            string? redirectUrl,
+
+            [FromQuery(Name = "state")]
+            [SwaggerParameter("A freely-defined value that will sent back to the client")]
+            string? clientState
         )
         {
             var state = new ServiceAuthStateModel {
-                State = body.State,
-                RedirectUrl = body.RedirectUrl
+                State = clientState,
+                RedirectUrl = redirectUrl!
             };
 
             User.TryGetUserId(out state.UserId);
 
-            var redirectUrl = new UriBuilder(body.RedirectUrl);
-            var queryParams = HttpUtility.ParseQueryString(redirectUrl.Query);
-
-            queryParams["state"] = body.State;
-
-            if (_serviceRepository.GetService(serviceId!.Value) == null) {
-                queryParams["successful"] = "false";
-                queryParams["error"] = "This service doesn't exist";
-                redirectUrl.Query = queryParams.ToString();
-                return new RedirectResult(redirectUrl.ToString());
-            }
+            if (_serviceRepository.GetService(serviceId!.Value) == null)
+                throw new NotFoundHttpException("The service does not exist");
 
             if (!_serviceManager.TryGetServiceById(serviceId.Value, out var service)) {
-                queryParams["successful"] = "true";
-                redirectUrl.Query = queryParams.ToString();
-                return new RedirectResult(redirectUrl.ToString());
+                return new ResponseModel<AuthenticationRedirectModel> {
+                    Data = new AuthenticationRedirectModel()
+                };
             }
 
             var serviceUri = await service!.GetSignInUrlAsync(JsonConvert.SerializeObject(state));
-            return new RedirectResult(serviceUri.ToString());
+
+            return new ResponseModel<AuthenticationRedirectModel> {
+                Data = new AuthenticationRedirectModel {
+                    RedirectUrl = serviceUri.AbsoluteUri
+                }
+            };
         }
 
         [HttpDelete(RouteConstants.Services.SignOutService)]
@@ -164,7 +165,7 @@ namespace Area.API.Controllers
             ServiceAuthStateModel serviceAuthState;
 
             try {
-                serviceAuthState = JsonConvert.DeserializeObject<ServiceAuthStateModel>(HttpUtility.UrlDecode(state));
+                serviceAuthState = JsonConvert.DeserializeObject<ServiceAuthStateModel>(state!);
             } catch {
                 Response.StatusCode = (int) HttpStatusCode.InternalServerError;
                 return Content("<h1>An unexpected error has occured, please try again later</h1>", "text/html");
@@ -173,7 +174,9 @@ namespace Area.API.Controllers
             bool failed;
             var redirectUrl = new UriBuilder(serviceAuthState.RedirectUrl);
             var queryParams = HttpUtility.ParseQueryString(redirectUrl.Query);
-            queryParams["state"] = serviceAuthState.State;
+
+            if (serviceAuthState.State != null)
+                queryParams["state"] = serviceAuthState.State;
 
             try {
                 failed = !await _serviceManager.HandleServiceSignInCallbackById(serviceId!.Value, serviceAuthState.UserId, code!);

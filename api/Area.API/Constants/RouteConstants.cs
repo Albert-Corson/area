@@ -41,8 +41,8 @@ namespace Area.API.Constants
             public const string GetServices = Root;
             public const string GetMyServices = Root + "/me";
             public const string GetService = Root + "/{serviceId}";
-            public const string SignInService = Root + "/{serviceId}";
-            public const string SignOutService = Root + "/{serviceId}";
+            public const string SignInService = Root + "/auth/{serviceId}";
+            public const string SignOutService = Root + "/auth/{serviceId}";
             public const string SignInServiceCallback = Root + "/{serviceId}/callback";
         }
 

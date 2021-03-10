@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace Area.API.Models
+namespace Area.AcceptanceTests.Models
 {
     public class ServiceAuthStateModel
     {
@@ -13,4 +13,5 @@ namespace Area.API.Models
         [JsonProperty("state")]
         public string? State { get; set; }
     }
+
 }
