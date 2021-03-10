@@ -39,6 +39,7 @@ namespace Area.API.Constants
             public const string ClientId = Base + ":" + nameof(ClientId);
             public const string ClientSecret = Base + ":" + nameof(ClientSecret);
             public const string AuthRedirectUri = Base + ":" + nameof(AuthRedirectUri);
+            public const string ServiceRedirectUri = Base + ":" + nameof(ServiceRedirectUri);
         }
 
         public static class Imgur

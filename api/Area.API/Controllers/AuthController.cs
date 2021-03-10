@@ -129,15 +129,15 @@ namespace Area.API.Controllers
         {
             if (!_authService.TryGetPrincipalFromToken(body.Code, out var principal)
                 || !principal.TryGetUserId(out var userId))
-                throw new UnauthorizedHttpException();
+                throw new BadRequestHttpException();
 
             var user = _userRepository.GetUser(userId, asNoTracking: false);
             if (user == null)
-                throw new UnauthorizedHttpException();
+                throw new BadRequestHttpException();
 
             var claim = _userRepository.GetUserClaim(user.Id, user.Type.ToString());
             if (claim == null || claim.ClaimValue != body.Code)
-                throw new UnauthorizedHttpException();
+                throw new BadRequestHttpException();
 
             var identityResult = await _userRepository.RemoveUserClaim(user, claim.ToClaim());
             if (!identityResult.Succeeded)
@@ -181,7 +181,13 @@ namespace Area.API.Controllers
         {
             var authRequestBody = JsonConvert.DeserializeObject<ExternalAuthModel>(state);
 
-            var redirectUrl = new UriBuilder(authRequestBody.RedirectUrl);
+            UriBuilder redirectUrl;
+            try {
+                redirectUrl = new UriBuilder(authRequestBody.RedirectUrl);
+            } catch {
+                throw new BadRequestHttpException();
+            }
+
             var query = HttpUtility.ParseQueryString(redirectUrl.Query);
 
             if (authRequestBody.State != null)
@@ -238,7 +244,13 @@ namespace Area.API.Controllers
         {
             var authRequestBody = JsonConvert.DeserializeObject<ExternalAuthModel>(state);
 
-            var redirectUrl = new UriBuilder(authRequestBody.RedirectUrl);
+            UriBuilder redirectUrl;
+            try {
+                redirectUrl = new UriBuilder(authRequestBody.RedirectUrl);
+            } catch {
+                throw new BadRequestHttpException();
+            }
+
             var query = HttpUtility.ParseQueryString(redirectUrl.Query);
 
             if (authRequestBody.State != null)
@@ -299,7 +311,13 @@ namespace Area.API.Controllers
         {
             var authRequestBody = JsonConvert.DeserializeObject<ExternalAuthModel>(state);
 
-            var redirectUrl = new UriBuilder(authRequestBody.RedirectUrl);
+            UriBuilder redirectUrl;
+            try {
+                redirectUrl = new UriBuilder(authRequestBody.RedirectUrl);
+            } catch {
+                throw new BadRequestHttpException();
+            }
+
             var query = HttpUtility.ParseQueryString(redirectUrl.Query);
 
             if (authRequestBody.State != null)

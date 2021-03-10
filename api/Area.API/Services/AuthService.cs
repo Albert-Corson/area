@@ -70,7 +70,7 @@ namespace Area.API.Services
                     && TryGetPrincipalFromToken(claim.Value, out _)));
 
                 if (identityResult.Succeeded) {
-                    code = GenerateToken(user.Id, DateTime.Now.AddTicks(AuthConstants.CodeLifespanTicks), claimType);
+                    code = GenerateToken(user.Id, DateTime.UtcNow.AddTicks(AuthConstants.CodeLifespanTicks), claimType);
                     identityResult = await _userRepository.AddUserClaim(user, new Claim(claimType, code));
                 }
             }
@@ -87,7 +87,7 @@ namespace Area.API.Services
                 new Claim(JwtRegisteredClaimNames.Typ, "access_token")
             });
 
-            return await GenerateTokenWithDevice(userId, DateTime.Now.AddTicks(AuthConstants.RefreshTokenLifespanTicks), ipAddress, claims);
+            return await GenerateTokenWithDevice(userId, DateTime.UtcNow.AddTicks(AuthConstants.RefreshTokenLifespanTicks), ipAddress, claims);
         }
 
         public async Task<string> GenerateRefreshToken(int userId, IPAddress ipAddress)
@@ -96,7 +96,7 @@ namespace Area.API.Services
                 new Claim(JwtRegisteredClaimNames.Typ, "refresh_token")
             });
 
-            return await GenerateTokenWithDevice(userId, DateTime.Now.AddTicks(AuthConstants.RefreshTokenLifespanTicks), ipAddress, claims);
+            return await GenerateTokenWithDevice(userId, DateTime.UtcNow.AddTicks(AuthConstants.RefreshTokenLifespanTicks), ipAddress, claims);
         }
 
         public string GenerateToken(int userId, DateTime expiryTime, string issuer)
@@ -113,7 +113,7 @@ namespace Area.API.Services
                 issuer,
                 _configuration[AuthConstants.ValidAudience],
                 claims,
-                DateTime.Now,
+                DateTime.UtcNow,
                 expiryTime,
                 signingCredentials
             );
@@ -161,7 +161,7 @@ namespace Area.API.Services
             if (registeredDeviceId != currentDevice.Id)
                 return false;
 
-            registeredDevice.LastUsed = DateTime.Now.Ticks;
+            registeredDevice.LastUsed = DateTime.UtcNow.Ticks;
 
             return true;
         }

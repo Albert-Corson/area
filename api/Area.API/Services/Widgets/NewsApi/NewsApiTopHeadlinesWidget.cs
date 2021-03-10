@@ -1,6 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Area.API.Constants;
 using Area.API.Exceptions.Http;
 using Area.API.Extensions;
@@ -14,22 +14,19 @@ using NewsAPI.Models;
 
 namespace Area.API.Services.Widgets.NewsApi
 {
-    public class NewsApiTopHeadlinesWidgetService : IWidgetService
+    public class NewsApiTopHeadlinesWidget : IWidget
     {
-        private readonly NewsApiClient? _client;
+        private readonly NewsApiClient _client;
 
-        public NewsApiTopHeadlinesWidgetService(IConfiguration configuration)
+        public NewsApiTopHeadlinesWidget(IConfiguration configuration)
         {
-            var apiKey = configuration[AuthConstants.NewsApi.Key];
-
-            if (apiKey != null)
-                _client = new NewsApiClient(apiKey);
+            _client = new NewsApiClient(configuration[AuthConstants.NewsApi.Key]);
         }
 
-        public string Name { get; } = "Top headlines";
+        public int Id { get; } = 9;
 
-        public void CallWidgetApi(IEnumerable<ParamModel> widgetCallParams,
-            ref WidgetCallResponseModel response)
+        public async Task<IEnumerable<WidgetCallResponseItemModel>> CallWidgetApiAsync(
+            IEnumerable<ParamModel> widgetCallParams)
         {
 
             var topHeadlinesRequest = new TopHeadlinesRequest {
@@ -38,14 +35,14 @@ namespace Area.API.Services.Widgets.NewsApi
                 Language = widgetCallParams.GetEnumValue<Languages>("language")
             };
 
-            var news = _client?.GetTopHeadlines(topHeadlinesRequest);
+            var news = await _client.GetTopHeadlinesAsync(topHeadlinesRequest);
 
             if (news == null)
                 throw new InternalServerErrorHttpException("Could not reach NewsApi");
             if (news.Status != Statuses.Ok)
                 throw new BadRequestHttpException(news.Error.Message);
 
-            response.Items = news.Articles.Select(article => new NewsApiArticleModel(article));
+            return news.Articles.Select(article => new NewsApiArticleModel(article));
         }
     }
 }

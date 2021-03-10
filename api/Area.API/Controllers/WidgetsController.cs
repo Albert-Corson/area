@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Area.API.Constants;
 using Area.API.Exceptions.Http;
 using Area.API.Extensions;
@@ -22,10 +23,10 @@ namespace Area.API.Controllers
     {
         private readonly ServiceRepository _serviceRepository;
         private readonly UserRepository _userRepository;
-        private readonly WidgetManagerService _widgetManager;
+        private readonly WidgetManager _widgetManager;
         private readonly WidgetRepository _widgetRepository;
 
-        public WidgetsController(WidgetManagerService widgetManager, WidgetRepository widgetRepository,
+        public WidgetsController(WidgetManager widgetManager, WidgetRepository widgetRepository,
             ServiceRepository serviceRepository, UserRepository userRepository)
         {
             _widgetManager = widgetManager;
@@ -90,7 +91,7 @@ namespace Area.API.Controllers
 
             foreach (var widget in widgets) {
                 var currentParam = widgetParams.Where(model => model.Param.WidgetId == widget.Id);
-                widget.Params = WidgetManagerService.BuildUserWidgetCallParams(currentParam, widget.Params!);
+                widget.Params = WidgetManager.BuildUserWidgetCallParams(currentParam, widget.Params!);
                 widget.RequiresAuth = user.ServiceTokens.FirstOrDefault(model => model.ServiceId == widget.ServiceId) != null;
             }
 
@@ -107,13 +108,13 @@ namespace Area.API.Controllers
 ## The API's request result is interpolated into a its corresponding data scheme (inheriting from `WidgetCallResponse`) and returned"
         )]
         [SwaggerResponse((int) HttpStatusCode.NotFound, "The widget doesn't exist")]
-        public ResponseModel<WidgetCallResponseModel> CallWidget(
+        public async Task<ResponseModel<WidgetCallResponseModel>> CallWidget(
             [FromRoute] [Required] [Range(1, int.MaxValue)] [SwaggerParameter("The widget's ID")]
             int? widgetId
         )
         {
             return new ResponseModel<WidgetCallResponseModel> {
-                Data = _widgetManager.CallWidgetById(HttpContext, widgetId!.Value)
+                Data = await _widgetManager.CallWidgetByIdAsync(HttpContext, widgetId!.Value)
             };
         }
 

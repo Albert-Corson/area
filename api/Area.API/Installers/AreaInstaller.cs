@@ -5,6 +5,7 @@ using Area.API.Services.Widgets.CatApi;
 using Area.API.Services.Widgets.Icanhazdadjoke;
 using Area.API.Services.Widgets.Imgur;
 using Area.API.Services.Widgets.LoremPicsum;
+using Area.API.Services.Widgets.Microsoft;
 using Area.API.Services.Widgets.NewsApi;
 using Area.API.Services.Widgets.Spotify;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,30 +25,34 @@ namespace Area.API.Installers
 
         public static IServiceCollection AddAreaWidgets(this IServiceCollection services)
         {
-            services.AddScoped<WidgetManagerService>();
+            services.AddScoped<WidgetManager>();
 
-            services.AddScoped<ImgurGalleryWidgetService>();
-            services.AddScoped<ImgurFavoritesWidgetService>();
-            services.AddScoped<ImgurUploadsWidgetService>();
-            services.AddScoped<ImgurGallerySearchWidgetService>();
-            services.AddScoped<LoremPicsumRandomImageService>();
-            services.AddScoped<SpotifyFavoriteArtistsWidgetService>();
-            services.AddScoped<SpotifyFavoriteTracksWidgetService>();
-            services.AddScoped<SpotifyHistoryWidgetService>();
-            services.AddScoped<NewsApiTopHeadlinesWidgetService>();
-            services.AddScoped<NewsApiSearchWidgetService>();
-            services.AddScoped<CatApiRandomImagesWidgetService>();
-            services.AddScoped<IcanhazdadjokeRandomJokeWidgetService>();
+            services.AddScoped<ImgurGalleryWidget>();
+            services.AddScoped<ImgurFavoritesWidget>();
+            services.AddScoped<ImgurUploadsWidget>();
+            services.AddScoped<ImgurGallerySearchWidget>();
+            services.AddScoped<LoremPicsumRandomImageWidget>();
+            services.AddScoped<SpotifyFavoriteArtistsWidget>();
+            services.AddScoped<SpotifyFavoriteTracksWidget>();
+            services.AddScoped<SpotifyHistoryWidget>();
+            services.AddScoped<NewsApiTopHeadlinesWidget>();
+            services.AddScoped<NewsApiSearchWidget>();
+            services.AddScoped<CatApiRandomImagesWidget>();
+            services.AddScoped<IcanhazdadjokeRandomJokeWidget>();
+            services.AddScoped<MicrosoftCalendarWidget>();
+            services.AddScoped<MicrosoftTodoWidget>();
+            services.AddScoped<MicrosoftUnreadEmailsWidget>();
 
             return services;
         }
 
         public static IServiceCollection AddAreaServices(this IServiceCollection services)
         {
-            services.AddScoped<ServiceManagerService>();
+            services.AddScoped<ServiceManager>();
 
-            services.AddScoped<ImgurServiceService>();
-            services.AddScoped<SpotifyServiceService>();
+            services.AddScoped<ImgurService>();
+            services.AddScoped<SpotifyService>();
+            services.AddScoped<MicrosoftService>();
 
             return services;
         }

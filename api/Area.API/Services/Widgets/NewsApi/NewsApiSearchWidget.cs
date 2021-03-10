@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Area.API.Constants;
 using Area.API.Exceptions.Http;
 using Area.API.Extensions;
@@ -14,37 +15,34 @@ using NewsAPI.Models;
 
 namespace Area.API.Services.Widgets.NewsApi
 {
-    public class NewsApiSearchWidgetService : IWidgetService
+    public class NewsApiSearchWidget : IWidget
     {
-        private readonly NewsApiClient? _client;
+        private readonly NewsApiClient _client;
 
-        public NewsApiSearchWidgetService(IConfiguration configuration)
+        public NewsApiSearchWidget(IConfiguration configuration)
         {
-            var apiKey = configuration[AuthConstants.NewsApi.Key];
-
-            if (apiKey != null)
-                _client = new NewsApiClient(apiKey);
+            _client = new NewsApiClient(configuration[AuthConstants.NewsApi.Key]);
         }
 
-        public string Name { get; } = "News search";
+        public int Id { get; } = 10;
 
-        public void CallWidgetApi(IEnumerable<ParamModel> widgetCallParams,
-            ref WidgetCallResponseModel response)
+        public async Task<IEnumerable<WidgetCallResponseItemModel>> CallWidgetApiAsync(
+            IEnumerable<ParamModel> widgetCallParams)
         {
             var everythingRequest = new EverythingRequest {
-                From = DateTime.Now.Subtract(TimeSpan.FromDays(21)),
+                From = DateTime.UtcNow.Subtract(TimeSpan.FromDays(21)),
                 Q = widgetCallParams.GetValue("query"),
                 Language = widgetCallParams.GetEnumValue<Languages>("language")
             };
 
-            var news = _client?.GetEverything(everythingRequest);
+            var news = await _client.GetEverythingAsync(everythingRequest);
 
             if (news == null)
                 throw new InternalServerErrorHttpException("Could not reach NewsApi");
             if (news.Status != Statuses.Ok)
                 throw new BadRequestHttpException(news.Error.Message);
 
-            response.Items = news.Articles.Select(article => new NewsApiArticleModel(article));
+            return news.Articles.Select(article => new NewsApiArticleModel(article));
         }
     }
 }

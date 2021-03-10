@@ -37,7 +37,7 @@ namespace Area.API.Models.Widgets
         public string Description { get; set; } = null!;
 
         [JsonProperty("published_at", Required = Required.DisallowNull)]
-        [SwaggerSchema("The date publishing (epoch) of the article")]
+        [SwaggerSchema("The publishing date, in UTC Linux EPOCH, of the article")]
         public long? PublishedAt { get; set; }
     }
 }
