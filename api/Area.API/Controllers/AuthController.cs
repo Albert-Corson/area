@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -151,23 +152,24 @@ namespace Area.API.Controllers
             };
         }
 
-        [HttpPost(RouteConstants.Auth.SignInWithFacebook)]
+        [HttpGet(RouteConstants.Auth.SignInWithFacebook)]
         [AllowAnonymous]
         [SwaggerOperation(
             Summary = "Sign-in/register with Facebook",
-            Description = "Redirect the user to this endpoint to let them sign-in/register with Facebook. The user will be redirected back to the client with an authentication code once done."
+            Description = "Get a URL to redirect the user to, to let them sign-in/register with Facebook. The user will be redirected back to the client with an authentication code once done."
         )]
-        [SwaggerResponse((int) HttpStatusCode.Found, "Redirection to Facebook's sign-in page")]
-        public async Task<RedirectResult> SignInWithFacebook(
-            CancellationToken cancellationToken,
-            [FromBody]
-            [SwaggerRequestBody("Mandatory information to be able to redirect the user back to the client once the operation is done")]
-            ExternalAuthModel body
+        public async Task<ResponseModel<AuthenticationRedirectModel>> SignInWithFacebook(
+            [Required, FromQuery(Name = "redirect_url")]
+            [SwaggerParameter("The URL to redirect the user to once the operation is completed")]
+            string? redirectUrl,
+
+            [FromQuery(Name = "state")]
+            [SwaggerParameter("A freely-defined value that will sent back to the client")]
+            string? clientState
             )
         {
-            var state = JsonConvert.SerializeObject(body);
-
-            return new RedirectResult(await _facebook.GetLoginLinkUriAsync(state, cancellationToken));
+            return await SignInWithExternalService(redirectUrl!, clientState,
+                async state => new Uri(await _facebook.GetLoginLinkUriAsync(state)));
         }
 
         [HttpGet(RouteConstants.Auth.SignInWithFacebookCallback)]
@@ -179,58 +181,31 @@ namespace Area.API.Controllers
             [FromQuery] string state
         )
         {
-            var authRequestBody = JsonConvert.DeserializeObject<ExternalAuthModel>(state);
-
-            UriBuilder redirectUrl;
-            try {
-                redirectUrl = new UriBuilder(authRequestBody.RedirectUrl);
-            } catch {
-                throw new BadRequestHttpException();
-            }
-
-            var query = HttpUtility.ParseQueryString(redirectUrl.Query);
-
-            if (authRequestBody.State != null)
-                query["state"] = authRequestBody.State;
-
-            try {
+            return await SignInWithExternalServiceCallback(state, UserModel.UserType.Facebook, async () => {
                 UserInfo userInfo = await _facebook.GetUserInfoAsync(new NameValueCollection {{nameof(code), code}}, cancellationToken);
 
-                var authResult = await _authService.AuthenticateExternalUserAsync(userInfo.Email, UserModel.UserType.Facebook);
-
-                if (authResult.Successful) {
-                    query["code"] = authResult.Code;
-                    query["successful"] = "true";
-                } else {
-                    query["error"] = authResult.Error;
-                    query["successful"] = "false";
-                }
-            } catch {
-               query["successful"] = "false";
-               query["error"] = "Authentication canceled";
-            }
-
-            redirectUrl.Query = query.ToString();
-            return new RedirectResult(redirectUrl.ToString());
+                return userInfo.Email;
+            });
         }
 
-        [HttpPost(RouteConstants.Auth.SignInWithGoogle)]
+        [HttpGet(RouteConstants.Auth.SignInWithGoogle)]
         [AllowAnonymous]
         [SwaggerOperation(
             Summary = "Sign-in/register with Google",
-            Description = "Redirect the user to this endpoint to let them sign-in/register with Google. The user will be redirected back to the client with an authentication code once done."
+            Description = "Get a URL to redirect the user to, to let them sign-in/register with Google. The user will be redirected back to the client with an authentication code once done."
         )]
-        [SwaggerResponse((int) HttpStatusCode.Found, "Redirection to Google's sign-in page")]
-        public async Task<RedirectResult> SignInWithGoogle(
-            CancellationToken cancellationToken,
-            [FromBody]
-            [SwaggerRequestBody("Mandatory information to be able to redirect the user back to the client once the operation is done")]
-            ExternalAuthModel body
+        public async Task<ResponseModel<AuthenticationRedirectModel>> SignInWithGoogle(
+            [Required, FromQuery(Name = "redirect_url")]
+            [SwaggerParameter("The URL to redirect the user to once the operation is completed")]
+            string? redirectUrl,
+
+            [FromQuery(Name = "state")]
+            [SwaggerParameter("A freely-defined value that will sent back to the client")]
+            string? clientState
             )
         {
-            var state = JsonConvert.SerializeObject(body);
-
-            return new RedirectResult(await _google.GetLoginLinkUriAsync(state, cancellationToken));
+            return await SignInWithExternalService(redirectUrl!, clientState,
+                async state => new Uri(await _google.GetLoginLinkUriAsync(state)));
         }
 
         [HttpGet(RouteConstants.Auth.SignInWithGoogleCallback)]
@@ -242,62 +217,36 @@ namespace Area.API.Controllers
             [FromQuery] string state
         )
         {
-            var authRequestBody = JsonConvert.DeserializeObject<ExternalAuthModel>(state);
-
-            UriBuilder redirectUrl;
-            try {
-                redirectUrl = new UriBuilder(authRequestBody.RedirectUrl);
-            } catch {
-                throw new BadRequestHttpException();
-            }
-
-            var query = HttpUtility.ParseQueryString(redirectUrl.Query);
-
-            if (authRequestBody.State != null)
-                query["state"] = authRequestBody.State;
-
-            try {
+            return await SignInWithExternalServiceCallback(state, UserModel.UserType.Google, async () => {
                 UserInfo userInfo = await _google.GetUserInfoAsync(new NameValueCollection {{nameof(code), code}}, cancellationToken);
 
-                var authResult = await _authService.AuthenticateExternalUserAsync(userInfo.Email, UserModel.UserType.Google);
-
-                if (authResult.Successful) {
-                    query["code"] = authResult.Code;
-                    query["successful"] = "true";
-                } else {
-                    query["error"] = authResult.Error;
-                    query["successful"] = "false";
-                }
-            } catch {
-                query["successful"] = "false";
-                query["error"] = "Authentication canceled";
-            }
-
-            redirectUrl.Query = query.ToString();
-            return new RedirectResult(redirectUrl.ToString());
+                return userInfo.Email;
+            });
         }
 
-        [HttpPost(RouteConstants.Auth.SignInWithMicrosoft)]
+        [HttpGet(RouteConstants.Auth.SignInWithMicrosoft)]
         [AllowAnonymous]
         [SwaggerOperation(
             Summary = "Sign-in/register with Microsoft",
-            Description = "Redirect the user to this endpoint to let them sign-in/register with Microsoft. The user will be redirected back to the client with an authentication code once done."
+            Description = "Get a URL to redirect the user to, to let them sign-in/register with Microsoft. The user will be redirected back to the client with an authentication code once done."
         )]
-        [SwaggerResponse((int) HttpStatusCode.Found, "Redirection to Microsoft's sign-in page")]
-        public async Task<RedirectResult> SignInWithMicrosoft(
-            CancellationToken cancellationToken,
-            [FromBody]
-            [SwaggerRequestBody("Mandatory information to be able to redirect the user back to the client once the operation is done")]
-            ExternalAuthModel body
+        public async Task<ResponseModel<AuthenticationRedirectModel>> SignInWithMicrosoft(
+            [Required, FromQuery(Name = "redirect_url")]
+            [SwaggerParameter("The URL to redirect the user to once the operation is completed")]
+            string? redirectUrl,
+
+            [FromQuery(Name = "state")]
+            [SwaggerParameter("A freely-defined value that will sent back to the client")]
+            string? clientState
             )
         {
-            var uri =  await _microsoft.GetAuthorizationRequestUrl(new[] {"user.read"})
-                .WithExtraQueryParameters(new Dictionary<string, string> {
-                    {"state", JsonConvert.SerializeObject(body)}
-                })
-                .ExecuteAsync(cancellationToken);
-
-            return new RedirectResult(uri.ToString());
+            return await SignInWithExternalService(redirectUrl!, clientState, async state => {
+                return await _microsoft.GetAuthorizationRequestUrl(new[] {"user.read"})
+                    .WithExtraQueryParameters(new Dictionary<string, string> {
+                        {"state", state}
+                    })
+                    .ExecuteAsync();
+            });
         }
 
         [HttpGet(RouteConstants.Auth.SignInWithMicrosoftCallback)]
@@ -309,6 +258,40 @@ namespace Area.API.Controllers
             [FromQuery] string state
         )
         {
+            return await SignInWithExternalServiceCallback(state, UserModel.UserType.Microsoft, async () => {
+                var provider = new AuthorizationCodeProvider(_microsoft, new[] {"user.read"});
+                await provider.GetAccessTokenByAuthorizationCode(code);
+
+                var userInfo = await new GraphServiceClient(provider).Me
+                    .Request()
+                    .GetAsync(cancellationToken);
+
+                return userInfo.Mail;
+            });
+        }
+
+        public async Task<ResponseModel<AuthenticationRedirectModel>> SignInWithExternalService(string redirectUrl, string? clientState, Func<string, Task<Uri>> uriGetter)
+        {
+            var externalAuthModel = new ExternalAuthModel {
+                RedirectUrl = redirectUrl!,
+                State = clientState
+            };
+
+            var state = JsonConvert.SerializeObject(externalAuthModel, new JsonSerializerSettings {
+                NullValueHandling = NullValueHandling.Ignore
+            });
+
+            var uri =  await uriGetter(state);
+
+            return new ResponseModel<AuthenticationRedirectModel> {
+                Data = new AuthenticationRedirectModel {
+                    RedirectUrl = uri.AbsoluteUri
+                }
+            };
+        }
+
+        private async Task<RedirectResult> SignInWithExternalServiceCallback(string state, UserModel.UserType type, Func<Task<string>> emailGetter)
+        {
             var authRequestBody = JsonConvert.DeserializeObject<ExternalAuthModel>(state);
 
             UriBuilder redirectUrl;
@@ -324,12 +307,9 @@ namespace Area.API.Controllers
                 query["state"] = authRequestBody.State;
 
             try {
-                var provider = new AuthorizationCodeProvider(_microsoft, new[] {"user.read"});
-                await provider.GetAccessTokenByAuthorizationCode(code);
+                var email = await emailGetter();
 
-                var userInfo = await new GraphServiceClient(provider).Me.Request().GetAsync(cancellationToken);
-
-                var authResult = await _authService.AuthenticateExternalUserAsync(userInfo.Mail, UserModel.UserType.Microsoft);
+                var authResult = await _authService.AuthenticateExternalUserAsync(email, type);
 
                 if (authResult.Successful) {
                     query["code"] = authResult.Code;

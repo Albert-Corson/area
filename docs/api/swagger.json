@@ -174,40 +174,42 @@
       }
     },
     "/api/auth/facebook": {
-      "post": {
+      "get": {
         "tags": [
           "Auth"
         ],
         "summary": "Sign-in/register with Facebook",
-        "description": "Redirect the user to this endpoint to let them sign-in/register with Facebook. The user will be redirected back to the client with an authentication code once done.",
-        "requestBody": {
-          "description": "Mandatory information to be able to redirect the user back to the client once the operation is done",
-          "content": {
-            "application/json-patch+json": {
-              "schema": {
-                "$ref": "#/components/schemas/ExternalAuth"
-              }
-            },
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ExternalAuth"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ExternalAuth"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/ExternalAuth"
-              }
+        "description": "Get a URL to redirect the user to, to let them sign-in/register with Facebook. The user will be redirected back to the client with an authentication code once done.",
+        "parameters": [
+          {
+            "name": "redirect_url",
+            "in": "query",
+            "description": "The URL to redirect the user to once the operation is completed",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "description": "A freely-defined value that will sent back to the client",
+            "schema": {
+              "type": "string",
+              "nullable": true
             }
           }
-        },
+        ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response<AuthenticationRedirect>"
+                }
+              }
+            }
           },
           "401": {
             "description": "Unauthorized"
@@ -217,48 +219,47 @@
           },
           "500": {
             "description": "Server Error"
-          },
-          "302": {
-            "description": "Redirection to Facebook's sign-in page"
           }
         }
       }
     },
     "/api/auth/google": {
-      "post": {
+      "get": {
         "tags": [
           "Auth"
         ],
         "summary": "Sign-in/register with Google",
-        "description": "Redirect the user to this endpoint to let them sign-in/register with Google. The user will be redirected back to the client with an authentication code once done.",
-        "requestBody": {
-          "description": "Mandatory information to be able to redirect the user back to the client once the operation is done",
-          "content": {
-            "application/json-patch+json": {
-              "schema": {
-                "$ref": "#/components/schemas/ExternalAuth"
-              }
-            },
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ExternalAuth"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ExternalAuth"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/ExternalAuth"
-              }
+        "description": "Get a URL to redirect the user to, to let them sign-in/register with Google. The user will be redirected back to the client with an authentication code once done.",
+        "parameters": [
+          {
+            "name": "redirect_url",
+            "in": "query",
+            "description": "The URL to redirect the user to once the operation is completed",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "description": "A freely-defined value that will sent back to the client",
+            "schema": {
+              "type": "string",
+              "nullable": true
             }
           }
-        },
+        ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response<AuthenticationRedirect>"
+                }
+              }
+            }
           },
           "401": {
             "description": "Unauthorized"
@@ -268,48 +269,47 @@
           },
           "500": {
             "description": "Server Error"
-          },
-          "302": {
-            "description": "Redirection to Google's sign-in page"
           }
         }
       }
     },
     "/api/auth/microsoft": {
-      "post": {
+      "get": {
         "tags": [
           "Auth"
         ],
         "summary": "Sign-in/register with Microsoft",
-        "description": "Redirect the user to this endpoint to let them sign-in/register with Microsoft. The user will be redirected back to the client with an authentication code once done.",
-        "requestBody": {
-          "description": "Mandatory information to be able to redirect the user back to the client once the operation is done",
-          "content": {
-            "application/json-patch+json": {
-              "schema": {
-                "$ref": "#/components/schemas/ExternalAuth"
-              }
-            },
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ExternalAuth"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ExternalAuth"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/ExternalAuth"
-              }
+        "description": "Get a URL to redirect the user to, to let them sign-in/register with Microsoft. The user will be redirected back to the client with an authentication code once done.",
+        "parameters": [
+          {
+            "name": "redirect_url",
+            "in": "query",
+            "description": "The URL to redirect the user to once the operation is completed",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "description": "A freely-defined value that will sent back to the client",
+            "schema": {
+              "type": "string",
+              "nullable": true
             }
           }
-        },
+        ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response<AuthenticationRedirect>"
+                }
+              }
+            }
           },
           "401": {
             "description": "Unauthorized"
@@ -319,9 +319,6 @@
           },
           "500": {
             "description": "Server Error"
-          },
-          "302": {
-            "description": "Redirection to Microsoft's sign-in page"
           }
         }
       }
@@ -475,8 +472,10 @@
             "Bearer": []
           }
         ]
-      },
-      "post": {
+      }
+    },
+    "/api/services/auth/{serviceId}": {
+      "get": {
         "tags": [
           "Services"
         ],
@@ -494,35 +493,36 @@
               "type": "integer",
               "format": "int32"
             }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json-patch+json": {
-              "schema": {
-                "$ref": "#/components/schemas/ExternalAuth"
-              }
-            },
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ExternalAuth"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ExternalAuth"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/ExternalAuth"
-              }
+          },
+          {
+            "name": "redirect_url",
+            "in": "query",
+            "description": "The URL to redirect the user to once the operation is completed",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "description": "A freely-defined value that will sent back to the client",
+            "schema": {
+              "type": "string",
+              "nullable": true
             }
           }
-        },
+        ],
         "responses": {
           "200": {
-            "description": "Success"
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response<AuthenticationRedirect>"
+                }
+              }
+            }
           },
           "401": {
             "description": "Unauthorized"
@@ -1148,20 +1148,40 @@
         },
         "additionalProperties": false
       },
-      "ExternalAuth": {
+      "AuthenticationRedirect": {
         "required": [
-          "redirect_url"
+          "requires_redirect"
         ],
         "type": "object",
         "properties": {
           "redirect_url": {
             "type": "string",
-            "description": "The URL to redirect the user to once the operation is completed"
+            "description": "URL to redirect the user to, to complete authentication"
           },
-          "state": {
+          "requires_redirect": {
+            "type": "boolean",
+            "description": "Indicates if the client should redirect the user to the given URL to complete authentication",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Response<AuthenticationRedirect>": {
+        "required": [
+          "successful"
+        ],
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/AuthenticationRedirect"
+          },
+          "error": {
             "type": "string",
-            "description": "A freely-defined value that will sent back to the client",
-            "nullable": true
+            "description": "Message describing the error if any"
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "State of the request (failed or successful)"
           }
         },
         "additionalProperties": false
@@ -1473,7 +1493,7 @@
           },
           "last_used": {
             "type": "integer",
-            "description": "Date (seconds since EPOCH) at which the device was last used",
+            "description": "Date in UTC Linux EPOCH at which the device was last used",
             "format": "int64"
           },
           "country": {
@@ -1697,7 +1717,7 @@
           },
           "published_at": {
             "type": "integer",
-            "description": "The date publishing (epoch) of the article",
+            "description": "The publishing date, in UTC Linux EPOCH, of the article",
             "format": "int64"
           }
         },
@@ -1771,6 +1791,149 @@
         "additionalProperties": false,
         "description": "## This is the response model for the \"Favorite artists\" widget of the Spotify service"
       },
+      "MicrosoftPerson": {
+        "required": [
+          "email",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Display name"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email address"
+          }
+        },
+        "additionalProperties": false,
+        "description": "## This is an internal model of the `MicrosoftEvent` and `MicrosoftEmail` models"
+      },
+      "Attendee": {
+        "required": [
+          "email",
+          "name",
+          "required",
+          "response_status"
+        ],
+        "type": "object",
+        "properties": {
+          "response_status": {
+            "type": "string",
+            "description": "The response received from the attendee"
+          },
+          "required": {
+            "type": "boolean",
+            "description": "Indicates if the attendee's presence is required or not"
+          },
+          "name": {
+            "type": "string",
+            "description": "Display name"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email address"
+          }
+        },
+        "additionalProperties": false,
+        "description": "## This is an internal model of the `MicrosoftEvent` model"
+      },
+      "MicrosoftEvent": {
+        "required": [
+          "attendees",
+          "end",
+          "location",
+          "organizer",
+          "start"
+        ],
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/WidgetCallResponseItem"
+          }
+        ],
+        "properties": {
+          "start": {
+            "type": "integer",
+            "description": "The start time of the event in UTC Linux EPOCH",
+            "format": "int64"
+          },
+          "end": {
+            "type": "integer",
+            "description": "The end time of the event in UTC Linux EPOCH",
+            "format": "int64"
+          },
+          "organizer": {
+            "$ref": "#/components/schemas/MicrosoftPerson"
+          },
+          "location": {
+            "type": "string",
+            "description": "Location of the event"
+          },
+          "attendees": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Attendee"
+            },
+            "description": "List of attendees"
+          }
+        },
+        "additionalProperties": false,
+        "description": "## This is the response model for the \"Microsoft Calendar\" widget"
+      },
+      "MicrosoftTodo": {
+        "required": [
+          "importance",
+          "status"
+        ],
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/WidgetCallResponseItem"
+          }
+        ],
+        "properties": {
+          "importance": {
+            "type": "string",
+            "description": "Importance level of the task"
+          },
+          "status": {
+            "type": "string",
+            "description": "Status of the task"
+          }
+        },
+        "additionalProperties": false,
+        "description": "## This is the response model for the \"Microsoft Todo list\" widget"
+      },
+      "MicrosoftEmail": {
+        "required": [
+          "from",
+          "has_attachment",
+          "importance"
+        ],
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/WidgetCallResponseItem"
+          }
+        ],
+        "properties": {
+          "has_attachment": {
+            "type": "boolean",
+            "description": "Indicates if the email has an attachments or not"
+          },
+          "importance": {
+            "type": "string",
+            "description": "Importance of the email"
+          },
+          "from": {
+            "$ref": "#/components/schemas/MicrosoftPerson"
+          }
+        },
+        "additionalProperties": false,
+        "description": "## This is the response model for the \"Microsoft Outlook Unread Emails\" widget"
+      },
       "WidgetCallResponseItem": {
         "type": "object",
         "properties": {
@@ -1796,6 +1959,7 @@
       },
       "WidgetCallResponse": {
         "required": [
+          "items",
           "params"
         ],
         "type": "object",
@@ -1823,28 +1987,20 @@
                 },
                 {
                   "$ref": "#/components/schemas/SpotifyArtist"
+                },
+                {
+                  "$ref": "#/components/schemas/MicrosoftEvent"
+                },
+                {
+                  "$ref": "#/components/schemas/MicrosoftTodo"
+                },
+                {
+                  "$ref": "#/components/schemas/MicrosoftEmail"
                 }
               ],
               "description": "Base (generic) interpolation scheme for a widget's invocation result item. At least one of the field must be defined. This scheme can be extended depending on the widget"
             },
             "description": "The result of the widget's invocation, if enumerable"
-          },
-          "item": {
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/WidgetCallResponseItem"
-              },
-              {
-                "$ref": "#/components/schemas/NewsApiArticle"
-              },
-              {
-                "$ref": "#/components/schemas/SpotifyTrack"
-              },
-              {
-                "$ref": "#/components/schemas/SpotifyArtist"
-              }
-            ],
-            "description": "The result of the widget's invocation, if singular"
           }
         },
         "additionalProperties": false

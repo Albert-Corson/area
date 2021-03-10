@@ -30,17 +30,12 @@ namespace Area.AcceptanceTests.Utilities
                 _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", value);
         }
 
-        public async Task<HttpResponseMessage> RawPostAsync<TRequest>(string endpoint, TRequest form)
-        {
-            var serializedForm = JsonConvert.SerializeObject(form);
-            return await _client.PostAsync(endpoint,
-                new StringContent(serializedForm, Encoding.UTF8, "application/json"));
-        }
-
-        public async Task<ResponseHolder<TResponse>> PostAsync<TResponse, TRequest>(string endpoint, TRequest form)
+        public async Task<ResponseHolder<TResponse>> PostAsync<TResponse>(string endpoint, object form)
             where TResponse : StatusModel
         {
-            var response = await RawPostAsync(endpoint, form);
+            var serializedForm = JsonConvert.SerializeObject(form);
+            var response = await _client.PostAsync(endpoint,
+                new StringContent(serializedForm, Encoding.UTF8, "application/json"));
 
             return new ResponseHolder<TResponse> {
                 Content = JsonConvert.DeserializeObject<TResponse>(await response.Content.ReadAsStringAsync()),
@@ -49,13 +44,13 @@ namespace Area.AcceptanceTests.Utilities
         }
 
         public async Task<ResponseHolder<TResponse>> PostAsync<TResponse>(string endpoint)
-            where TResponse : StatusModel => await PostAsync<TResponse, object>(endpoint, new object());
+            where TResponse : StatusModel => await PostAsync<TResponse>(endpoint, new object());
 
         public async Task<ResponseHolder<StatusModel>> PostAsync(string endpoint) =>
-            await PostAsync<StatusModel, object>(endpoint, new object());
+            await PostAsync<StatusModel>(endpoint, new object());
 
-        public async Task<ResponseHolder<StatusModel>> PostAsync<TRequest>(string endpoint, TRequest form) =>
-            await PostAsync<StatusModel, TRequest>(endpoint, form);
+        public async Task<ResponseHolder<StatusModel>> PostAsync(string endpoint, object form) =>
+            await PostAsync<StatusModel>(endpoint, form);
 
         public async Task<ResponseHolder<TResponse>> GetAsync<TResponse>(string endpoint)
             where TResponse : StatusModel

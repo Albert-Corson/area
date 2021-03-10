@@ -1,13 +1,14 @@
 using System;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 using Area.AcceptanceTests.Collections;
 using Area.AcceptanceTests.Fixtures;
+using Area.AcceptanceTests.Models;
 using Area.AcceptanceTests.Models.Requests;
 using Area.AcceptanceTests.Models.Responses;
 using Area.AcceptanceTests.Utilities;
+using Microsoft.AspNetCore.Http.Extensions;
 using Newtonsoft.Json;
 using Xunit;
 using Xunit.Priority;
@@ -55,24 +56,29 @@ namespace Area.AcceptanceTests.Tests
         public async Task SignInServiceById()
         {
             var form = new ExternalAuthModel {
-                State = "test",
+                State = "test to be encoded",
                 RedirectUrl = "http://google.fr"
             };
-            var response = await AreaApi.SignInServiceById(_service.Id, form);
 
-            Assert.True(response.StatusCode == HttpStatusCode.Found || response.StatusCode == HttpStatusCode.OK);
+            var query = new QueryBuilder {
+                {"state", form.State},
+                {"redirect_url", form.RedirectUrl}
+            };
 
-            var queryParams = HttpUtility.ParseQueryString(response.Headers.Location.Query);
+            var response = await AreaApi.SignInServiceById(_service.Id, query.ToString());
+            var withAuthResponse = await AreaApi.SignInServiceById(1, query.ToString());
+
+            AssertExtension.SuccessfulApiResponse(response);
+            AssertExtension.SuccessfulApiResponse(withAuthResponse);
+            Assert.NotNull(withAuthResponse.Content.Data!.RedirectUrl);
+            Assert.True(withAuthResponse.Content.Data!.RequiresRedirect);
+
+            var queryParams = HttpUtility.ParseQueryString(new Uri(withAuthResponse.Content.Data!.RedirectUrl!).Query);
             var state = queryParams.Get("state");
+            var recoveredForm = JsonConvert.DeserializeObject<ServiceAuthStateModel>(state);
 
-            if (response.Headers.Location.ToString().StartsWith(form.RedirectUrl)) {
-                Assert.Equal(form.State, state);
-                Assert.Equal("true", queryParams.Get("successful"));
-            } else {
-                var recoveredForm = JsonConvert.DeserializeObject<ExternalAuthModel>(HttpUtility.UrlDecode(state));
-                Assert.Equal(form.State, recoveredForm.State);
-                Assert.Equal(new Uri(form.RedirectUrl), new Uri(recoveredForm.RedirectUrl));
-            }
+            Assert.Equal(form.State, recoveredForm.State);
+            Assert.Equal(new Uri(form.RedirectUrl), new Uri(recoveredForm.RedirectUrl));
         }
 
         [Fact, Priority(10)]
