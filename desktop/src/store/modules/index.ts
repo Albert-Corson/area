@@ -9,7 +9,7 @@ const modules = {}
 files.keys().forEach(key => {
   if (key === "./index.ts") return
   // @ts-ignore
-  modules[key.replace(/(\.\/|\.[jt]s)/g, "")] = files(key).default
+  modules[key.replace(/(\.\/|Module\.[jt]s)/g, "")] = files(key).default
 })
 
 export default modules
