@@ -18,7 +18,7 @@ interface Props {
   item: WidgetType;
   subscribed?: boolean;
   size: Size;
-  display: Record<string, string>;
+  display: Record<string, any>;
 }
 
 const sizes: Record<Size, number> = {

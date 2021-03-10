@@ -68,6 +68,11 @@ export class GridStore {
   public setBlocks = (arr: Widget[]): void => {
     this._blocks = arr
   };
+  
+  @action
+  public setBlock = (widget: Widget): void => {
+    this._blocks[this._blocks.indexOf(widget)] = widget
+  };
 
   private addEmptyBlock = (blocks: Widget[], index: number): void => {
     blocks.splice(index, 0, this.fillBlock)
