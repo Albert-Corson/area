@@ -51,9 +51,8 @@ namespace Area.API.Services
             string claimType = type.ToString();
             IdentityResult? identityResult = null;
             string? code = null;
+            var user = _userRepository.GetUser(email: email, asNoTracking: false);
 
-            var user = _userRepository.GetUser(email: email, type: type,
-                asNoTracking: false);
             if (user == null) {
                 user = new UserModel {
                     UserName = email,
@@ -61,13 +60,16 @@ namespace Area.API.Services
                     Type = type
                 };
                 identityResult = await _userRepository.AddUser(user);
+            } else if (user.Type != type) {
+                return new AuthenticationResult {
+                    Error = "Username or email already in use"
+                };
             }
 
             if (identityResult == null || identityResult.Succeeded) {
                 var claims = await _userRepository.GetUserClaims(user);
                 identityResult = await _userRepository.RemoveUserClaims(user, claims.Where(claim =>
-                    claim.Type == claimType
-                    && TryGetPrincipalFromToken(claim.Value, out _)));
+                    claim.Type == claimType));
 
                 if (identityResult.Succeeded) {
                     code = GenerateToken(user.Id, DateTime.UtcNow.AddTicks(AuthConstants.CodeLifespanTicks), claimType);

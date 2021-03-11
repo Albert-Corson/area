@@ -26,7 +26,9 @@ namespace Area.API.Repositories
 
         public bool UserExists(int? userId = null, string? username = null, string? email = null, UserModel.UserType? type = null)
         {
-            return GetUser(userId, username, email, type: type) != null;
+            return Database.Users.FirstOrDefault(model =>
+                (model.UserName == username || model.Email == email || (userId != null && model.Id == userId.Value))
+                && (type == null || model.Type == type.Value)) != null;
         }
 
         public UserModel? GetUser(int? userId = null, string? username = null, string? email = null,
