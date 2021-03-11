@@ -3,8 +3,12 @@
     <div>
       <h1>Area</h1>
       <form @submit.prevent="submit">
-        <input type="text" placeholder="Email or username..." />
-        <input type="text" placeholder="Password..." />
+        <input
+          name="identifier"
+          type="text"
+          placeholder="Email or username..."
+        />
+        <input name="password" type="password" placeholder="Password..." />
         <button class="gradient" type="submit">Sign in</button>
         <router-link to="signup">
           <button type="button">Register</button>
@@ -18,8 +22,9 @@
 export default {
   name: "signin",
   methods: {
-    submit() {
-      console.log("submit")
+    submit({ target }) {
+      const payload = { ...Object.fromEntries(new FormData(target).entries()) }
+      this.$store.dispatch("Auth/signin", payload)
     }
   }
 }

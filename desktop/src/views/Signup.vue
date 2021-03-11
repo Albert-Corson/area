@@ -3,10 +3,14 @@
     <div>
       <h1>Register</h1>
       <form @submit.prevent="submit">
-        <input type="text" placeholder="Email..." />
-        <input type="text" placeholder="Username..." />
-        <input type="text" placeholder="Password..." />
-        <input type="text" placeholder="Confirm password..." />
+        <input name="email" type="email" placeholder="Email..." />
+        <input name="username" type="text" placeholder="Username..." />
+        <input name="password" type="password" placeholder="Password..." />
+        <input
+          name="confirm"
+          type="password"
+          placeholder="Confirm password..."
+        />
         <button class="gradient" type="submit">Sign up</button>
         <router-link to="signin">
           <button type="button">Already registered ?</button>
@@ -20,8 +24,13 @@
 export default {
   name: "signup",
   methods: {
-    submit() {
-      console.log("submit")
+    submit({ target }) {
+      const payload = { ...Object.fromEntries(new FormData(target).entries()) }
+      if (payload.password !== payload.confirm) {
+        throw new Error("password do not match")
+      }
+      delete payload.confirm
+      this.$store.dispatch("User/signup", payload)
     }
   }
 }

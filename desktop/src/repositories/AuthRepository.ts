@@ -8,7 +8,7 @@ import {
   ExternalAuth
 } from "@/types/models"
 
-export const AboutRepository = {
+export const AuthRepository = {
   signin(payload: Signin): Promise<Response<UserToken>> {
     return $axios.post("/api/auth/token", payload)
   },
