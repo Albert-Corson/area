@@ -7,6 +7,8 @@ import DashboardScreen from '../Screens/DashboardScreen'
 import ProfileScreen from '../Screens/ProfileScreen'
 import RootStoreContext from '../Stores/RootStore'
 import ServiceAuthScreen from '../Screens/ServiceAuthScreen'
+import OAuthSignInScreen from '../Screens/OAuthSignInScreen'
+import {WebViewNavigation} from 'react-native-webview/lib/WebViewTypes'
 
 export type RootStackParamList = {
   Login: undefined;
@@ -15,6 +17,9 @@ export type RootStackParamList = {
   Dashboard: undefined;
   Profile: undefined;
   ServiceAuth: {authUrl: string, widgetId: number};
+  OAuthSignIn: {
+    url?: string;
+  };
 };
 
 const Stack = createStackNavigator<RootStackParamList>()
@@ -33,6 +38,7 @@ const StackNavigator = (): JSX.Element => {
       <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen name="Dashboard" component={DashboardScreen} />
       <Stack.Screen name="ServiceAuth" component={ServiceAuthScreen} />
+      <Stack.Screen name="OAuthSignIn" component={OAuthSignInScreen} />
     </Stack.Navigator>
   )
 }

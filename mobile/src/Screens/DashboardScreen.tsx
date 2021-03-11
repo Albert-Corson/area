@@ -14,6 +14,8 @@ import Widget from '../Components/Widget'
 import GradientFlatButton from '../Components/GradientFlatButton'
 import Animated, {useAnimatedStyle, useSharedValue, withSpring} from 'react-native-reanimated'
 import * as Device from 'expo-device'
+import {pure} from 'recompose'
+import {Widget as WidgetType} from '../Types/Widgets'
 
 interface Props {
   navigation: StackNavigationProp<RootStackParamList>;
@@ -101,8 +103,10 @@ const WidgetsScreen = observer(({navigation}: Props): JSX.Element => {
               >
                 <Widget
                   item={widget}
+                  widgetStore={store.widget}
                   subscribed={!store.grid.modifying}
                   size={store.grid.getBlockSize(index)}
+                  display={widget.display}
                 />
               </DraggableContainer>
             ))}
@@ -125,7 +129,7 @@ const WidgetsScreen = observer(({navigation}: Props): JSX.Element => {
   )
 })
 
-export default WidgetsScreen
+export default pure(WidgetsScreen)
 
 const styles = StyleSheet.create({
   safeView: {

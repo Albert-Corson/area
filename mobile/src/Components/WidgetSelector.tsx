@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useContext} from 'react'
 import {observer} from 'mobx-react-lite'
 import {View, Text, StyleSheet} from 'react-native'
 import {State, TapGestureHandlerGestureEvent} from 'react-native-gesture-handler'
@@ -10,6 +10,8 @@ import {StackNavigationProp} from '@react-navigation/stack'
 import {RootStackParamList} from '../Navigation/StackNavigator'
 import ServiceLoginPrompt from './ServiceLoginPrompt'
 import Animated, {useAnimatedStyle, useSharedValue, withSpring} from 'react-native-reanimated'
+import {WebViewNavigation} from 'react-native-webview'
+import RootStoreContext from '../Stores/RootStore'
 
 interface WidgetSelectorProps {
   store: RootStore;
@@ -19,6 +21,7 @@ interface WidgetSelectorProps {
 const WidgetSelector = observer(({store, navigation}: WidgetSelectorProps): JSX.Element => {
   const {availableWidgets} = store.widget
   const opacity = useSharedValue<number>(1)
+  const widgetStore = useContext(RootStoreContext).widget
 
   const opacityStyle = useAnimatedStyle(() => ({
     opacity: opacity.value
@@ -73,7 +76,7 @@ const WidgetSelector = observer(({store, navigation}: WidgetSelectorProps): JSX.
               key={index}
               onTap={onTap}
               index={index}
-              renderItem={() => <Widget item={widget} subscribed={false} />}
+              renderItem={() => <Widget widgetStore={widgetStore} item={widget} subscribed={false} />}
             />
           ))}
         </WidgetListContainer>

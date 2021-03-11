@@ -20,11 +20,9 @@ const ProfileScreen = observer(({navigation}: Props): JSX.Element => {
   const authStore = useContext(RootStoreContext).auth
 
   const logout = async () => {
-    console.log('hello')
-    if (await authStore.logout()) {
-      console.log('goodbye')
-      navigation.replace('Login')
-    }
+    await authStore.logout()
+    
+    navigation.replace('Login')
   }
 
   return (

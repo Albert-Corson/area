@@ -1,6 +1,6 @@
 import React, {useContext, useCallback} from 'react'
 import {
-  View, ScrollView, StyleProp, ViewStyle, RefreshControl,
+  ScrollView, StyleProp, ViewStyle, RefreshControl,
 } from 'react-native'
 import InsetShadow from 'react-native-inset-shadow'
 import RootStoreContext from '../Stores/RootStore'

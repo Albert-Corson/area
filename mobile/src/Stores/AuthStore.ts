@@ -112,8 +112,6 @@ export class AuthStore {
       }),
     })
 
-    this.password = ''
-
     try {
       const body = await res.json()
 
@@ -121,6 +119,11 @@ export class AuthStore {
         this.error = body.error ?? 'Error occured'
         return false
       }
+
+      this.password = ''
+      this.email = ''
+      this.username = ''
+      this.error = ''
 
       this._rootStore.user.loadUser()
 
@@ -139,23 +142,56 @@ export class AuthStore {
   };
 
   @action
+  public askForTokens = async (code: string): Promise<boolean> => {
+    const res = await absFetch({
+      route: '/auth/code',
+      method: 'post',
+      body: JSON.stringify({
+        code,
+      }),
+    })
+
+    const json: Response = await res.json()
+    
+    if (json.successful) {
+      return await this._rootStore.user.storeUser(
+        json.data.refresh_token,
+        json.data.access_token,
+        json.data.expires_in,
+        'Profile',
+      )
+    }
+
+    return false
+  };
+
+  @action
   public resetPassword = (): void => {
     console.warn('Not implemented yet')
   };
 
   @action
-  public logout = async (): Promise<boolean> => {
-    const res = await absFetch({
-      route: '/auth/revoke',
-      method: 'delete'
+  public logout = async (): Promise<void> => {
+    const headers = {
+      Authorization: `Bearer ${this._rootStore.user.userJWT?.accessToken}`,
+    }
+
+    this._rootStore.user.removeCurrentUser()
+
+    const deviceRes = await absFetch({
+      route: '/users/me/devices',
+      headers,
     })
 
-    const json: Response = await res.json()
+    const deviceJson: Response = await deviceRes.json()
+    const currentDevice = deviceJson?.data?.current_device
 
-    if (json.successful || res.status === 401) {
-      this._rootStore.user.removeCurrentUser()
-      return true
-    }
-    return false
+    if (currentDevice == undefined) return
+
+    await absFetch({
+      route: `/users/me/devices/${currentDevice}`,
+      method: 'delete',
+      headers,
+    })
   }
 }

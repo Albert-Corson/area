@@ -16,24 +16,24 @@ const ServiceAuthScreen = observer(({navigation, route}: Props): JSX.Element => 
   const store = useContext(RootStoreContext).widget
   const {authUrl, widgetId} = route.params
 
-  const onMessage = (event: WebViewMessageEvent) => {
-    const {data} = event.nativeEvent
+  const onNavigationStateChange = (state: WebViewNavigation) => {
+    const success = state.url.match(/.*successful=(true|false)/)
 
-    if (data.includes('Success! You can now close this page!')) {
+    if (success && success[1] === "true") {
       if (widgetId >= 0) {
         store.subscribeToWidget(widgetId)
       }
-      navigation.goBack()
+      navigation.navigate('Dashboard')
     }
   }
 
   return (
     <SafeAreaView style={{height: '100%'}}>
       <WebView
-        javaScriptEnabled={true}
-        injectedJavaScript={'window.ReactNativeWebView.postMessage(document.body.innerHTML)'}
         source={{uri: authUrl}}
-        onMessage={onMessage}>
+        onNavigationStateChange={onNavigationStateChange}
+        incognito
+        >
       </WebView>
     </SafeAreaView>
   )
