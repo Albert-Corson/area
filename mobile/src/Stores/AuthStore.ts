@@ -152,20 +152,14 @@ export class AuthStore {
     })
 
     const json: Response = await res.json()
-
-    console.log(json.successful)
     
     if (json.successful) {
-      const ret = await this._rootStore.user.storeUser(
+      return await this._rootStore.user.storeUser(
         json.data.refresh_token,
         json.data.access_token,
         json.data.expires_in,
         'Profile',
       )
-
-      console.log(ret)
-
-      return true
     }
 
     return false
@@ -194,15 +188,10 @@ export class AuthStore {
 
     if (currentDevice == undefined) return
 
-    const res = await absFetch({
+    await absFetch({
       route: `/users/me/devices/${currentDevice}`,
       method: 'delete',
       headers,
     })
-
-    const json: Response = await res.json()
-
-    console.log(json)
-
   }
 }

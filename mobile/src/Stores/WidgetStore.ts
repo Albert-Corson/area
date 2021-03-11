@@ -190,12 +190,8 @@ export class WidgetStore {
     if (!this._currentWidget?.service) return
 
     const res = await absFetch({
-      route: `/services/${this._currentWidget.service.id}`,
-      method: 'post',
-      body: JSON.stringify({
-        serviceId: this._currentWidget.service.id,
-        redirect_url: 'xhttps://imgur.com/',
-      }),
+      route: `/services/auth/${this._currentWidget.service.id}?redirect_url=https://google.fr/`,
+      method: 'get',
       headers: {
         Authorization: `Bearer ${this._rootStore.user.userJWT?.accessToken}`,
       },
@@ -203,7 +199,7 @@ export class WidgetStore {
     const json: Response = await res.json()
 
     if (json.successful) {
-      return json.data
+      return json.data.redirect_url
     }
   }
 

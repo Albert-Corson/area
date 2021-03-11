@@ -45,24 +45,13 @@ const WidgetSelector = observer(({store, navigation}: WidgetSelectorProps): JSX.
   }
 
   const onPromptPress = async () => {
+    const authUrl = await store.widget.serviceAuthentication()
+
     opacity.value = withSpring(1)
-    
-    const widgetId = (store.widget.currentWidget?.id ?? -1)
 
     navigation.navigate('ServiceAuth', {
-      authUrl: `/services/${store.widget.currentWidget?.service.id}/auth`,
-      tokenRequired: true,
-      method: 'get',
-      callback: async (state: WebViewNavigation) => {
-        const match = state.url.match(/.*successful=(true|false)/)
-    
-        if (!match) return
-    
-        if (match[1] === 'true' && widgetId >= 0) {
-          await widgetStore.subscribeToWidget(widgetId)
-        }
-        navigation.navigate('Dashboard')
-      },
+      authUrl: authUrl ?? '',
+      widgetId: store.widget.currentWidget?.id ?? -1
     })
 
     store.widget.currentWidget = null
