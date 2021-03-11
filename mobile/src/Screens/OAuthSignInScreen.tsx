@@ -27,7 +27,10 @@ const OAuthSignInScreen = observer(({navigation, route}: Props): JSX.Element => 
     const successulTokenClaim = await store.auth.askForTokens(code[1])
 
     if (successulTokenClaim) {
-      navigation.navigate('Dashboard')
+      navigation.reset({
+        index: 0,
+        routes: [{name: 'Dashboard'}],
+      })
     }
   }
 

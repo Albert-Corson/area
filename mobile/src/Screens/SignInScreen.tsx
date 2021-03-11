@@ -94,7 +94,10 @@ const SignInScreen = observer(({navigation}: Props): JSX.Element => {
               containerStyle={{margin: 10}}
               onPress={async () => {
                 if (await store.auth.signIn()) {
-                  navigation.navigate('Dashboard')
+                  navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'Dashboard' }],
+                  })
                 }
               }}
             />
