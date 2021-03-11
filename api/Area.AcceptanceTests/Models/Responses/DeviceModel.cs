@@ -1,6 +1,7 @@
 using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Swan;
 using Wangkanai.Detection.Models;
 
 namespace Area.AcceptanceTests.Models.Responses
@@ -11,7 +12,7 @@ namespace Area.AcceptanceTests.Models.Responses
         public uint Id { get; set; }
 
         [JsonProperty("last_used", Required = Required.Always)]
-        public long LastUsed { get; set; } = DateTime.UtcNow.Ticks;
+        public long LastUsed { get; set; } = DateTime.UtcNow.ToUnixEpochDate();
 
         [JsonProperty("country", Required = Required.Always)]
         public string Country { get; set; } = "Unknown";

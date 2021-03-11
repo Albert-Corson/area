@@ -14,7 +14,7 @@ using IpData;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using OAuth2.Models;
+using Swan;
 using Wangkanai.Detection.Services;
 
 namespace Area.API.Services
@@ -163,7 +163,7 @@ namespace Area.API.Services
             if (registeredDeviceId != currentDevice.Id)
                 return false;
 
-            registeredDevice.LastUsed = DateTime.UtcNow.Ticks;
+            registeredDevice.LastUsed = DateTime.UtcNow.ToUnixEpochDate();
 
             return true;
         }

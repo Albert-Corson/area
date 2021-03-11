@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using Microsoft.Graph;
 using Newtonsoft.Json;
+using Swan;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Area.API.Models.Widgets
@@ -28,8 +29,8 @@ namespace Area.API.Models.Widgets
             Header = ev.Subject;
             Content = ev.BodyPreview;
             Link = ev.WebLink;
-            Start = DateTime.Parse(ev.Start.DateTime, null, DateTimeStyles.RoundtripKind).Ticks;
-            End = DateTime.Parse(ev.End.DateTime, null, DateTimeStyles.RoundtripKind).Ticks;
+            Start = DateTime.Parse(ev.Start.DateTime, null, DateTimeStyles.RoundtripKind).ToUnixEpochDate();
+            End = DateTime.Parse(ev.End.DateTime, null, DateTimeStyles.RoundtripKind).ToUnixEpochDate();
             Organizer = new MicrosoftPersonModel {
                 Email = ev.Organizer.EmailAddress.Address,
                 Name = ev.Organizer.EmailAddress.Name

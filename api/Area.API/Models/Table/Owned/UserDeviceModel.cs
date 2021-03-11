@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Swan;
 using Swashbuckle.AspNetCore.Annotations;
 using Wangkanai.Detection.Models;
 using Wangkanai.Detection.Services;
@@ -42,11 +43,11 @@ namespace Area.API.Models.Table.Owned
         public int UserId { get; set; }
 
         [JsonIgnore]
-        public long FirstUsed { get; set; } = DateTime.UtcNow.Ticks;
+        public long FirstUsed { get; set; } = DateTime.UtcNow.ToUnixEpochDate();
 
         [JsonProperty("last_used", Required = Required.Always)]
         [SwaggerSchema("Date in UTC Linux EPOCH at which the device was last used")]
-        public long LastUsed { get; set; } = DateTime.UtcNow.Ticks;
+        public long LastUsed { get; set; } = DateTime.UtcNow.ToUnixEpochDate();
 
         [JsonProperty("country", Required = Required.Always)]
         [SwaggerSchema("The country associated to the device")]

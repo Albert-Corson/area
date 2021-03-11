@@ -1,7 +1,7 @@
-using System.Runtime.Serialization;
 using NewsAPI.Models;
 using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Annotations;
+using Swan;
 
 namespace Area.API.Models.Widgets
 {
@@ -21,7 +21,7 @@ namespace Area.API.Models.Widgets
             Source = article.Source.Name;
             Author = article.Author;
             Description = article.Description;
-            PublishedAt = article.PublishedAt?.Ticks;
+            PublishedAt = article.PublishedAt?.ToUnixEpochDate();
         }
 
         [JsonProperty("source", Required = Required.Always)]
