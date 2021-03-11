@@ -1,2 +1,3 @@
 export * from "./Response"
-export * from "./AboutDotJson"
+export * from "./about/"
+export * from "./auth/"

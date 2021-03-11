@@ -7,7 +7,23 @@ const routes: Array<RouteConfig> = [
   {
     path: "/",
     name: "Home",
-    component: () => import(/* webpackChunkName: "home" */ "../views/Home.vue")
+    component: () => {
+      return import(/* webpackChunkName: "home" */ "../views/Home.vue")
+    }
+  },
+  {
+    path: "/signin",
+    name: "Sign in",
+    component: () => {
+      return import(/* webpackChunkName: "signin" */ "../views/Signin.vue")
+    }
+  },
+  {
+    path: "/signup",
+    name: "Sign up",
+    component: () => {
+      return import(/* webpackChunkName: "signup" */ "../views/Signup.vue")
+    }
   }
 ]
 
