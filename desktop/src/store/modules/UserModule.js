@@ -3,13 +3,30 @@ import { UserRepository } from "@/repositories"
 const UserModule = {
   namespaced: true,
 
-  state: {},
+  state: {
+    id: undefined,
+    username: null,
+    email: null
+  },
 
-  mutations: {},
+  mutations: {
+    SET_INFO(state, payload) {
+      state.id = payload.id
+      state.username = payload.username
+      state.email = payload.email
+    }
+  },
 
   actions: {
+    async fetchInfo({ commit }) {
+      const response = await UserRepository.fetchInfo()
+      if (response.successful) {
+        commit("SET_INFO", response.data)
+      }
+      return response
+    },
+
     async signup(_, payload) {
-      console.log("signup -> store")
       const response = await UserRepository.signup(payload)
       return response
     }

@@ -12,6 +12,7 @@
           placeholder="Confirm password..."
         />
         <button class="gradient" type="submit">Sign up</button>
+        <provider-buttons />
         <router-link to="signin">
           <button type="button">Already registered ?</button>
         </router-link>
@@ -21,8 +22,18 @@
 </template>
 
 <script>
+import ProviderButtons from "@/components/ProviderButtons"
+
 export default {
   name: "signup",
+  components: {
+    ProviderButtons
+  },
+  created() {
+    if (this.$store.getters["Auth/isAuthenticated"]) {
+      this.$router.push("/")
+    }
+  },
   methods: {
     submit({ target }) {
       const payload = { ...Object.fromEntries(new FormData(target).entries()) }

@@ -24,6 +24,22 @@ const routes: Array<RouteConfig> = [
     component: () => {
       return import(/* webpackChunkName: "signup" */ "../views/Signup.vue")
     }
+  },
+  {
+    path: "/signout",
+    name: "Sign out",
+    component: () => {
+      return import(/* webpackChunkName: "signout" */ "../views/Signout.vue")
+    }
+  },
+  {
+    path: "/callback",
+    name: "Auth callback",
+    component: () => {
+      return import(
+        /* webpackChunkName: "callback" */ "../views/AuthCallback.vue"
+      )
+    }
   }
 ]
 

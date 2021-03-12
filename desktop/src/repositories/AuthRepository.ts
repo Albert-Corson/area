@@ -17,22 +17,31 @@ export const AuthRepository = {
     return $axios.post("/api/auth/refresh", payload)
   },
 
-  exchangeCode(payload: ExchangeCode): Promise<Response<UserToken>> {
+  exchangeAuthCode(payload: ExchangeCode): Promise<Response<UserToken>> {
     return $axios.post("/api/auth/code", payload)
   },
 
   signinWithFacebook(payload: ExternalAuth): Promise<Response<UserToken>> {
-    throw new Error("not implemented")
-    // return $axios.post("/api/auth/facebook", payload)
+    return $axios.get(
+      `/api/auth/facebook?redirect_url=${
+        payload.redirect_url
+      }&state=${payload.state || ""}`
+    )
   },
 
   signinWithGoogle(payload: ExternalAuth): Promise<Response<UserToken>> {
-    throw new Error("not implemented")
-    // return $axios.post("/api/auth/google", payload)
+    return $axios.get(
+      `/api/auth/google?redirect_url=${
+        payload.redirect_url
+      }&state=${payload.state || ""}`
+    )
   },
 
   signinWithMicrosoft(payload: ExternalAuth): Promise<Response<UserToken>> {
-    throw new Error("not implemented")
-    // return $axios.post("/api/auth/microsoft", payload)
+    return $axios.get(
+      `/api/auth/microsoft?redirect_url=${
+        payload.redirect_url
+      }&state=${payload.state || ""}`
+    )
   }
 }

@@ -10,6 +10,7 @@
         />
         <input name="password" type="password" placeholder="Password..." />
         <button class="gradient" type="submit">Sign in</button>
+        <provider-buttons />
         <router-link to="signup">
           <button type="button">Register</button>
         </router-link>
@@ -19,12 +20,28 @@
 </template>
 
 <script>
+import ProviderButtons from "@/components/ProviderButtons"
+
 export default {
   name: "signin",
+  components: {
+    ProviderButtons
+  },
+  created() {
+    if (this.$store.getters["Auth/isAuthenticated"]) {
+      this.$router.push("/")
+    }
+  },
   methods: {
     submit({ target }) {
       const payload = { ...Object.fromEntries(new FormData(target).entries()) }
-      this.$store.dispatch("Auth/signin", payload)
+      this.$store.dispatch("Auth/signin", payload).then(response => {
+        if (response.successful) {
+          this.$router.push("/")
+        } else {
+          // TODO
+        }
+      })
     }
   }
 }
