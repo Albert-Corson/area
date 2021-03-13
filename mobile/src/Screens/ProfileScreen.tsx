@@ -1,7 +1,7 @@
-import React, {useContext, useEffect} from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import {StackNavigationProp} from '@react-navigation/stack'
 import {observer} from 'mobx-react-lite'
-import {SafeAreaView, Text, Image, StyleSheet, View} from 'react-native'
+import {SafeAreaView, Text, Image, StyleSheet, View, ActivityIndicator, FlatList} from 'react-native'
 import {RootStackParamList} from '../Navigation/StackNavigator'
 import RootStoreContext from '../Stores/RootStore'
 import DropShadowContainer from '../Components/DropShadowContainer'
@@ -9,6 +9,8 @@ import GradientFlatButton from '../Components/GradientFlatButton'
 import TextInput from '../Components/TextInput'
 import {Form as formStyles} from '../StyleSheets/Form'
 import FlatButton from '../Components/FlatButton'
+import {Device, DeviceInfo} from '../Stores/UserStore'
+import {DeviceItem} from '../Components/Devices'
 
 
 interface Props {
@@ -18,12 +20,22 @@ interface Props {
 const ProfileScreen = observer(({navigation}: Props): JSX.Element => {
   const userStore = useContext(RootStoreContext).user
   const authStore = useContext(RootStoreContext).auth
+  const [devices, setDevices] = useState<DeviceInfo | undefined>()
 
   const logout = async () => {
     await authStore.logout()
     
-    navigation.replace('Login')
+    navigation.reset({
+      index: 0,
+      routes: [{name: 'Login'}]
+    })
   }
+
+  console.log(devices)
+
+  useEffect(() => {
+    (async () => setDevices(await userStore.devices()))()
+  }, [])
 
   return (
     <SafeAreaView style={styles.safeView}>
@@ -39,24 +51,27 @@ const ProfileScreen = observer(({navigation}: Props): JSX.Element => {
             <Text style={styles.label}>{userStore.user.email}</Text>
           </>
         )}
-      </View>
-      <View style={{alignItems: 'center'}}>
-        <Text style={styles.label}>
-          Modify username
-        </Text>
-        <View style={styles.inlineInputSubmit}>
-          <View style={styles.inputContainer}>
-            <TextInput
-              value={''}
-              placeholder={authStore.username}
-              onChange={(val) => authStore.username = val}
-              containerStyle={formStyles.input}
-            />
+        {!devices ? (
+          <ActivityIndicator size="large" />
+        ) : (
+          <View style={{alignItems: 'center', marginVertical: 50}}>
+            <Text style={{fontFamily: 'Dosis', fontSize: 16}}>Devices</Text>
+            <View style={{height: 300}}>
+              <FlatList
+                style={{marginVertical: 15}}
+                contentContainerStyle={{height: '100%'}}
+                data={devices.devices}
+                renderItem={({item}: {item: Device}) => <DeviceItem {...item} isCurrent={item.id === devices.current} />}
+                keyExtractor={(item: Device) => item.id.toString()}
+              />
+            </View>
           </View>
-          <FlatButton value="Modify" width={100} height={50} onPress={() => console.log('pressed')} containerStyle={styles.submit} />
+        )}
+        <View>
+          <GradientFlatButton value={'Logout'} onPress={logout} />
         </View>
       </View>
-      <GradientFlatButton value={'Logout'} onPress={logout} />
+
     </SafeAreaView>
   )
 })
