@@ -6,7 +6,9 @@ const UserModule = {
   state: {
     id: undefined,
     username: null,
-    email: null
+    email: null,
+    devices: [],
+    currentDevice: null
   },
 
   mutations: {
@@ -14,6 +16,12 @@ const UserModule = {
       state.id = payload.id
       state.username = payload.username
       state.email = payload.email
+    },
+    SET_DEVICES(state, payload) {
+      state.devices = payload
+    },
+    SET_CURRENT_DEVICE(state, payload) {
+      state.currentDevice = payload
     }
   },
 
@@ -28,6 +36,21 @@ const UserModule = {
 
     async signup(_, payload) {
       const response = await UserRepository.signup(payload)
+      return response
+    },
+
+    async listDevices({ commit }) {
+      const response = await UserRepository.listDevices()
+      if (response.successful) {
+        commit("SET_DEVICES", response.data.devices)
+        console.log(response.data.devices)
+        commit(
+          "SET_CURRENT_DEVICE",
+          response.data.devices.find(
+            device => device.id === response.data.current_device
+          )
+        )
+      }
       return response
     }
   }

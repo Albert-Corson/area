@@ -2,6 +2,9 @@
   <div class="home">
     <h1>Welcome {{ username }}</h1>
 
+    <pre style="text-align: left">
+      {{ JSON.stringify(devices, null, 4) }}
+    </pre>
     <router-link to="/signout">
       Sign out
     </router-link>
@@ -15,13 +18,14 @@ export default Vue.extend({
   name: "Home",
   created() {
     this.$store.dispatch("User/fetchInfo")
+    this.$store.dispatch("User/listDevices")
   },
   computed: {
     username() {
       return this.$store.state.User.username
     },
-    isAuthenticated() {
-      return this.$store.getters["Auth/isAuthenticated"]
+    devices() {
+      return this.$store.state.User.devices
     }
   }
 })
