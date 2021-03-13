@@ -233,7 +233,7 @@ export class WidgetStore {
         return widget
       })
       
-      this._rootStore.grid.setBlocks([...this._subscribedWidgets])
+      this._rootStore.grid.setBlocks(this._subscribedWidgets)
     })
   }
 

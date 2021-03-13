@@ -10,6 +10,7 @@ import ModalContainer from './ModalContainer'
 import FlatButton from './FlatButton'
 import GradientFlatButton from './GradientFlatButton'
 import TextInput from './TextInput'
+import { keys } from 'mobx'
 
 interface Props {
   item: WidgetType;
@@ -62,10 +63,14 @@ class Widget extends Component<Props, State> {
     this.setState({showText: !this.state?.showText})
   }
 
-  onDoubleTap = () => {
+  onDoubleTap = (): void => {
     if (!this.props.subscribed || !this.queries.length) return
 
     this.setState({showModal: true})
+  }
+
+  parseAllowedValues = (item): string => {
+    return item.allowed_values ? item.allowed_values.map((obj) => obj.display_name).join('  |  ') : item.name
   }
 
   content: () => JSX.Element | boolean = () => this.state.showText && (
@@ -146,17 +151,19 @@ class Widget extends Component<Props, State> {
             style={{height: 50}}
             data={this.queries}
             renderItem={({item, index}) => (
-              <TextInput
-                containerStyle={{width: '100%', marginVertical: 15}}
-                placeholder={item.name}
-                value={this.state.modifyingQuery[index]}
-                onChange={(text) => {
-                  const modifyingQuery = {...this.state.modifyingQuery}
+              <>
+                <TextInput
+                  containerStyle={{width: '100%', marginVertical: 15}}
+                  placeholder={this.parseAllowedValues(item)}
+                  value={this.state.modifyingQuery[index]}
+                  onChange={(text) => {
+                    const modifyingQuery = {...this.state.modifyingQuery}
   
-                  modifyingQuery[index] = text
-                  this.setState({modifyingQuery})
-                }}
-              />
+                    modifyingQuery[index] = text
+                    this.setState({modifyingQuery})
+                  }}
+                />
+              </>
             )}
             keyExtractor={(_, index) => `query_${index}`}
           />

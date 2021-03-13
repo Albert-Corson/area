@@ -30,11 +30,13 @@ const WidgetSelector = observer(({store, navigation}: WidgetSelectorProps): JSX.
   const onTap = (e: TapGestureHandlerGestureEvent, index: number): void => {
     if (e.nativeEvent.state !== State.ACTIVE) return
 
-    const {availableWidgets} = store.widget
+    const {availableWidgets, subscribedWidgets} = store.widget
 
     if (index < 0 || index >= availableWidgets.length) return
 
     const widget = availableWidgets[index]
+
+    if (subscribedWidgets.includes(widget)) return
 
     if (widget.requires_auth) {
       store.widget.currentWidget = widget

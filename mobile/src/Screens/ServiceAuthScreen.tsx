@@ -23,7 +23,10 @@ const ServiceAuthScreen = observer(({navigation, route}: Props): JSX.Element => 
       if (widgetId >= 0) {
         store.subscribeToWidget(widgetId)
       }
-      navigation.navigate('Dashboard')
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Dashboard' }],
+      })
     }
   }
 

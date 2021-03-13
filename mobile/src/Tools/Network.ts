@@ -1,4 +1,5 @@
-import {API_HOST, API_PORT} from '@env'
+const API_HOST = '192.168.1.99'
+const API_PORT = '8080'
 
 type Method = 'get' | 'post' | 'put' | 'delete';
 

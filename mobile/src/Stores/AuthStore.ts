@@ -122,7 +122,6 @@ export class AuthStore {
 
       this.password = ''
       this.email = ''
-      this.username = ''
       this.error = ''
 
       this._rootStore.user.loadUser()

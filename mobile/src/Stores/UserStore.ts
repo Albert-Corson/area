@@ -19,6 +19,23 @@ export interface User {
   username: string | undefined;
 }
 
+export interface Device {
+  id: number;
+  last_used: number;
+  country: string;
+  device: string;
+  browser: string;
+  browser_version: string;
+  os: string;
+  os_version: string;
+  architecture: string;
+}
+
+export interface DeviceInfo {
+  current: number;
+  devices: Device[]
+}
+
 export class UserStore {
   private _userJWT: UserJWT;
   private _user: User;
@@ -29,6 +46,19 @@ export class UserStore {
 
   public get userJWT(): UserJWT | undefined {
     return this._userJWT
+  }
+
+  public async devices(): Promise<DeviceInfo> {
+    const res = await absFetch({
+      route: '/users/me/devices',
+      headers: {
+        Authorization: `Bearer ${this._userJWT?.accessToken}`
+      },
+    })
+    const json: Response<DeviceInfo> = await res.json()
+
+
+    return json.data
   }
 
   @action

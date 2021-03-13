@@ -1,14 +1,12 @@
-import React, {useContext} from 'react'
+import React from 'react'
 import {createStackNavigator} from '@react-navigation/stack'
 import SignInScreen from '../Screens/SignInScreen'
 import SignUpScreen from '../Screens/SignUpScreen'
 import HelpScreen from '../Screens/HelpScreen'
 import DashboardScreen from '../Screens/DashboardScreen'
 import ProfileScreen from '../Screens/ProfileScreen'
-import RootStoreContext from '../Stores/RootStore'
 import ServiceAuthScreen from '../Screens/ServiceAuthScreen'
 import OAuthSignInScreen from '../Screens/OAuthSignInScreen'
-import {WebViewNavigation} from 'react-native-webview/lib/WebViewTypes'
 
 export type RootStackParamList = {
   Login: undefined;
@@ -25,12 +23,10 @@ export type RootStackParamList = {
 const Stack = createStackNavigator<RootStackParamList>()
 
 const StackNavigator = (): JSX.Element => {
-  const store = useContext(RootStoreContext)
-
   return (
     <Stack.Navigator
       screenOptions={{headerShown: false}}
-      initialRouteName={store.user.userJWT?.accessToken ? 'Dashboard' : 'Login'}
+      initialRouteName="Login"
     >
       <Stack.Screen name="Login" component={SignInScreen} />
       <Stack.Screen name="SignUp" component={SignUpScreen} />
