@@ -1,6 +1,7 @@
 import {
   action, configure, makeAutoObservable, observable, runInAction,
 } from 'mobx'
+import { block } from 'react-native-reanimated'
 import Grid from '../Tools/Grid'
 import {Size} from '../Types/Block'
 import {Widget} from '../Types/Widgets'
@@ -15,7 +16,7 @@ export class GridStore {
 
   @observable private _blocks: Array<Widget> = [];
 
-  private _timePickerVisible = false;
+  @observable private _timePickerVisible = false;
 
   constructor(private _rootStore: RootStore) {
     makeAutoObservable(this)
@@ -45,7 +46,7 @@ export class GridStore {
   }
 
   @action
-  private initGrid = async (): Promise<void> => {
+  public initGrid = async (): Promise<void> => {
     this._rootStore.widget.updateWidgets()
       .then((success) => {
         if (!success) return
@@ -62,8 +63,6 @@ export class GridStore {
 
   @action
   private parseWidgetDisplayItems = (item: Widget): any => {
-    if (item.params?.item) return item.params.item
-
     if (item.params?.items?.length) {
       const max = item.params?.items?.length
 
@@ -78,27 +77,21 @@ export class GridStore {
 
   @action
   public get blocks(): Widget[] {
-    return this._blocks.map((widget) => {
-      const copy = {...widget}
-      
-      copy.display = this.parseWidgetDisplayItems(widget)
-
-      return copy
-    })
+    return this._blocks.map(action((widget) => ({...widget, display: this.parseWidgetDisplayItems(widget)})))
   }
 
   @action
   public setBlocks = (arr: Widget[]): void => {
-    this._blocks = arr
+    this._blocks = arr.map(block => ({...block, currentParam: undefined}))
   };
   
   @action
   public setBlock = (widget: Widget): void => {
-    const index = this._blocks.indexOf(widget)
+    const old = this._blocks.filter((item) => widget.id === item.id)[0]
+    const index = this._blocks.indexOf(old)
     const copy = [...this._blocks]
 
-    copy[index] = widget
-    copy[index].currentParam = undefined
+    copy[index] = {...old, ...widget, currentParam: undefined}
 
     this._blocks = copy
   };

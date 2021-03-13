@@ -58,8 +58,8 @@ const ProfileScreen = observer(({navigation}: Props): JSX.Element => {
             <Text style={{fontFamily: 'Dosis', fontSize: 16}}>Devices</Text>
             <View style={{height: 300}}>
               <FlatList
-                style={{marginVertical: 15}}
-                contentContainerStyle={{height: '100%'}}
+                style={{marginVertical: 15, width: 300}}
+                contentContainerStyle={{height: '100%', width: 300}}
                 data={devices.devices}
                 renderItem={({item}: {item: Device}) => <DeviceItem {...item} isCurrent={item.id === devices.current} />}
                 keyExtractor={(item: Device) => item.id.toString()}
