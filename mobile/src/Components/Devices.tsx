@@ -21,13 +21,10 @@ const formatDate = (date: Date): string => {
 const DeviceItem = ({country, isCurrent, last_used, browser}: Props) => {
   const date = new Date(last_used * 1000)
 
-  console.log()
-
   return (
     <View style={styles.container}>
       <InsetShadowContainer>
         <View style={styles.item}>
-          {console.log(last_used, typeof last_used)}
           <View style={styles.badge}>
             <Text style={{color: '#fff'}}>{country === 'Unknown' ? 'FR' : country}</Text>
           </View>

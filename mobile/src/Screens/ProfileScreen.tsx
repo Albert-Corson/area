@@ -31,8 +31,6 @@ const ProfileScreen = observer(({navigation}: Props): JSX.Element => {
     })
   }
 
-  console.log(devices)
-
   useEffect(() => {
     (async () => setDevices(await userStore.devices()))()
   }, [])

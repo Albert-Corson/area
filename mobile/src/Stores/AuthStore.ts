@@ -124,14 +124,16 @@ export class AuthStore {
       this.email = ''
       this.error = ''
 
-      this._rootStore.user.loadUser()
-
-      return await this._rootStore.user.storeUser(
+      const ret = await this._rootStore.user.storeUser(
         body.data.refresh_token,
         body.data.access_token,
         body.data.expires_in,
         this.username,
       )
+
+      await this._rootStore.user.loadUser()
+
+      return ret
     } catch (e) {
       console.warn(e)
       this.error = 'Error occured'
@@ -153,12 +155,16 @@ export class AuthStore {
     const json: Response = await res.json()
     
     if (json.successful) {
-      return await this._rootStore.user.storeUser(
+      const ret = await this._rootStore.user.storeUser(
         json.data.refresh_token,
         json.data.access_token,
         json.data.expires_in,
         'Profile',
       )
+
+      await this._rootStore.user.loadUser()
+
+      return ret
     }
 
     return false

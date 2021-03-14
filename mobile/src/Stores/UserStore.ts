@@ -1,5 +1,5 @@
 import {
-  observable, action, makeAutoObservable, runInAction,
+  action, makeAutoObservable, runInAction,
 } from 'mobx'
 import * as SecureStore from 'expo-secure-store'
 import {RootStore} from './RootStore'
@@ -153,8 +153,6 @@ export class UserStore {
 
   @action
   public loadUser = async (): Promise<void> => {
-    if (this._user) return
-
     const res = await absFetch({
       route: '/users/me',
       headers: {
