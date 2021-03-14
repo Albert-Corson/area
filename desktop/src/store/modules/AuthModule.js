@@ -45,10 +45,10 @@ const AuthModule = {
     async signinWithFacebook() {
       const response = await AuthRepository.signinWithFacebook({
         /* eslint-disable-next-line @typescript-eslint/camelcase */
-        redirect_url: `${window.location.origin}/callback`,
+        redirect_url: `${window.location.origin}/auth/callback`,
         state: window.location.pathname
       })
-      if (response.data.requires_redirect) {
+      if (response.successful && response.data.requires_redirect) {
         window.location.href = response.data.redirect_url
       }
     },
@@ -56,10 +56,10 @@ const AuthModule = {
     async signinWithGoogle() {
       const response = await AuthRepository.signinWithGoogle({
         /* eslint-disable-next-line @typescript-eslint/camelcase */
-        redirect_url: `${window.location.origin}/callback`,
+        redirect_url: `${window.location.origin}/auth/callback`,
         state: window.location.pathname
       })
-      if (response.data.requires_redirect) {
+      if (response.successful && response.data.requires_redirect) {
         window.location.href = response.data.redirect_url
       }
     },
@@ -67,10 +67,10 @@ const AuthModule = {
     async signinWithMicrosoft() {
       const response = await AuthRepository.signinWithMicrosoft({
         /* eslint-disable-next-line @typescript-eslint/camelcase */
-        redirect_url: `${window.location.origin}/callback`,
+        redirect_url: `${window.location.origin}/auth/callback`,
         state: window.location.pathname
       })
-      if (response.data.requires_redirect) {
+      if (response.successful && response.data.requires_redirect) {
         window.location.href = response.data.redirect_url
       }
     },

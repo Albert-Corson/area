@@ -14,36 +14,58 @@ const routes: Array<RouteConfig> = [
     }
   },
   {
-    path: "/signin",
+    path: "/auth/signin",
     name: "Sign in",
     meta: { requiresAuth: false },
     component: () => {
-      return import(/* webpackChunkName: "signin" */ "../views/Signin.vue")
+      return import(/* webpackChunkName: "signin" */ "../views/auth/Signin.vue")
     }
   },
   {
-    path: "/signup",
+    path: "/auth/signup",
     name: "Sign up",
     meta: { requiresAuth: false },
     component: () => {
-      return import(/* webpackChunkName: "signup" */ "../views/Signup.vue")
+      return import(/* webpackChunkName: "signup" */ "../views/auth/Signup.vue")
     }
   },
   {
-    path: "/signout",
+    path: "/auth/signout",
     name: "Sign out",
     meta: { requiresAuth: false },
     component: () => {
-      return import(/* webpackChunkName: "signout" */ "../views/Signout.vue")
+      return import(
+        /* webpackChunkName: "signout" */ "../views/auth/Signout.vue"
+      )
     }
   },
   {
-    path: "/callback",
+    path: "/auth/callback",
     name: "Auth callback",
     meta: { requiresAuth: false },
     component: () => {
       return import(
-        /* webpackChunkName: "callback" */ "../views/AuthCallback.vue"
+        /* webpackChunkName: "callback" */ "../views/auth/Callback.vue"
+      )
+    }
+  },
+  {
+    path: "/services",
+    name: "Services list",
+    meta: { requiresAuth: true },
+    component: () => {
+      return import(
+        /* webpackChunkName: "callback" */ "../views/services/Home.vue"
+      )
+    }
+  },
+  {
+    path: "/services/callback",
+    name: "Services auth callback",
+    meta: { requiresAuth: true },
+    component: () => {
+      return import(
+        /* webpackChunkName: "callback" */ "../views/services/Callback.vue"
       )
     }
   }
@@ -58,7 +80,7 @@ const router = new VueRouter({
 router.beforeEach((to, _, next) => {
   const isAuthenticated = store.getters["Auth/isAuthenticated"]
   if (to.meta.requiresAuth && isAuthenticated === false) {
-    router.push("/signout")
+    router.push("/auth/signout")
   } else {
     next()
   }

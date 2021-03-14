@@ -43,7 +43,6 @@ const UserModule = {
       const response = await UserRepository.listDevices()
       if (response.successful) {
         commit("SET_DEVICES", response.data.devices)
-        console.log(response.data.devices)
         commit(
           "SET_CURRENT_DEVICE",
           response.data.devices.find(

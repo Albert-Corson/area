@@ -13,7 +13,7 @@
         />
         <button class="gradient" type="submit">Sign up</button>
         <provider-buttons />
-        <router-link to="signin">
+        <router-link to="/auth/signin">
           <button type="button">Already registered ?</button>
         </router-link>
       </form>
@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import ProviderButtons from "@/components/ProviderButtons"
+import ProviderButtons from "@/components/auth/ProviderButtons"
 
 export default {
   name: "signup",
@@ -35,13 +35,22 @@ export default {
     }
   },
   methods: {
-    submit({ target }) {
+    async submit({ target }) {
       const payload = { ...Object.fromEntries(new FormData(target).entries()) }
       if (payload.password !== payload.confirm) {
         throw new Error("password do not match")
       }
       delete payload.confirm
-      this.$store.dispatch("User/signup", payload)
+      const signup = await this.$store.dispatch("User/signup", payload)
+      if (signup.successful) {
+        const signin = await this.$store.dispatch("Auth/localSignin", {
+          identifier: payload.email,
+          password: payload.password
+        })
+        if (signin.successful) {
+          this.$router.push("/auth/signin")
+        }
+      }
     }
   }
 }

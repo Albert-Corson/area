@@ -5,7 +5,8 @@ import {
   UserToken,
   RefreshToken,
   ExchangeCode,
-  ExternalAuth
+  ExternalAuth,
+  AuthenticationRedirect
 } from "@/types/models"
 
 export const AuthRepository = {
@@ -21,7 +22,9 @@ export const AuthRepository = {
     return $axios.post("/api/auth/code", payload)
   },
 
-  signinWithFacebook(payload: ExternalAuth): Promise<Response<UserToken>> {
+  signinWithFacebook(
+    payload: ExternalAuth
+  ): Promise<Response<AuthenticationRedirect>> {
     return $axios.get(
       `/api/auth/facebook?redirect_url=${
         payload.redirect_url
@@ -29,7 +32,9 @@ export const AuthRepository = {
     )
   },
 
-  signinWithGoogle(payload: ExternalAuth): Promise<Response<UserToken>> {
+  signinWithGoogle(
+    payload: ExternalAuth
+  ): Promise<Response<AuthenticationRedirect>> {
     return $axios.get(
       `/api/auth/google?redirect_url=${
         payload.redirect_url
@@ -37,7 +42,9 @@ export const AuthRepository = {
     )
   },
 
-  signinWithMicrosoft(payload: ExternalAuth): Promise<Response<UserToken>> {
+  signinWithMicrosoft(
+    payload: ExternalAuth
+  ): Promise<Response<AuthenticationRedirect>> {
     return $axios.get(
       `/api/auth/microsoft?redirect_url=${
         payload.redirect_url

@@ -1,13 +1,13 @@
 <template>
   <div class="providers">
     <button class="google" type="button" @click="signinWithGoogle">
-      <img src="../assets/google.svg" />
+      <img src="@/assets/google.svg" />
     </button>
     <button class="facebook" type="button" @click="signinWithFacebook">
-      <img src="../assets/facebook.svg" />
+      <img src="@/assets/facebook.svg" />
     </button>
     <button class="microsoft" type="button" @click="signinWithMicrosoft">
-      <img src="../assets/microsoft.svg" />
+      <img src="@/assets/microsoft.svg" />
     </button>
   </div>
 </template>

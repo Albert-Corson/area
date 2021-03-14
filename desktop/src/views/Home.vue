@@ -5,7 +5,7 @@
     <pre style="text-align: left">
       {{ JSON.stringify(devices, null, 4) }}
     </pre>
-    <router-link to="/signout">
+    <router-link to="/auth/signout">
       Sign out
     </router-link>
   </div>

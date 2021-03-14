@@ -8,7 +8,7 @@ export default {
   created() {
     this.$store
       .dispatch("Auth/signout")
-      .then(() => this.$router.push("/signin"))
+      .then(() => this.$router.push("/auth/signin"))
   }
 }
 </script>

@@ -1,9 +1,9 @@
 <template>
-  <div class="signout">
+  <div class="auth-callback">
     <div v-if="error">
       <h1>Login failed</h1>
       <p>{{ error }}</p>
-      <router-link to="/signin">
+      <router-link to="/auth/signin">
         Go back to login page
       </router-link>
     </div>
