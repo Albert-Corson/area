@@ -22,15 +22,20 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  text-align: center;
+
+  padding: 1rem;
+  &:not(:last-of-type) {
+    margin-bottom: 2rem;
+  }
+  min-height: 12rem;
+  width: 100%;
+  cursor: pointer;
+
   border-radius: $borderRadius;
   box-shadow: $upShadow, $downShadow;
-  text-align: center;
-  padding: 1rem;
-  height: 12rem;
-  width: 12rem;
+
   opacity: 1;
-  margin: 1rem;
-  cursor: pointer;
   transition: 0.15s opacity ease-in-out;
   &:hover {
     opacity: 0.6;

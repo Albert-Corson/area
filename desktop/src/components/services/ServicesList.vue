@@ -31,6 +31,6 @@ export default {
 
 <style lang="scss" scoped>
 .services-list {
-  padding: 1.5rem;
+  padding: 2rem;
 }
 </style>

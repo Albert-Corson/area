@@ -20,4 +20,28 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+h2 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &::before,
+  &::after {
+    content: "";
+    display: block;
+    height: 3px;
+    flex: 1 0;
+  }
+
+  &::before {
+    background: linear-gradient(to right, transparent, #999999);
+    margin-right: 4vh;
+  }
+
+  &::after {
+    background: linear-gradient(to left, transparent, #999999);
+    margin-left: 4vh;
+  }
+}
+</style>

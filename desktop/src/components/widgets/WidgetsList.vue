@@ -25,8 +25,9 @@ export default {
 <style lang="scss" scoped>
 .widgets-list {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   flex-wrap: wrap;
+  margin-bottom: 8rem;
 
   .widgets-list-item:last-child {
     position: relative;
