@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
-import {View, Text, StyleSheet, ImageBackground, FlatList} from 'react-native'
+import {View, Text, StyleSheet, ImageBackground} from 'react-native'
+import {Picker} from '@react-native-picker/picker'
 import {Widget as WidgetType} from '../Types/Widgets'
 import {observer} from 'mobx-react'
 import {BlurView} from 'expo-blur'
@@ -10,7 +11,6 @@ import ModalContainer from './ModalContainer'
 import FlatButton from './FlatButton'
 import GradientFlatButton from './GradientFlatButton'
 import TextInput from './TextInput'
-import { keys } from 'mobx'
 
 interface Props {
   item: WidgetType;
@@ -21,10 +21,16 @@ interface Props {
   modifying?: any;
 }
 
+interface AllowedValue {
+  display_name: string;
+  value: string;
+}
+
 interface State {
   showText: boolean;
   showModal: boolean;
   modifyingQuery: Record<string, string>;
+  selectedValue: number | undefined;
 }
 
 const sizes: Record<Size, number> = {
@@ -44,6 +50,7 @@ class Widget extends Component<Props, State> {
       showText: true,
       showModal: false,
       modifyingQuery: {},
+      selectedValue: undefined,
     }
 
     this.queries = Array.isArray(props.item?.params) ? props.item?.params : props.item?.params?.params || []
@@ -69,19 +76,17 @@ class Widget extends Component<Props, State> {
     this.setState({showModal: true})
   }
 
-  parseAllowedValues = (item): string => {
-    return item.allowed_values ? item.allowed_values.map((obj) => obj.display_name).join('  |  ') : item.name
-  }
-
   content: () => JSX.Element | boolean = () => this.state.showText && (
     <BlurView intensity={100} style={[styles.centerContent, styles.fullSize]}>
       <View style={styles.contentContainer}>
         <Text style={[styles.text, styles.title, {}]}>
-          {this.truncateString(this.props.display?.header ?? this.props.item.name)}
+          {this.truncateString(!this.props.modifying 
+            ? this.props.display?.header ?? this.props.item.name
+            : this.props.item.name)}
         </Text>
 
-        {(() => {
-          const body = (this.props.display?.artists ?? (this.props.display?.genres || []))?.map((item: string, i: number) => (
+        {!this.props.modifying ? (() => {
+          const body = (this.props.display?.artists || this.props.display?.genres || [])?.map((item: string, i: number) => (
             <Text style={styles.text} key={i}>
               {this.truncateString(item)}
             </Text>
@@ -97,10 +102,14 @@ class Widget extends Component<Props, State> {
 
           return (
             <Text style={styles.text}>
-              {this.truncateString(this.props.display?.content || this.props.display?.description || this.props.item.description)}
+              {this.truncateString(this.props.display?.content || this.props.display?.description || '')}
             </Text>
           )
-        })()}
+        })() : (
+          <Text style={styles.text}>
+            {this.truncateString(this.props.display?.description || '')}
+          </Text>
+        )}
       </View>
     </BlurView>
   )
@@ -146,48 +155,67 @@ class Widget extends Component<Props, State> {
           {this.container()}
   
         </DoubleTap>
-        <ModalContainer visible={this.state.showModal} containerStyle={{height: 175, justifyContent: 'center'}}>
-          <FlatList
-            style={{height: 50}}
-            data={this.queries}
-            renderItem={({item, index}) => (
-              <>
-                <TextInput
-                  containerStyle={{width: '100%', marginVertical: 15}}
-                  placeholder={this.parseAllowedValues(item)}
-                  value={this.state.modifyingQuery[index]}
-                  onChange={(text) => {
-                    const modifyingQuery = {...this.state.modifyingQuery}
+        <View style={{height: '90%', width: '100%'}}>
+          <ModalContainer visible={this.state.showModal} containerStyle={{flex: 1, width: '100%', height: 'auto', justifyContent: 'center'}}>
+            <View style={{flex: 1, flexDirection: 'column', justifyContent: 'space-evenly', alignItems: 'center'}}>
+              <View style={{flex: 1, justifyContent: 'space-evenly'}}>
+                {this.queries.map((item: any, index: number) => (
+                  <View key={index} style={{justifyContent: 'center', alignItems: 'center'}}>
+                    {!item.allowed_values ? (
+                      <TextInput
+                        containerStyle={{width: '100%', marginVertical: 15}}
+                        placeholder={item.name}
+                        value={this.state.modifyingQuery[index]}
+                        onChange={(text) => {
+                          const {modifyingQuery} = {...this.state}
   
-                    modifyingQuery[index] = text
-                    this.setState({modifyingQuery})
+                          modifyingQuery[index] = text
+                          this.setState({modifyingQuery})
+                        }}
+                      />
+                    ) : (
+                      <View style={{height: 200, width: 300}}>
+                        <Picker
+                          selectedValue={this.state.modifyingQuery[index]}
+                          onValueChange={(value) => {
+                            const {modifyingQuery} = {...this.state}
+
+                            modifyingQuery[index] = value
+                            this.setState({modifyingQuery})
+                          }}
+                        >
+                          {item.allowed_values.map((item: AllowedValue, i: number) => (
+                            <Picker.Item key={i} label={item.display_name} value={item.value} />
+                          ))}
+                        </Picker>
+                      </View>
+                    )}
+                  </View>
+                ))}
+              </View>
+              <View style={{flexDirection: 'row', justifyContent: 'space-evenly', width: 300, marginBottom: 40}}>
+                <GradientFlatButton
+                  width={200} 
+                  value="Save" 
+                  onPress={async () => {
+                    const map = new Map(Object.keys(this.state.modifyingQuery)
+                      .filter((key: any) => this.state.modifyingQuery[key]?.length)
+                      .map((key: any) => [this.queries[key].name, this.state.modifyingQuery[key]]))
+  
+                    await this.props.widgetStore.updateWidget(this.props.item.id, Object.fromEntries(map))
+                    this.props.widgetStore.updateParameter(this.props.item.id)
+                    this.setState({showModal: false})
                   }}
                 />
-              </>
-            )}
-            keyExtractor={(_, index) => `query_${index}`}
-          />
-          <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-evenly', width: 300}}>
-            <GradientFlatButton
-              width={200} 
-              value="Save" 
-              onPress={async () => {
-                const map = new Map(Object.keys(this.state.modifyingQuery)
-                  .filter((key: any) => this.state.modifyingQuery[key]?.length)
-                  .map((key: any) => [this.queries[key].name, this.state.modifyingQuery[key]]))
-  
-                await this.props.widgetStore.updateWidget(this.props.item.id, Object.fromEntries(map))
-                this.props.widgetStore.updateParameter(this.props.item.id)
-                this.setState({showModal: false})
-              }}
-            />
-            <FlatButton 
-              width={75} 
-              value="Cancel" 
-              onPress={() => this.setState({modifyingQuery: {}, showModal: false})}
-            />
-          </View>
-        </ModalContainer>
+                <FlatButton 
+                  width={75} 
+                  value="Cancel" 
+                  onPress={() => this.setState({modifyingQuery: {}, showModal: false})}
+                />
+              </View>
+            </View>
+          </ModalContainer>
+        </View>
       </>
     )
   }
@@ -233,22 +261,5 @@ const styles = StyleSheet.create({
   fullSize: {
     width: '100%',
     height: '100%',
-  },
-  query: {
-    width: 20,
-    height: 20,
-    borderRadius: 20,
-
-    zIndex: 1000,
-
-    position: 'absolute',
-
-    bottom: 0,
-    right: 0,
-
-    backgroundColor: '#54545477',
-
-    justifyContent: 'center',
-    alignItems: 'center',
   },
 })

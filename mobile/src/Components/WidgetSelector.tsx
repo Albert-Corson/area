@@ -1,36 +1,33 @@
-import React, {useContext} from 'react'
+import React, {useContext, useState, useEffect} from 'react'
 import {observer} from 'mobx-react-lite'
-import {View, Text, StyleSheet} from 'react-native'
-import {State, TapGestureHandlerGestureEvent} from 'react-native-gesture-handler'
+import {View, Text, StyleSheet, Dimensions} from 'react-native'
 import {RootStore} from '../Stores/RootStore'
 import WidgetListContainer from './WidgetListContainer'
 import Widget from './Widget'
-import StaticContainer from './StaticContainer'
 import {StackNavigationProp} from '@react-navigation/stack'
 import {RootStackParamList} from '../Navigation/StackNavigator'
 import ServiceLoginPrompt from './ServiceLoginPrompt'
 import Animated, {useAnimatedStyle, useSharedValue, withSpring} from 'react-native-reanimated'
-import {WebViewNavigation} from 'react-native-webview'
 import RootStoreContext from '../Stores/RootStore'
+import {RefreshableWidget} from '../Stores/WidgetStore'
+import {TouchableOpacity} from 'react-native-gesture-handler'
+import DropShadowContainer from './DropShadowContainer'
+import FlatButton from './FlatButton'
+import GradientFlatButton from './GradientFlatButton'
+import ModalContainer from './ModalContainer'
 
 interface WidgetSelectorProps {
   store: RootStore;
   navigation: StackNavigationProp<RootStackParamList>;
+  sheetRef: any;
 }
 
-const WidgetSelector = observer(({store, navigation}: WidgetSelectorProps): JSX.Element => {
-  const {availableWidgets} = store.widget
-  const opacity = useSharedValue<number>(1)
-  const widgetStore = useContext(RootStoreContext).widget
+const WidgetSelector = observer(({store, navigation, sheetRef}: WidgetSelectorProps): JSX.Element => {
+  const widgetStore = store.widget
+  const [showModal, setShowModal] = useState<boolean>(false)
 
-  const opacityStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value
-  }))
-
-  const onTap = (e: TapGestureHandlerGestureEvent, index: number): void => {
-    if (e.nativeEvent.state !== State.ACTIVE) return
-
-    const {availableWidgets, subscribedWidgets} = store.widget
+  const onTap = (index: number): void => {
+    const {subscribedWidgets, availableWidgets} = store.widget
 
     if (index < 0 || index >= availableWidgets.length) return
 
@@ -40,7 +37,7 @@ const WidgetSelector = observer(({store, navigation}: WidgetSelectorProps): JSX.
 
     if (widget.requires_auth) {
       store.widget.currentWidget = widget
-      opacity.value = withSpring(.3)
+      setShowModal(!!(store.widget.currentWidget?.service != null))
     } else {
       store.widget.subscribeToWidget(widget.id)
     }
@@ -49,7 +46,7 @@ const WidgetSelector = observer(({store, navigation}: WidgetSelectorProps): JSX.
   const onPromptPress = async () => {
     const authUrl = await store.widget.serviceAuthentication()
 
-    opacity.value = withSpring(1)
+    // sheetRef?.current?.snapTo(1)
 
     navigation.navigate('ServiceAuth', {
       authUrl: authUrl ?? '',
@@ -57,38 +54,61 @@ const WidgetSelector = observer(({store, navigation}: WidgetSelectorProps): JSX.
     })
 
     store.widget.currentWidget = null
+    setShowModal(false)
   }
 
   const onPromptCancel = () => {
     store.widget.currentWidget = null
-    opacity.value = withSpring(1)
-
+    setShowModal(false)
   }
 
+  const SIZE = Dimensions.get('window').width / 2.5
+  const MARGIN = ((SIZE * (2.5 - 2.14)) / 4)
+  
+  const Widgets = () => (
+    <>
+      {widgetStore.availableWidgets.filter(widget => widget.name).map((widget, index) => (
+        <TouchableOpacity
+          key={index}
+          activeOpacity={.5}
+          onPressOut={() => onTap(index)}
+        >
+          <DropShadowContainer>
+            <View style={[{width: SIZE, height: SIZE, margin: MARGIN, zIndex: 11}]}>
+              <Widget widgetStore={widgetStore} item={widget} subscribed={false} />
+            </View>
+          </DropShadowContainer>
+        </TouchableOpacity>
+      ))}
+    </>
+  )
 
   return (
     <>
-      <Animated.View style={opacityStyle}>
-        <WidgetListContainer containerStyle={[styles.container, styles.selector]} bounce={false}>
-          {!availableWidgets.length && (
-            <Text style={styles.title}>{'No new widget available, you got\'em all!'}</Text>
-          )}
-          {availableWidgets.map((widget, index) => (
-            <StaticContainer
-              key={index}
-              onTap={onTap}
-              index={index}
-              renderItem={() => <Widget widgetStore={widgetStore} item={widget} subscribed={false} />}
+      <ModalContainer visible={showModal}>
+        <View style={styles.verticalContainer}>
+          <Text style={styles.title}>{`${store.widget.currentWidget?.service?.name} requires authentication`}</Text>
+          <View style={styles.btnContainer}>
+            <GradientFlatButton
+              value={'Login'}
+              width={150}
+              onPress={onPromptPress}
             />
-          ))}
-        </WidgetListContainer>
-      </Animated.View>
+            <FlatButton
+              value={'Cancel'}
+              width={75}
+              onPress={onPromptCancel}
+            />
+          </View>
+        </View>
+      </ModalContainer>
 
-      <ServiceLoginPrompt
-        onPress={onPromptPress}
-        onCancel={onPromptCancel}
-        service={store.widget.currentWidget?.service || null}
-      />
+      <WidgetListContainer containerStyle={[styles.container, styles.selector]} bounce={false}>
+        {!widgetStore.availableWidgets.length && (
+          <Text style={styles.headerTitle}>{'No new widget available, you got\'em all!'}</Text>
+        )}
+        <Widgets />
+      </WidgetListContainer>
     </>
   )
 })
@@ -148,10 +168,31 @@ const styles = StyleSheet.create({
 
     paddingBottom: 50,
   },
+  headerTitle: {
+    width: '100%',
+    textAlign: 'center',
+    fontSize: 20,
+    fontFamily: 'DosisBold',
+    marginHorizontal: 20,
+  },
+  box: {
+    borderRadius: 25,
+    backgroundColor: '#e6e6e9',
+  },
+  verticalContainer: {
+    flex: 1,
+    flexDirection: 'column',
+  },
   title: {
     width: '100%',
     textAlign: 'center',
     fontSize: 20,
     fontFamily: 'DosisBold',
+    marginBottom: 25,
+  },
+  btnContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between'
   },
 })

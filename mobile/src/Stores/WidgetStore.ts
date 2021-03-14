@@ -11,7 +11,7 @@ enum Action {
   remove,
 }
 
-interface RefreshableWidget extends Widget {
+export interface RefreshableWidget extends Widget {
   hours?: number;
   minutes?: number;
   interval?: number | NodeJS.Timeout;
@@ -277,6 +277,8 @@ export class WidgetStore {
         clearInterval(this.subscribedWidgets[widgetIndex].interval as number)
       }
   
+      if (hours === 0 && minutes === 0) return 
+      
       this.subscribedWidgets[widgetIndex].interval = setInterval(() => {
         this.updateParameter(this.subscribedWidgets[widgetIndex].id)
       }, (hours * 3600000 + minutes * 60000) + DEBOUNCE)
