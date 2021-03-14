@@ -1,6 +1,11 @@
 import $axios from "@/services/http"
-import { Response, Service, ExternalAuth, Status } from "@/types/models"
-import { AuthenticationRedirect } from "@/types/models/auth/AuthenticationRedirect"
+import {
+  Response,
+  Service,
+  ExternalAuth,
+  Status,
+  AuthenticationRedirect
+} from "@/types/models"
 
 export const ServiceRepository = {
   listServices(): Promise<Response<Array<Service>>> {
