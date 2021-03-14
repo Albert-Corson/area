@@ -9,7 +9,7 @@ namespace Area.API.Attributes
     public class ValidateModelStateAttribute : ActionFilterAttribute
     {
         private readonly bool _activated;
-        
+
         public ValidateModelStateAttribute()
             : this(true)
         { }
@@ -24,7 +24,9 @@ namespace Area.API.Attributes
             if (!_activated || context.ModelState.IsValid)
                 return;
 
-            string str = context.ModelState.Values.SelectMany(entry => entry.Errors).Aggregate("", (current, it) => current + it.ErrorMessage + "; ");
+            string str = context.ModelState.Values
+                .SelectMany(entry => entry.Errors)
+                .Aggregate("", (current, it) => current + it.ErrorMessage + "; ");
 
             throw new BadRequestHttpException(str);
         }

@@ -92,7 +92,8 @@ namespace Area.API.Controllers
             foreach (var widget in widgets) {
                 var currentParam = widgetParams.Where(model => model.Param.WidgetId == widget.Id);
                 widget.Params = WidgetManager.BuildUserWidgetCallParams(currentParam, widget.Params!);
-                widget.RequiresAuth = user.ServiceTokens.FirstOrDefault(model => model.ServiceId == widget.ServiceId) != null;
+                if (widget.RequiresAuth)
+                    widget.RequiresAuth = user.ServiceTokens.FirstOrDefault(model => model.ServiceId == widget.ServiceId) == null;
             }
 
             return new ResponseModel<List<WidgetModel>> {
