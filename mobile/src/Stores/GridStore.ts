@@ -39,6 +39,12 @@ export class GridStore {
 
   public get adding(): boolean {
     return this._adding
+    
+  }
+
+  @action
+  public set adding(value: boolean) {
+    this._adding = value
   }
 
   private get fillBlock(): any {

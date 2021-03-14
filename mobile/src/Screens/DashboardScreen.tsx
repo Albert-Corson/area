@@ -93,18 +93,20 @@ const WidgetsScreen = observer(({navigation}: Props): JSX.Element => {
           <WidgetListContainer containerStyle={[
             styles.container,
             {
-              marginLeft: Device.modelName === 'iPad' ? 20 : 10
+              marginLeft: Device?.modelName?.includes('iPad') ? 25 : 10
             }
           ]}>
             {store.grid.blocks.map((widget, index) => (
               <DraggableContainer
                 key={widget.id || `fillBlock${index}`}
                 index={index}
+                name={widget.name}
               >
                 <Widget
                   item={widget}
                   widgetStore={store.widget}
                   subscribed={!store.grid.modifying}
+                  modifying={store.grid.modifying}
                   size={store.grid.getBlockSize(index)}
                   display={widget.display}
                 />
@@ -117,7 +119,7 @@ const WidgetsScreen = observer(({navigation}: Props): JSX.Element => {
         ref={sheetRef}
         snapPoints={['90%', '0%']}
         initialSnap={1}
-        renderContent={() => (<WidgetSelector store={store} navigation={navigation} />)}
+        renderContent={() => (<WidgetSelector store={store} navigation={navigation} sheetRef={sheetRef} />)}
         renderHeader={WidgetSelectorHeader}
         onOpenStart={store.grid.toggleAdditionMode}
         onCloseStart={() => {

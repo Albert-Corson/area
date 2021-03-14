@@ -15,7 +15,7 @@ const numberPadding = (number: number, padding = 2, char = '0') => {
 }
 
 const formatDate = (date: Date): string => {
-  return `${date.getFullYear()}/${numberPadding(date.getMonth())}/${numberPadding(date.getDay())} ${date.getHours()}:${date.getMinutes()}`
+  return `${date.getFullYear()}/${numberPadding(date.getMonth())}/${numberPadding(date.getDay())} ${numberPadding(date.getHours())}:${numberPadding(date.getMinutes())}`
 }
 
 const DeviceItem = ({country, isCurrent, last_used, browser}: Props) => {
