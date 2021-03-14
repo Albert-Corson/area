@@ -1,7 +1,7 @@
 <template>
   <div class="services-list-item" :id="`service-${service.id}`">
     <h2>{{ service.name }}</h2>
-    <widgets-list :widgets="serviceWidgets" />
+    <widgets-list :widgets="widgets" />
   </div>
 </template>
 
@@ -14,18 +14,8 @@ export default {
     WidgetsList
   },
   props: {
-    service: Object
-  },
-  computed: {
-    serviceWidgets() {
-      const widgets = this.$store.getters["Widget/serviceWidgets"](
-        this.service.id
-      )
-      if (widgets.length === 0) {
-        this.$store.dispatch("Widget/listWidgets")
-      }
-      return widgets
-    }
+    service: Object,
+    widgets: Array
   }
 }
 </script>

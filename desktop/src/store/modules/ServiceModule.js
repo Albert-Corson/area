@@ -11,6 +11,9 @@ const ServiceModule = {
   getters: {
     sortedServices(state) {
       return [...state.services].sort((a, b) => a.name.localeCompare(b.name))
+    },
+    mySortedServices(state) {
+      return [...state.myServices].sort((a, b) => a.name.localeCompare(b.name))
     }
   },
 

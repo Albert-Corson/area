@@ -68,6 +68,14 @@ const routes: Array<RouteConfig> = [
         /* webpackChunkName: "callback" */ "../views/services/Callback.vue"
       )
     }
+  },
+  {
+    path: "*",
+    name: "Not found",
+    meta: { requiresAuth: false },
+    component: () => {
+      return import(/* webpackChunkName: "404" */ "../views/404.vue")
+    }
   }
 ]
 

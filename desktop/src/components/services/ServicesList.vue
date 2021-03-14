@@ -4,6 +4,7 @@
       v-for="service in services"
       :key="service.id"
       :service="service"
+      :widgets="serviceWidgets(service)"
     />
   </div>
 </template>
@@ -17,7 +18,13 @@ export default {
     ServicesListItem
   },
   props: {
-    services: Array
+    services: Array,
+    widgets: Array
+  },
+  methods: {
+    serviceWidgets(service) {
+      return this.widgets.filter(widget => widget.service.id === service.id)
+    }
   }
 }
 </script>

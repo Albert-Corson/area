@@ -1,32 +1,30 @@
 <template>
   <div class="home">
-    <h1>Welcome {{ username }}</h1>
-
-    <pre style="text-align: left">
-      {{ JSON.stringify(devices, null, 4) }}
-    </pre>
-    <router-link to="/auth/signout">
-      Sign out
-    </router-link>
+    <h1>My dashboard</h1>
+    <services-list :services="mySortedServices" :widgets="myWidgets" />
   </div>
 </template>
 
-<script lang="ts">
-import Vue from "vue"
+<script>
+import ServicesList from "@/components/services/ServicesList"
 
-export default Vue.extend({
-  name: "Home",
+export default {
+  name: "home",
+  components: {
+    ServicesList
+  },
   created() {
-    this.$store.dispatch("User/fetchInfo")
-    this.$store.dispatch("User/listDevices")
+    if (this.$store.state.Service.myServices.length === 0) {
+      this.$store.dispatch("Service.listMyServices")
+    }
   },
   computed: {
-    username() {
-      return this.$store.state.User.username
+    mySortedServices() {
+      return this.$store.getters["Service/mySortedServices"]
     },
-    devices() {
-      return this.$store.state.User.devices
+    myWidgets() {
+      return this.$store.state.Widget.myWidgets
     }
   }
-})
+}
 </script>
