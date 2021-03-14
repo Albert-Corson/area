@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react'
+import React, {useContext} from 'react'
 import {RouteProp} from '@react-navigation/native'
 import {StackNavigationProp} from '@react-navigation/stack'
 import {WebView, WebViewNavigation} from 'react-native-webview'
@@ -6,7 +6,6 @@ import {RootStackParamList} from '../Navigation/StackNavigator'
 import {SafeAreaView} from 'react-native-safe-area-context'
 import RootStoreContext from '../Stores/RootStore'
 import {observer} from 'mobx-react-lite'
-import {throttle} from 'lodash'
 
 interface Props {
     navigation: StackNavigationProp<RootStackParamList, 'OAuthSignIn'>;
@@ -37,7 +36,7 @@ const OAuthSignInScreen = observer(({navigation, route}: Props): JSX.Element => 
   return (
     <SafeAreaView style={{height: '100%'}}>
       <WebView
-        source={{uri: url}}
+        source={{uri: url || ''}}
         userAgent="Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_1 like Mac OS X; en-us) AppleWebKit/532.9 (KHTML, like Gecko) Version/4.0.5 Mobile/8B117 Safari/6531.22.7 (compatible; Googlebot-Mobile/2.1; +http://www.google.com/bot.html)"
         onNavigationStateChange={onNavigationStateChange}
         incognito

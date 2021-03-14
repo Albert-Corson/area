@@ -1,7 +1,6 @@
 import {
   action, configure, makeAutoObservable, observable, runInAction,
 } from 'mobx'
-import { block } from 'react-native-reanimated'
 import Grid from '../Tools/Grid'
 import {Size} from '../Types/Block'
 import {Widget} from '../Types/Widgets'
