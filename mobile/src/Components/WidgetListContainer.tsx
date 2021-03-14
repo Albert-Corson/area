@@ -27,6 +27,7 @@ const WidgetListContainer = ({children, containerStyle, bounce = true}: Props): 
   return (
     <InsetShadow shadowColor="#A6ABBD">
       <ScrollView
+        keyboardShouldPersistTaps="always"
         contentContainerStyle={[containerStyle, {height: 'auto'}]}
         showsVerticalScrollIndicator={false}
         bounces={bounce}

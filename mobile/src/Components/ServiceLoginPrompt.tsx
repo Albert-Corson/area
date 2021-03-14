@@ -12,7 +12,8 @@ interface Props {
 }
 
 const ServiceLoginPrompt = ({service, onPress, onCancel}: Props): JSX.Element => (
-  <ModalContainer visible={service != null}>
+  <ModalContainer visible={!!(service != null)}>
+    {console.log(service)}
     <View style={styles.verticalContainer}>
       <Text style={styles.title}>{`${service?.name} requires authentication`}</Text>
       <View style={styles.btnContainer}>

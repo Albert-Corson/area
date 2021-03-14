@@ -1,7 +1,7 @@
 import React, {useContext} from 'react'
 import {RouteProp} from '@react-navigation/native'
 import {StackNavigationProp} from '@react-navigation/stack'
-import {WebView, WebViewMessageEvent, WebViewNavigation} from 'react-native-webview'
+import {WebView, WebViewNavigation} from 'react-native-webview'
 import {RootStackParamList} from '../Navigation/StackNavigator'
 import {SafeAreaView} from 'react-native-safe-area-context'
 import RootStoreContext from '../Stores/RootStore'
@@ -16,17 +16,20 @@ const ServiceAuthScreen = observer(({navigation, route}: Props): JSX.Element => 
   const store = useContext(RootStoreContext).widget
   const {authUrl, widgetId} = route.params
 
+
   const onNavigationStateChange = (state: WebViewNavigation) => {
     const success = state.url.match(/.*successful=(true|false)/)
 
-    if (success && success[1] === "true") {
+    if (success && success[1] === 'true') {
       if (widgetId >= 0) {
         store.subscribeToWidget(widgetId)
+        
+        navigation.goBack()
+        // navigation.reset({
+        //   index: 0,
+        //   routes: [{name: 'Dashboard'}],
+        // })
       }
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Dashboard' }],
-      })
     }
   }
 
@@ -35,8 +38,7 @@ const ServiceAuthScreen = observer(({navigation, route}: Props): JSX.Element => 
       <WebView
         source={{uri: authUrl}}
         onNavigationStateChange={onNavigationStateChange}
-        incognito
-        >
+      >
       </WebView>
     </SafeAreaView>
   )

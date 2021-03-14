@@ -1,6 +1,10 @@
 import React, {useContext, useRef} from 'react'
 import {
-  Dimensions, StyleSheet, View, TouchableOpacity,
+  Dimensions,
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Text,
 } from 'react-native'
 import Animated, {
   useAnimatedStyle,
@@ -32,12 +36,14 @@ type Event = GestureHandlerGestureEventNativeEvent & PanGestureHandlerEventExtra
 
 interface Props {
   index: number;
+  name: string;
   children?: React.ReactChild;
 }
 
 const DraggableContainer = observer(({
   index,
   children,
+  name,
 }: Props): JSX.Element => {
   const store = useContext(RootStoreContext)
   // drag
@@ -155,73 +161,79 @@ const DraggableContainer = observer(({
   }
 
   return (
-    <Animated.View style={[{margin: MARGIN}, boxStyle]}>
-      <DropShadowContainer>
-        {modifying ? (
-          <TapGestureHandler
-            onHandlerStateChange={onTap}
-            numberOfTaps={2}
-            ref={tapRef}
-            simultaneousHandlers={panRef}
-          >
-            <Animated.View>
-              <PanGestureHandler
-                ref={panRef}
-                simultaneousHandlers={tapRef}
-                maxPointers={1}
-                onGestureEvent={onDragEvent}
-              >
-                <Animated.View style={[
-                  widgetStyle,
-                  dragStyle,
-                ]}
+    <>
+      <Animated.View style={[
+        {marginHorizontal: MARGIN, marginVertical: MARGIN -  5},
+        boxStyle
+      ]}>
+        {!modifying && <Text style={styles.title}>{name}</Text>}
+        <DropShadowContainer>
+          {modifying ? (
+            <TapGestureHandler
+              onHandlerStateChange={onTap}
+              numberOfTaps={2}
+              ref={tapRef}
+              simultaneousHandlers={panRef}
+            >
+              <Animated.View>
+                <PanGestureHandler
+                  ref={panRef}
+                  simultaneousHandlers={tapRef}
+                  maxPointers={1}
+                  onGestureEvent={onDragEvent}
                 >
-                  <TouchableOpacity style={[styles.badgeBtn, styles.deleteBtn]} onPress={deleteWidget}>
-                    <Entypo name="cross" size={15} color="#e6e6e9" />
-                  </TouchableOpacity>
+                  <Animated.View style={[
+                    widgetStyle,
+                    dragStyle,
+                  ]}
+                  >
+                    <TouchableOpacity style={[styles.badgeBtn, styles.deleteBtn]} onPress={deleteWidget}>
+                      <Entypo name="cross" size={15} color="#e6e6e9" />
+                    </TouchableOpacity>
 
-                  <TouchableOpacity style={[styles.badgeBtn, styles.clockBtn]} onPress={() => {
-                    store.grid.openTimePicker()
-                    store.widget.currentWidget = item
-                    store.widget.setCurrentInterval({hours: item.hours || 0, minutes: item.minutes || 1})
-                  }}>
-                    <Entypo name="clock" size={15} color="#e6e6e9" />
-                  </TouchableOpacity>
+                    <TouchableOpacity style={[styles.badgeBtn, styles.clockBtn]} onPress={() => {
+                      store.grid.openTimePicker()
+                      store.widget.currentWidget = item
+                      store.widget.setCurrentInterval({hours: item.hours || 0, minutes: item.minutes || 1})
+                    }}>
+                      <Entypo name="clock" size={15} color="#e6e6e9" />
+                    </TouchableOpacity>
 
-                  {children}
+                    {children}
 
-                </Animated.View>
-              </PanGestureHandler>
-            </Animated.View>
-          </TapGestureHandler>
-        ) : (
-          <Animated.View style={widgetStyle}>
+                  </Animated.View>
+                </PanGestureHandler>
+              </Animated.View>
+            </TapGestureHandler>
+          ) : (
+            <Animated.View style={widgetStyle}>
 
-            {children}
+              {children}
           
-          </Animated.View>
-        )}
-      </DropShadowContainer>
-      <ModalContainer visible={store.grid.isTimePickerVisible()} containerStyle={{height: 300, maxWidth: 350}}>
-        <View style={styles.timePickerContainer}>
-          <TimePicker value={store.widget.currentInterval} onChange={store.widget.setCurrentInterval} />
-        </View>
-        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-          <FlatButton 
-            containerStyle={{margin: 5}}
-            value="Confirm" 
-            width={150} 
-            onPress={changeRefreshTime} 
-          />
-          <FlatButton 
-            containerStyle={{margin: 5}}
-            value="Cancel" 
-            width={75} 
-            onPress={store.grid.closeTimePicker} 
-          />
-        </View>
-      </ModalContainer>
-    </Animated.View>
+            </Animated.View>
+          )}
+        </DropShadowContainer>
+        <ModalContainer visible={store.grid.isTimePickerVisible()} containerStyle={{height: 300, maxWidth: 350}}>
+          <View style={styles.timePickerContainer}>
+            <TimePicker value={store.widget.currentInterval} onChange={store.widget.setCurrentInterval} />
+          </View>
+          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+            <FlatButton 
+              containerStyle={{margin: 5}}
+              value="Confirm" 
+              width={150} 
+              onPress={changeRefreshTime} 
+            />
+            <FlatButton 
+              containerStyle={{margin: 5}}
+              value="Cancel" 
+              width={75} 
+              onPress={store.grid.closeTimePicker} 
+            />
+          </View>
+        </ModalContainer>
+      </Animated.View>
+    </>
   )
 })
 
@@ -248,7 +260,7 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 20,
-    zIndex: 1000,
+    zIndex: 20,
 
     position: 'absolute',
     margin: 5,
@@ -272,5 +284,13 @@ const styles = StyleSheet.create({
     right: -10,
 
     backgroundColor: '#2B2B2BCC',
+  },
+  title: {
+    textAlign: 'center', 
+    fontSize: 11,
+    fontFamily: 'DosisLight',
+    padding: 0,
+    marginTop: 0,
+    marginBottom: 2,
   },
 })
