@@ -1,18 +1,22 @@
 <template>
   <div class="services-home">
-    <h1>Services</h1>
-    <services-list :services="servicesList" />
-    <services-list :services="myServices" />
+    <services-nav />
+    <main>
+      <h1>Services</h1>
+      <services-list :services="sortedServices" />
+    </main>
   </div>
 </template>
 
 <script>
 import ServicesList from "@/components/services/ServicesList"
+import ServicesNav from "@/components/services/ServicesNav"
 
 export default {
   name: "services-home",
   components: {
-    ServicesList
+    ServicesList,
+    ServicesNav
   },
   created() {
     if (this.$store.state.Service.services.length === 0) {
@@ -21,8 +25,8 @@ export default {
     this.$store.dispatch("Service/listMyServices")
   },
   computed: {
-    servicesList() {
-      return this.$store.state.Service.services
+    sortedServices() {
+      return this.$store.getters["Service/sortedServices"]
     },
     myServices() {
       return this.$store.state.Service.myServices
@@ -30,3 +34,24 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+@import "@/styles/vars";
+
+.services-home {
+  padding-left: 20vw;
+
+  .services-nav {
+    width: 20vw;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    box-shadow: $upShadow;
+  }
+
+  .services-list {
+    text-align: left;
+  }
+}
+</style>

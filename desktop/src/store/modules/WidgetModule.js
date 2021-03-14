@@ -1,58 +1,63 @@
-import { ServiceRepository } from "@/repositories"
+import { WidgetRepository } from "@/repositories"
 
-const ServiceModule = {
+const WidgetModule = {
   namespaced: true,
 
   state: {
-    services: [],
-    myServices: []
+    widgets: [],
+    myWidgets: [],
+    fetching: false
+  },
+
+  getters: {
+    serviceWidgets: state => serviceId => {
+      return state.widgets.filter(widget => widget.service.id === serviceId)
+    }
   },
 
   mutations: {
-    SET_SERVICES(state, payload) {
-      state.services = payload
+    SET_WIDGETS(state, payload) {
+      state.widgets = payload
     },
-    SET_MY_SERVICES(state, payload) {
-      state.myServices = payload
+    SET_MY_WIDGETS(state, payload) {
+      state.myWidgets = payload
     }
   },
 
   actions: {
-    async listServices({ commit }) {
-      const response = await ServiceRepository.listServices()
+    async listWidgets({ state, commit }) {
+      if (state.fetching === true) {
+        return null
+      }
+      state.fetching = true
+      const response = await WidgetRepository.listWidgets()
       if (response.successful) {
-        commit("SET_SERVICES", response.data)
+        commit("SET_WIDGETS", response.data)
+        state.fetching = false
       }
       return response
     },
 
-    async listMyServices({ commit }) {
-      const response = await ServiceRepository.listMyServices()
+    async listMyWidgets({ commit }) {
+      const response = await WidgetRepository.listMyWidgets()
       if (response.successful) {
-        commit("SET_MY_SERVICES", response.data)
+        commit("SET_MY_WIDGETS", response.data)
       }
       return response
     },
 
-    async getService(_, serviceId) {
-      return await ServiceRepository.getService(serviceId)
+    async callWidget(_, widgetId, params = {}) {
+      return await WidgetRepository.callWidget(widgetId, params)
     },
 
-    async signinToService(_, serviceId) {
-      const response = await ServiceRepository.signinToService(serviceId, {
-        /* eslint-disable-next-line @typescript-eslint/camelcase */
-        redirect_url: `${window.location.origin}/services/callback`,
-        state: window.location.pathname
-      })
-      if (response.successful && response.data.requires_redirect) {
-        window.location.href = response.data.redirect_url
-      }
+    async subscribeToWidget(_, widgetId) {
+      return await WidgetRepository.subscribeToWidget(widgetId)
     },
 
-    async signoutFromService(_, serviceId) {
-      return await ServiceRepository.signoutFromService(serviceId)
+    async unsubscribeFromWidget(_, widgetId) {
+      return await WidgetRepository.unsubscribeFromWidget(widgetId)
     }
   }
 }
 
-export default ServiceModule
+export default WidgetModule

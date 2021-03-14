@@ -8,6 +8,12 @@ const ServiceModule = {
     myServices: []
   },
 
+  getters: {
+    sortedServices(state) {
+      return [...state.services].sort((a, b) => a.name.localeCompare(b.name))
+    }
+  },
+
   mutations: {
     SET_SERVICES(state, payload) {
       state.services = payload
