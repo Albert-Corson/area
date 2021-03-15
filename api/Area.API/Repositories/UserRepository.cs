@@ -13,20 +13,27 @@ using Swan;
 
 namespace Area.API.Repositories
 {
-    public class UserRepository : ARepository
+    public sealed class UserRepository : IDisposable
     {
+        private readonly AreaDbContext _database;
         private readonly WidgetRepository _widgetRepository;
         private readonly UserManager<UserModel> _userManager;
 
-        public UserRepository(AreaDbContext database, WidgetRepository widgetRepository, UserManager<UserModel> userManager) : base(database)
+        public UserRepository(AreaDbContext database, WidgetRepository widgetRepository, UserManager<UserModel> userManager)
         {
+            _database = database;
             _widgetRepository = widgetRepository;
             _userManager = userManager;
         }
 
+        public void Dispose()
+        {
+            _database.SafeSaveChanges();
+        }
+
         public bool UserExists(int? userId = null, string? username = null, string? email = null, UserModel.UserType? type = null)
         {
-            return Database.Users.FirstOrDefault(model =>
+            return _database.Users.FirstOrDefault(model =>
                 (model.UserName == username || model.Email == email || (userId != null && model.Id == userId.Value))
                 && (type == null || model.Type == type.Value)) != null;
         }
@@ -34,7 +41,7 @@ namespace Area.API.Repositories
         public UserModel? GetUser(int? userId = null, string? username = null, string? email = null,
             string? passwd = null, UserModel.UserType? type = null, bool includeChildren = false, bool asNoTracking = true)
         {
-            var queryable = asNoTracking ? Database.Users.AsNoTracking() : Database.Users.AsQueryable();
+            var queryable = asNoTracking ? _database.Users.AsNoTracking() : _database.Users.AsQueryable();
             queryable = includeChildren
                 ? queryable
                     .Include(model => model.WidgetParams).ThenInclude(model => model.Param).ThenInclude(model => model.Enums).ThenInclude(model => model.Enum)
@@ -56,32 +63,32 @@ namespace Area.API.Repositories
             return !_userManager.CheckPasswordAsync(user, passwd).Await() ? null : user;
         }
 
-        public Task<IdentityResult> AddUser(UserModel user, string password)
+        public Task<IdentityResult> AddUserAsync(UserModel user, string password)
         {
             return _userManager.CreateAsync(user, password);
         }
 
-        public Task<IdentityResult> AddUser(UserModel user)
+        public Task<IdentityResult> AddUserAsync(UserModel user)
         {
             return _userManager.CreateAsync(user);
         }
 
-        public Task<IdentityResult> AddUserClaim(UserModel user, Claim claim)
+        public Task<IdentityResult> AddUserClaimAsync(UserModel user, Claim claim)
         {
             return _userManager.AddClaimAsync(user, claim);
         }
 
-        public Task<IList<Claim>> GetUserClaims(UserModel user)
+        public Task<IList<Claim>> GetUserClaimsAsync(UserModel user)
         {
             return _userManager.GetClaimsAsync(user);
         }
-        
+
         public IdentityUserClaim<int>? GetUserClaim(int userId, string claimType)
         {
-            return Database.UserClaims.FirstOrDefault(claim => claim.UserId == userId && claim.ClaimType == claimType);
+            return _database.UserClaims.FirstOrDefault(claim => claim.UserId == userId && claim.ClaimType == claimType);
         }
 
-        public Task<IdentityResult> RemoveUserClaims(UserModel user, IEnumerable<Claim> claims)
+        public Task<IdentityResult> RemoveUserClaimsAsync(UserModel user, IEnumerable<Claim> claims)
         {
             return _userManager.RemoveClaimsAsync(user, claims);
         }
@@ -93,12 +100,12 @@ namespace Area.API.Repositories
 
         public void RemoveUser(UserModel user)
         {
-            Database.Users.Remove(user);
+            _database.Users.Remove(user);
         }
 
         public bool AddWidgetSubscription(int userId, int widgetId)
         {
-            var dbSet = Database.Set<UserWidgetModel>();
+            var dbSet = _database.Set<UserWidgetModel>();
             var existingSub = dbSet.FirstOrDefault(model => model.UserId == userId && model.WidgetId == widgetId);
 
             if (existingSub != null)
@@ -116,7 +123,7 @@ namespace Area.API.Repositories
 
         public bool RemoveWidgetSubscription(int userId, int widgetId)
         {
-            var dbSet = Database.Set<UserWidgetModel>();
+            var dbSet = _database.Set<UserWidgetModel>();
 
             var subscription = dbSet.FirstOrDefault(model => model.UserId == userId && model.WidgetId == widgetId);
             var userParams = GetUser(userId, includeChildren: true, asNoTracking: false)
@@ -124,7 +131,7 @@ namespace Area.API.Repositories
                 .Where(model => model.Param.WidgetId == widgetId);
 
             if (userParams != null)
-                Database.RemoveRange(userParams);
+                _database.RemoveRange(userParams);
             if (subscription == null)
                 return false;
             dbSet.Remove(subscription);
@@ -133,7 +140,7 @@ namespace Area.API.Repositories
 
         public bool AddServiceCredentials(int userId, int serviceId, string jsonTokens)
         {
-            var user = Database.Users
+            var user = _database.Users
                 .FirstOrDefault(model => model.Id == userId);
 
             if (user == null)
@@ -150,7 +157,7 @@ namespace Area.API.Repositories
 
         public void RemoveServiceCredentials(int userId, int serviceId)
         {
-            var user = Database.Users
+            var user = _database.Users
                 .FirstOrDefault(model => model.Id == userId);
 
             var serviceToken = user?.ServiceTokens.FirstOrDefault(model => model.ServiceId == serviceId);

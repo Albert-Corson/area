@@ -47,5 +47,14 @@ namespace Area.API.Extensions
 
             return authTimeClaim != null && long.TryParse(authTimeClaim.Value, out ticks);
         }
+
+        public static bool TryGetExpiry(this ClaimsPrincipal principal, out long expiry)
+        {
+            expiry = 0;
+
+            var authTimeClaim = principal.FindFirst(claim => claim.Type == JwtRegisteredClaimNames.Exp);
+
+            return authTimeClaim != null && long.TryParse(authTimeClaim.Value, out expiry);
+        }
     }
 }

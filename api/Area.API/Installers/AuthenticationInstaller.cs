@@ -1,6 +1,5 @@
 using System;
 using System.Text;
-using Area.API.Authentication;
 using Area.API.Constants;
 using Area.API.DbContexts;
 using Area.API.Models.Table;
@@ -29,11 +28,11 @@ namespace Area.API.Installers
                 ValidateIssuerSigningKey = true
             };
 
-            services
-                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddScheme<JwtBearerOptions, JwtAuthentication>(JwtBearerDefaults.AuthenticationScheme,
-                    options => { options.TokenValidationParameters = tokenValidationParameters; });
             services.AddSingleton(tokenValidationParameters);
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options => {
+                    options.TokenValidationParameters = tokenValidationParameters;
+                });
 
             services.AddDetection();
             services.AddScoped(provider => new IpDataClient(configuration[AuthConstants.IpData.Key]));

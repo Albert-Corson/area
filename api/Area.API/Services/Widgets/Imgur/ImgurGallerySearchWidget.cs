@@ -29,8 +29,11 @@ namespace Area.API.Services.Widgets.Imgur
             var galleryEndpoint = new GalleryEndpoint(Imgur.Client);
 
             var sort = widgetCallParams.GetEnumValue<GallerySortOrder>("sort");
+            var query = widgetCallParams.GetValue("query");
 
-            var result = await galleryEndpoint.SearchGalleryAsync(widgetCallParams.GetValue("query"), sort);
+            if (string.IsNullOrWhiteSpace(query))
+                throw new BadRequestHttpException($"Parameter `{nameof(query)}` must have a value");
+            var result = await galleryEndpoint.SearchGalleryAsync(query, sort);
 
             return ImgurService.WidgetResponseItemsFromGallery(result);
         }

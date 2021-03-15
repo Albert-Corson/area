@@ -19,11 +19,14 @@ namespace Area.API.Models.Table.Owned
         public UserDeviceModel()
         { }
 
-        public UserDeviceModel(IDetectionService detectionService, int userId, string? country = null)
+        public UserDeviceModel(IDetectionService detectionService, int userId)
+            : this (detectionService, userId, DateTime.UtcNow.ToUnixEpochDate())
+        { }
+
+        public UserDeviceModel(IDetectionService detectionService, int userId, long firstUsed)
         {
+            FirstUsed = firstUsed;
             UserId = userId;
-            if (country != null)
-                Country = country;
             Device = detectionService.Device.Type;
             Os = detectionService.Platform.Name;
             OsVersion = detectionService.Platform.Version.ToString();
@@ -102,8 +105,8 @@ namespace Area.API.Models.Table.Owned
 
         public override string ToString()
         {
-            return UserId +
-                Country +
+            return UserId.ToString() +
+                FirstUsed +
                 Device +
                 Os +
                 OsVersion +

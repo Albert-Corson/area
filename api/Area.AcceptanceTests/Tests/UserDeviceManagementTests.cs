@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Area.AcceptanceTests.Collections;
 using Area.AcceptanceTests.Fixtures;
@@ -65,6 +66,7 @@ namespace Area.AcceptanceTests.Tests
         [Fact, Priority(5)]
         public async Task SignBackIn()
         {
+            Thread.Sleep(1100);
             var response = await AreaApi.SignIn(new SignInModel {
                 Identifier = _authenticatedTestsFixture.RegisterForm.Email,
                 Password = _authenticatedTestsFixture.RegisterForm.Password
@@ -99,7 +101,7 @@ namespace Area.AcceptanceTests.Tests
             var response = await AreaApi.GetMyDevices();
 
             AssertExtension.SuccessfulApiResponse(response);
-            Assert.Equal(_currentDeviceId, response.Content.Data!.CurrentDevice);
+            Assert.NotEqual(_currentDeviceId, response.Content.Data!.CurrentDevice);
 
         }
     }

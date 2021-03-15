@@ -1,6 +1,6 @@
 using System;
 using Area.AcceptanceTests.Models.Requests;
-using Xunit;
+using Swan;
 
 namespace Area.AcceptanceTests.Fixtures
 {
@@ -27,7 +27,7 @@ namespace Area.AcceptanceTests.Fixtures
 
         public void Dispose()
         {
-            AreaApi.DeleteMyUser().Wait();
+            AreaApi.DeleteMyUser().Await();
         }
 
         public void SignIn()

@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Area.API.Attributes;
 using Area.API.Constants;
 using Area.API.Exceptions.Http;
 using Area.API.Extensions;
@@ -54,7 +55,7 @@ namespace Area.API.Controllers
                 Type = UserModel.UserType.Area
             };
 
-            var result = await _userRepository.AddUser(user, body.Password);
+            var result = await _userRepository.AddUserAsync(user, body.Password);
 
             if (!result.Succeeded)
                 throw new BadRequestHttpException(result.Errors.First().Description);
@@ -62,6 +63,7 @@ namespace Area.API.Controllers
         }
 
         [HttpGet(RouteConstants.Users.GetMyUser)]
+        [ValidateIpAddress]
         [SwaggerOperation(
             Summary = "Get the current user's information",
             Description =
@@ -78,6 +80,7 @@ namespace Area.API.Controllers
         }
 
         [HttpDelete(RouteConstants.Users.DeleteMyUser)]
+        [ValidateIpAddress]
         [SwaggerOperation(
             Summary = "Delete a user",
             Description = "## Delete a user's account"
@@ -98,6 +101,7 @@ namespace Area.API.Controllers
         }
 
         [HttpGet(RouteConstants.Users.GetMyDevices)]
+        [ValidateIpAddress]
         [SwaggerOperation(
             Summary = "Get a user's known devices",
             Description = "## Get a list of devices associated to the user's account"
@@ -116,6 +120,7 @@ namespace Area.API.Controllers
         }
 
         [HttpDelete(RouteConstants.Users.DeleteMyDevice)]
+        [ValidateIpAddress]
         [SwaggerOperation(
             Summary = "Forget a user's device",
             Description = "## Forget a user's device and revoke the access and refresh tokens created from this device"
