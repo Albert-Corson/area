@@ -59,7 +59,7 @@ namespace Area.API.Services
                     Email = email,
                     Type = type
                 };
-                identityResult = await _userRepository.AddUser(user);
+                identityResult = await _userRepository.AddUserAsync(user);
             } else if (user.Type != type) {
                 return new AuthenticationResult {
                     Error = "Username or email already in use"
@@ -67,13 +67,13 @@ namespace Area.API.Services
             }
 
             if (identityResult == null || identityResult.Succeeded) {
-                var claims = await _userRepository.GetUserClaims(user);
-                identityResult = await _userRepository.RemoveUserClaims(user, claims.Where(claim =>
+                var claims = await _userRepository.GetUserClaimsAsync(user);
+                identityResult = await _userRepository.RemoveUserClaimsAsync(user, claims.Where(claim =>
                     claim.Type == claimType));
 
                 if (identityResult.Succeeded) {
-                    code = GenerateToken(user.Id, DateTime.UtcNow.AddTicks(AuthConstants.CodeLifespanTicks), claimType);
-                    identityResult = await _userRepository.AddUserClaim(user, new Claim(claimType, code));
+                    code = GenerateToken(user.Id, DateTime.UtcNow.AddTicks(AuthConstants.CodeLifespanTicks), new List<Claim>(), claimType);
+                    identityResult = await _userRepository.AddUserClaimAsync(user, new Claim(claimType, code));
                 }
             }
 
@@ -101,11 +101,6 @@ namespace Area.API.Services
             return await GenerateTokenWithDevice(userId, DateTime.UtcNow.AddTicks(AuthConstants.RefreshTokenLifespanTicks), ipAddress, claims);
         }
 
-        public string GenerateToken(int userId, DateTime expiryTime, string issuer)
-        {
-            return GenerateToken(userId, expiryTime, new List<Claim>(), issuer);
-        }
-
         private string GenerateToken(int userId, DateTime expiryTime, ICollection<Claim> claims, string issuer)
         {
             claims.Add(new Claim(ClaimTypeUserId, userId.ToString()));
@@ -126,16 +121,19 @@ namespace Area.API.Services
         private async Task<string> GenerateTokenWithDevice(int userId, DateTime expiryTime, IPAddress ipAddress, List<Claim> claims)
         {
             var country = await _ipDataClient.GetCountry(ipAddress);
-            var device = new UserDeviceModel(_detection, userId, country);
+            var device = new UserDeviceModel(_detection, userId);
 
-            AssociateDeviceToUser(userId, device);
+            if (country != null)
+                device.Country = country;
 
-            claims.Add(new Claim(JwtRegisteredClaimNames.AuthTime, device.FirstUsed.ToString()));
+            var authTime = AssociateDeviceToUser(userId, device);
+
+            claims.Add(new Claim(JwtRegisteredClaimNames.AuthTime, authTime.ToString()));
 
             return GenerateToken(userId, expiryTime, claims, device.Id.ToString());
         }
 
-        private void AssociateDeviceToUser(int userId, UserDeviceModel device)
+        private long AssociateDeviceToUser(int userId, UserDeviceModel device)
         {
             var user = _userRepository.GetUser(userId, asNoTracking: false);
 
@@ -143,25 +141,31 @@ namespace Area.API.Services
 
             if (existingDevice != null) {
                 existingDevice.LastUsed = device.LastUsed;
-            } else {
-                user.Devices.Add(device);
+                return existingDevice.FirstUsed;
             }
+
+            user.Devices.Add(device);
+            return device.FirstUsed;
         }
 
-        public async Task<bool> ValidateDeviceUse(ClaimsPrincipal principal, UserModel user, IPAddress ipv4)
+        public async Task<bool> ValidateDeviceUse(ClaimsPrincipal principal, UserModel user, IPAddress? ipv4 = null)
         {
             if (!principal.TryGetAuthTime(out var authTime)
                 || !principal.TryGetDeviceId(out var registeredDeviceId))
                 return false;
 
             var registeredDevice = user.Devices.FirstOrDefault(model => model.Id == registeredDeviceId);
-            if (registeredDevice == null || registeredDevice.FirstUsed > authTime)
+            if (registeredDevice == null)
                 return false;
 
-            var currentCountry = await _ipDataClient.GetCountry(ipv4);
-            var currentDevice = new UserDeviceModel(_detection, user.Id, currentCountry);
+            var currentDevice = new UserDeviceModel(_detection, user.Id, authTime);
             if (registeredDeviceId != currentDevice.Id)
                 return false;
+            if (ipv4 != null) {
+                var currentCountry = await _ipDataClient.GetCountry(ipv4) ?? registeredDevice.Country;
+                if (registeredDevice.Country != currentCountry)
+                    return false;
+            }
 
             registeredDevice.LastUsed = DateTime.UtcNow.ToUnixEpochDate();
 

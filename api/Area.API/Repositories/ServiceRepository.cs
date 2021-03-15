@@ -7,28 +7,31 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Area.API.Repositories
 {
-    public class ServiceRepository : ARepository
+    public sealed class ServiceRepository
     {
-        public ServiceRepository(AreaDbContext database) : base(database)
-        { }
+        private readonly AreaDbContext _database;
+
+        public ServiceRepository(AreaDbContext database)
+        {
+            _database = database;
+        }
 
         public bool ServiceExists(int serviceId)
         {
             return GetService(serviceId) != null;
         }
 
-        public IEnumerable<ServiceModel> GetServices(bool includeWidgets = false, bool asNoTracking = true)
+        public IEnumerable<ServiceModel> GetServices(bool includeWidgets = false)
         {
-            var queryable = asNoTracking ? Database.Services.AsNoTracking() : Database.Services.AsQueryable();
-
             return includeWidgets
-                ? queryable.Include(model => model.Widgets)
-                : queryable;
+                ? _database.Services.AsNoTracking()
+                    .Include(model => model.Widgets)
+                : _database.Services.AsNoTracking();
         }
 
         public List<ServiceModel> GetServicesByUser(int userId)
         {
-            var services = Database.Set<UserWidgetModel>()
+            var services = _database.Set<UserWidgetModel>()
                 .AsNoTracking()
                 .Where(model => model.UserId == userId)
                 .Include(model => model.Widget)
@@ -44,11 +47,10 @@ namespace Area.API.Repositories
             return filteredServices;
         }
 
-        public ServiceModel? GetService(int serviceId, bool asNoTracking = true)
+        public ServiceModel? GetService(int serviceId)
         {
-            var queryable = asNoTracking ? Database.Services.AsNoTracking() : Database.Services.AsQueryable();
-
-            return queryable.FirstOrDefault(model => model.Id == serviceId);
+            return _database.Services.AsNoTracking()
+                .FirstOrDefault(model => model.Id == serviceId);
         }
     }
 }

@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Area.API.Attributes;
 using Area.API.Constants;
 using Area.API.Exceptions.Http;
 using Area.API.Extensions;
@@ -120,6 +121,7 @@ namespace Area.API.Controllers
         }
 
         [HttpDelete(RouteConstants.Widgets.UnsubscribeWidget)]
+        [ValidateIpAddress]
         [SwaggerOperation(
             Summary = "Unsubscribe the user to a widget",
             Description = "## Remove a widget to the user's subscriptions"
@@ -138,6 +140,7 @@ namespace Area.API.Controllers
         }
 
         [HttpPost(RouteConstants.Widgets.SubscribeWidget)]
+        [ValidateIpAddress]
         [SwaggerOperation(
             Summary = "Subscribe the user to a widget",
             Description = "## Add a widget to the user's subscriptions"

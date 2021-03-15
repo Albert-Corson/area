@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web;
+using Area.API.Attributes;
 using Area.API.Constants;
 using Area.API.Exceptions.Http;
 using Area.API.Extensions;
@@ -88,6 +89,7 @@ namespace Area.API.Controllers
         }
 
         [HttpGet(RouteConstants.Services.SignInService)]
+        [ValidateIpAddress]
         [SwaggerOperation(
             Summary = "Sign-in a user to a service",
             Description =
@@ -134,6 +136,7 @@ namespace Area.API.Controllers
         }
 
         [HttpDelete(RouteConstants.Services.SignOutService)]
+        [ValidateIpAddress]
         [SwaggerOperation(
             Summary = "Sign-out a user from a service",
             Description =

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Area.AcceptanceTests.Constants;
 using Area.AcceptanceTests.Models;

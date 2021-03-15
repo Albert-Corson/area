@@ -1,6 +1,7 @@
 using System.Net;
 using Area.API.Attributes;
 using Area.API.Constants;
+using Area.API.Filters;
 using Area.API.Installers;
 using Area.API.Middlewares;
 using Microsoft.AspNetCore.Builder;
@@ -46,6 +47,7 @@ namespace Area.API
             });
 
             services.AddMvc(options => {
+                options.Filters.Add<AuthorizationFilter>();
                 options.Filters.Add(new ValidateModelStateAttribute());
                 options.Filters.Add(new ProducesAttribute("application/json"));
                 options.Filters.Add(new SwaggerResponseAttribute((int) HttpStatusCode.OK));
