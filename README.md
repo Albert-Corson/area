@@ -62,7 +62,7 @@ cf: [issue #71](https://github.com/Albert-Corson/area/issues/71)
     - Imgur uploads: See your posts on Imgur
     - Imgur gallery search: Search for images on Imgur
 - Spotify 🎧
-    - Spotify favorite artists: Get a list of your favorite artists on Spotify
+    - Spotify favorite artists: Get a list of your favorite artists
     - Spotify favorite tracks: Get a list of your favorite tracks
     - Spotify history: Get a list of your recently played tracks
 - Microsoft 👨‍💼
@@ -70,7 +70,7 @@ cf: [issue #71](https://github.com/Albert-Corson/area/issues/71)
     - Microsoft Outlook unread mails: Get your most recent unread emails
     - Microsoft Todo list: View remaining tasks in your Todo list
 - Lorem Picsum 🖼️
-    - Lorem Picsum random Image: An inspiring image every time you load the widget
+    - Lorem Picsum random image: An inspiring image every time you load the widget
 - NewsAPI 📰
     - Top headlines: See the most recent top headlines
     - News search: Search for headlines from the past month

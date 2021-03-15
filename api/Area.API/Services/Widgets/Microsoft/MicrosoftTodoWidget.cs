@@ -22,7 +22,7 @@ namespace Area.API.Services.Widgets.Microsoft
         public int Id { get; } = 15;
 
         public async Task<IEnumerable<WidgetCallResponseItemModel>> CallWidgetApiAsync(
-            IEnumerable<ParamModel> widgetCallParams)
+            IEnumerable<ParamModel> _)
         {
             var taskLists = await Microsoft.Client!.Me.Todo.Lists
                 .Request()

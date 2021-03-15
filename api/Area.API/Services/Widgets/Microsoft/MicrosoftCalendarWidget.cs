@@ -22,7 +22,7 @@ namespace Area.API.Services.Widgets.Microsoft
         public int Id { get; } = 13;
 
         public async Task<IEnumerable<WidgetCallResponseItemModel>> CallWidgetApiAsync(
-            IEnumerable<ParamModel> widgetCallParams)
+            IEnumerable<ParamModel> _)
         {
             var today = DateTime.Today.ToUniversalTime();
             var options = new List<Option> {

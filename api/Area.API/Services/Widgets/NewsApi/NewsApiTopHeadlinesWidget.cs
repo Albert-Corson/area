@@ -28,7 +28,6 @@ namespace Area.API.Services.Widgets.NewsApi
         public async Task<IEnumerable<WidgetCallResponseItemModel>> CallWidgetApiAsync(
             IEnumerable<ParamModel> widgetCallParams)
         {
-
             var topHeadlinesRequest = new TopHeadlinesRequest {
                 Country = widgetCallParams.GetEnumValue<Countries>("country"),
                 Category = widgetCallParams.GetEnumValue<Categories>("category"),

@@ -4,7 +4,6 @@ using Area.API.Models.Table;
 using Area.API.Models.Table.ManyToMany;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Swan.Logging;
 
 namespace Area.API.DbContexts
 {
@@ -68,9 +67,7 @@ namespace Area.API.DbContexts
                 } catch (DbUpdateConcurrencyException ex) {
                     saveFailed = true;
                     ex.Entries.Single().Reload();
-                } catch (ObjectDisposedException ex) {
-                    ex.Log(typeof(ObjectDisposedException));
-                }
+                } catch (ObjectDisposedException) { }
             } while (saveFailed);
 
             return !saveFailed;

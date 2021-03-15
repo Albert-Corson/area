@@ -26,13 +26,13 @@ namespace Area.API.Services.Widgets.Imgur
 
             var items = new List<WidgetCallResponseItemModel>();
             foreach (var album in result) {
-                var imageTask = new AlbumEndpoint(Imgur.Client).GetAlbumImagesAsync(album.Id);
-                imageTask.Wait();
-                if (!imageTask.IsCompletedSuccessfully)
+                var imageLink = album.Images.FirstOrDefault()?.Link
+                    ?? (await new AlbumEndpoint(Imgur.Client).GetAlbumImagesAsync(album.Id))
+                    .FirstOrDefault()
+                    ?.Link;
+                if (imageLink == null) {
                     continue;
-                var imageLink = imageTask.Result.FirstOrDefault()?.Link;
-                if (imageLink == null)
-                    continue;
+                }
                 items.Add(new WidgetCallResponseItemModel {
                     Image = imageLink,
                     Header = album.Title,

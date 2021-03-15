@@ -1,4 +1,3 @@
-using System;
 using Microsoft.Graph;
 using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Annotations;
