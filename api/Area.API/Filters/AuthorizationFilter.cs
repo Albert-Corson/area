@@ -46,7 +46,7 @@ namespace Area.API.Filters
 
             var ipv4 = validateIpAddress ? context.HttpContext.Connection.RemoteIpAddress.MapToIPv4() : null;
             if (!_authService.ValidateDeviceUse(context.HttpContext.User, user, ipv4).Await())
-                throw new UnauthorizedHttpException("No device associated to this token");
+                throw new ForbiddenHttpException("You need to sign back in");
         }
 
         public void OnActionExecuted(ActionExecutedContext context)

@@ -50,7 +50,7 @@ namespace Area.AcceptanceTests.Tests
         {
             var response = await AreaApi.GetMyDevices();
 
-            AssertExtension.FailedApiResponse(response, HttpStatusCode.Unauthorized);
+            AssertExtension.FailedApiResponse(response, HttpStatusCode.Forbidden);
         }
 
         [Fact, Priority(4)]
@@ -60,7 +60,7 @@ namespace Area.AcceptanceTests.Tests
                 RefreshToken = AreaApi.Tokens!.RefreshToken
             });
 
-            AssertExtension.FailedApiResponse(response, HttpStatusCode.Unauthorized);
+            AssertExtension.FailedApiResponse(response, HttpStatusCode.BadRequest);
         }
 
         [Fact, Priority(5)]
@@ -80,7 +80,7 @@ namespace Area.AcceptanceTests.Tests
         {
             var response = await AreaApi.GetMyDevices();
 
-            AssertExtension.FailedApiResponse(response, HttpStatusCode.Unauthorized);
+            AssertExtension.FailedApiResponse(response, HttpStatusCode.Forbidden);
         }
 
         [Fact, Priority(7)]
@@ -90,7 +90,7 @@ namespace Area.AcceptanceTests.Tests
                 RefreshToken = AreaApi.Tokens!.RefreshToken
             });
 
-            AssertExtension.FailedApiResponse(response, HttpStatusCode.Unauthorized);
+            AssertExtension.FailedApiResponse(response, HttpStatusCode.BadRequest);
         }
         
         [Fact, Priority(8)]

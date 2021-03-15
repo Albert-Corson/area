@@ -52,6 +52,8 @@ namespace Area.API
                 options.Filters.Add(new ProducesAttribute("application/json"));
                 options.Filters.Add(new SwaggerResponseAttribute((int) HttpStatusCode.OK));
                 options.Filters.Add(new SwaggerResponseAttribute((int) HttpStatusCode.Unauthorized));
+                options.Filters.Add(new SwaggerResponseAttribute((int) HttpStatusCode.Forbidden,
+                    "The origin of the request has not been validated, you need to sign back in"));
                 options.Filters.Add(new SwaggerResponseAttribute((int) HttpStatusCode.BadRequest));
                 options.Filters.Add(new SwaggerResponseAttribute((int) HttpStatusCode.InternalServerError));
             });

@@ -106,7 +106,7 @@ namespace Area.API.Controllers
             var principal = await _authService.ValidateRefreshToken(body.RefreshToken, HttpContext.Connection.RemoteIpAddress.MapToIPv4());
 
             if (principal == null || !principal.TryGetUserId(out var userId))
-                throw new UnauthorizedHttpException();
+                throw new BadRequestHttpException();
 
             return new ResponseModel<UserTokenModel> {
                 Data = new UserTokenModel {
