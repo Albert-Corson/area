@@ -14,9 +14,9 @@ jobs:
       with:
         dotnet-version: 3.1.x
     - name: Start build docker services
-      run: docker-compose build
+      run: docker-compose build server
     - name: Start docker
-      run: docker-compose up -d
+      run: docker-compose up -d server db
     - name: Restore dependencies
       working-directory: api/Area.AcceptanceTests
       run: dotnet restore
