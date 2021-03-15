@@ -1,17 +1,17 @@
 <template>
-  <div class="services-list-item" :id="`service-${service.id}`">
+  <div class="services-info-list-item" :id="`service-${service.id}`">
     <h2>{{ service.name }}</h2>
-    <widgets-preview-list :widgets="widgets" />
+    <widgets-info-list :widgets="widgets" />
   </div>
 </template>
 
 <script>
-import WidgetsPreviewList from "@/components/widgets/WidgetsPreviewList"
+import WidgetsInfoList from "@/components/widgets/WidgetsInfoList"
 
 export default {
-  name: "services-list-item",
+  name: "services-info-list-item",
   components: {
-    WidgetsPreviewList
+    WidgetsInfoList
   },
   props: {
     service: Object,

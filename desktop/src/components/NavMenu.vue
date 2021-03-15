@@ -20,7 +20,7 @@ export default {
   name: "nav-menu",
   computed: {
     username() {
-      return this.$store.state.User.username.slice(
+      return this.$store.state.User.username?.slice(
         0,
         this.$store.state.User.username.indexOf("@")
       )

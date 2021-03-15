@@ -2,18 +2,18 @@
   <div class="services-home">
     <main>
       <h1>Services</h1>
-      <services-list :services="sortedServices" :widgets="widgets" />
+      <services-info-list :services="sortedServices" :widgets="widgets" />
     </main>
   </div>
 </template>
 
 <script>
-import ServicesList from "@/components/services/ServicesList"
+import ServicesInfoList from "@/components/services/ServicesInfoList"
 
 export default {
   name: "services-home",
   components: {
-    ServicesList
+    ServicesInfoList
   },
   created() {
     if (this.$store.state.Service.services.length === 0) {

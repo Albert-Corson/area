@@ -15,8 +15,9 @@ export default {
   },
   created() {
     if (this.$store.state.Service.myServices.length === 0) {
-      this.$store.dispatch("Service.listMyServices")
+      this.$store.dispatch("Service/listMyServices")
     }
+    this.$store.dispatch("Widget/listMyWidgets")
   },
   computed: {
     mySortedServices() {

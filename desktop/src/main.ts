@@ -5,9 +5,21 @@ import router from "./router"
 import store from "./store"
 import axios from "@/services/http"
 import vueSmoothScroll from "vue2-smooth-scroll"
+// @ts-ignore
+import VuePlyr from "vue-plyr"
 import { AxiosStatic } from "axios"
 
+import "vue-plyr/dist/vue-plyr.css"
+
 Vue.use(vueSmoothScroll)
+Vue.use(VuePlyr, {
+  plyr: {
+    controls: [],
+    muted: true,
+    resetOnEnd: true,
+    ratio: "1:1"
+  }
+})
 Vue.config.productionTip = false
 
 Vue.prototype.$axios = axios

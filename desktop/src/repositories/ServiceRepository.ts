@@ -24,9 +24,13 @@ export const ServiceRepository = {
     serviceId: number,
     payload: ExternalAuth
   ): Promise<Response<AuthenticationRedirect>> {
-    return $axios.get(
-      `/api/services/auth/${serviceId}?redirect_url=${payload.redirect_url}&state=${payload.state}`
-    )
+    let url = `/api/services/auth/${serviceId}?redirect_url=${encodeURIComponent(
+      payload.redirect_url
+    )}`
+    if (payload.state) {
+      url += `&state=${encodeURIComponent(payload.state)}`
+    }
+    return $axios.get(url)
   },
 
   signoutFromService(serviceId: number): Promise<Status> {

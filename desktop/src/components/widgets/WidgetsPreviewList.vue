@@ -1,6 +1,6 @@
 <template>
   <div class="widgets-list">
-    <widgets-list-item
+    <widgets-preview-list-item
       v-for="widget in widgets"
       :key="widget.id"
       :widget="widget"
@@ -9,12 +9,12 @@
 </template>
 
 <script>
-import WidgetsListItem from "./WidgetsListItem"
+import WidgetsPreviewListItem from "./WidgetsPreviewListItem"
 
 export default {
   name: "widgets-list",
   components: {
-    WidgetsListItem
+    WidgetsPreviewListItem
   },
   props: {
     widgets: Array

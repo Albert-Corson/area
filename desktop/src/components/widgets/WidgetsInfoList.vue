@@ -1,6 +1,6 @@
 <template>
-  <div class="widgets-list">
-    <widgets-list-item
+  <div class="widgets-info-list">
+    <widgets-info-list-item
       v-for="widget in widgets"
       :key="widget.id"
       :widget="widget"
@@ -9,12 +9,12 @@
 </template>
 
 <script>
-import WidgetsListItem from "./WidgetsListItem"
+import WidgetsInfoListItem from "./WidgetsInfoListItem"
 
 export default {
-  name: "widgets-list",
+  name: "widgets-info-list",
   components: {
-    WidgetsListItem
+    WidgetsInfoListItem
   },
   props: {
     widgets: Array
@@ -23,7 +23,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.widgets-list {
+.widgets-info-list {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
