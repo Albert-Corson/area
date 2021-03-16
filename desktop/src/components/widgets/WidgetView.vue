@@ -1,26 +1,40 @@
 <template>
-  <div
-    class="widget-view"
-    :class="{ clickable: isClickable }"
-    @click="redirect"
-    @mouseenter="unmuteVideo"
-    @mouseleave="muteVideo"
-  >
-    <div class="legend">
-      {{ widget.header }}
-    </div>
-    <div class="media-preview">
+  <div>
+    <div class="refresh-button" @click="refresh">🗘</div>
+    <div
+      class="widget-view"
+      :class="{ clickable: isClickable }"
+      @click="redirect"
+      @mouseenter="unmuteVideo"
+      @mouseleave="muteVideo"
+    >
+      <div class="legend" v-if="widget.header">
+        {{ widget.header }}
+      </div>
       <div
-        v-if="isImage"
-        class="image-preview"
-        :style="`background-image: url(${widget.image})`"
-      ></div>
-      <div v-else-if="isVideo" class="video-preview">
-        <vue-plyr ref="plyr">
-          <video crossorigin>
-            <source :src="widget.image" type="video/mp4" />
-          </video>
-        </vue-plyr>
+        class="media-preview"
+        :class="{ noheader: !Boolean(widget.header) }"
+        v-if="isMedia"
+      >
+        <div
+          v-if="isImage"
+          class="image-preview"
+          :style="`background-image: url(${widget.image})`"
+        ></div>
+        <div v-else-if="isVideo" class="video-preview">
+          <vue-plyr ref="plyr">
+            <video crossorigin>
+              <source :src="widget.image" type="video/mp4" />
+            </video>
+          </vue-plyr>
+        </div>
+      </div>
+      <div
+        v-else
+        class="content-preview"
+        :class="{ noheader: !Boolean(widget.header) }"
+      >
+        {{ widget.content }}
       </div>
     </div>
   </div>
@@ -41,6 +55,9 @@ export default {
     isImage() {
       return this.widget.image && this.isVideo === false
     },
+    isMedia() {
+      return this.isVideo || this.isImage
+    },
     isClickable() {
       return Boolean(this.widget.link)
     }
@@ -55,6 +72,9 @@ export default {
     }
   },
   methods: {
+    refresh() {
+      this.$emit("refresh")
+    },
     redirect() {
       if (this.widget.link) {
         window.open(this.widget.link)
@@ -91,6 +111,32 @@ export default {
 <style lang="scss" scoped>
 @import "@/styles/vars";
 
+.refresh-button {
+  user-select: none;
+  cursor: pointer;
+  position: absolute;
+  transform: translate(25%, -25%);
+  top: 0;
+  right: 0;
+  background-color: rgb(55, 55, 55);
+  opacity: 0.4;
+  z-index: 3;
+  color: $bgColor;
+  height: 2rem;
+  width: 2rem;
+  border-radius: 90px;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+  line-height: 0;
+  transition: opacity 0.2s ease-out;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
 .widget-view {
   &.clickable {
     cursor: pointer;
@@ -110,26 +156,39 @@ export default {
     overflow: hidden;
     white-space: nowrap;
     border-radius: $borderRadius $borderRadius 0 0;
-    background: $bgColor;
-    box-shadow: 0 1em 0 0 $bgColor;
+    color: $bgColor;
+    background: $textColor;
+    box-shadow: 0 1em 0 0 $textColor;
   }
 
-  .media-preview {
-    position: absolute;
+  .media-preview:not(.noheader),
+  .content-preview:not(.noheader) {
     height: calc(100% - 2.5em);
+  }
+
+  .media-preview,
+  .content-preview {
+    border-radius: $borderRadius;
+    z-index: 2;
+    background-color: $bgColor;
+    position: absolute;
+    padding: 0.5rem;
     width: 100%;
+    height: 100%;
     left: 0;
     bottom: 0;
+    display: flex;
+    align-content: center;
+    align-items: center;
+    overflow: hidden;
   }
 
   .image-preview,
   .video-preview {
-    z-index: 2;
     height: 100%;
     width: 100%;
     left: 0;
     top: 0;
-    border-radius: $borderRadius;
     position: absolute;
     overflow: hidden;
   }

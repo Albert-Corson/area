@@ -15,7 +15,7 @@
     </div>
     <slider v-else :items="data.items" transition="fade" class="widget">
       <template v-slot="{ item, visible }">
-        <widget-view :widget="item" :visible="visible" />
+        <widget-view :widget="item" :visible="visible" @refresh="refresh" />
       </template>
     </slider>
   </div>

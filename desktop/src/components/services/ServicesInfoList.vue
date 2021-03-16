@@ -5,6 +5,7 @@
       :key="service.id"
       :service="service"
       :widgets="serviceWidgets(service)"
+      v-on="$listeners"
     />
   </div>
 </template>

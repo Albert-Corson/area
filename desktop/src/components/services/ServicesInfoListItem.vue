@@ -1,7 +1,7 @@
 <template>
   <div class="services-info-list-item" :id="`service-${service.id}`">
     <h2>{{ service.name }}</h2>
-    <widgets-info-list :widgets="widgets" />
+    <widgets-info-list :widgets="widgets" v-on="$listeners" />
   </div>
 </template>
 

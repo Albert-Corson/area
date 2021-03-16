@@ -4,6 +4,7 @@
       v-for="widget in widgets"
       :key="widget.id"
       :widget="widget"
+      v-on="$listeners"
     />
   </div>
 </template>

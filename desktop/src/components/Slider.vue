@@ -1,6 +1,6 @@
 <template>
   <div class="slider" @mouseenter="stopSliding" @mouseleave="resumeSliding">
-    <div class="counter">
+    <div class="counter" v-if="size > 0">
       <div class="prev" @click="slidePrev">&lt;</div>
       {{ index + 1 }} / {{ size + 1 }}
       <div class="next" @click="slideNext">&gt;</div>
@@ -32,7 +32,7 @@ export default {
   data() {
     return {
       index: 0,
-      isSliding: true
+      isSliding: false
     }
   },
   computed: {
@@ -52,7 +52,7 @@ export default {
       this.isSliding = false
     },
     resumeSliding() {
-      this.isSliding = true
+      /* this.isSliding = true */
     },
     isSelected(index) {
       return index === this.index

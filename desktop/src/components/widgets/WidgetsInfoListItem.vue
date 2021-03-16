@@ -1,5 +1,5 @@
 <template>
-  <div class="widgets-info-list-item">
+  <div class="widgets-info-list-item" @click="select">
     <span class="widget-name">{{ widget.name }}</span>
     <span class="widget-description">{{ widget.description }}</span>
   </div>
@@ -10,6 +10,11 @@ export default {
   name: "widgets-info-list-item",
   props: {
     widget: Object
+  },
+  methods: {
+    select() {
+      this.$emit("select", this.widget.id)
+    }
   }
 }
 </script>

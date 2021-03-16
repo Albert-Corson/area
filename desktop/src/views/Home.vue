@@ -9,7 +9,11 @@
     ></button>
     <popup title="Select widgets to add to your dashboard" ref="popup">
       <template v-slot:body>
-        <services-info-list :services="sortedServices" :widgets="widgets" />
+        <services-info-list
+          :services="sortedServices"
+          :widgets="widgets"
+          @select="addWidget"
+        />
       </template>
     </popup>
   </div>
@@ -60,6 +64,11 @@ export default {
     },
     openWidgetsList() {
       this.$refs.popup.open()
+    },
+    addWidget(widgetId) {
+      this.$store
+        .dispatch("Widget/subscribeToWidget", widgetId)
+        .then(() => this.$router.go(0))
     }
   }
 }
