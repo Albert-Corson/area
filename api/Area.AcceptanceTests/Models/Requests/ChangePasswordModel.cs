@@ -14,13 +14,13 @@ namespace Area.AcceptanceTests.Models.Requests
             ResetDevices = rhs.ResetDevices;
         }
 
-        [JsonProperty("old_password")]
+        [JsonProperty("old_password", Required = Required.Always)]
         public string Old { get; set; } = null!;
 
-        [JsonProperty("new_password")]
+        [JsonProperty("new_password", Required = Required.Always)]
         public string New { get; set; } = null!;
 
-        [JsonProperty("reset_devices")]
+        [JsonProperty("reset_devices", Required = Required.DisallowNull)]
         public bool ResetDevices { get; set; } = false;
     }
 }
