@@ -64,6 +64,18 @@ namespace Area.API.Repositories
             return !_userManager.CheckPasswordAsync(user, passwd).Await() ? null : user;
         }
 
+        public UserModel? GetUserFromIdentifier(string identifier, string? password = null, bool asNoTracking = true)
+        {
+            var queryable = asNoTracking ? _database.Users.AsNoTracking() : _database.Users.AsQueryable();
+
+            var user = queryable.FirstOrDefault(model => model.UserName == identifier || model.Email == identifier);
+
+            if (user == null || password == null)
+                return user;
+
+            return !_userManager.CheckPasswordAsync(user, password).Await() ? null : user;
+        }
+
         public Task<IdentityResult> AddUserAsync(UserModel user, string password)
         {
             return _userManager.CreateAsync(user, password);

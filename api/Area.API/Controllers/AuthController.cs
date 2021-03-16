@@ -77,8 +77,7 @@ namespace Area.API.Controllers
             SignInModel body
         )
         {
-            var user = _userRepository.GetUser(email: body.Identifier, passwd: body.Password)
-                ?? _userRepository.GetUser(username: body.Identifier, passwd: body.Password);
+            var user = _userRepository.GetUserFromIdentifier(body.Identifier, body.Password);
             if (user == null)
                 throw new UnauthorizedHttpException("Invalid identifier/password");
 
