@@ -27,7 +27,7 @@ export default {
   },
   computed: {
     size() {
-      return this.$props.items?.length - 1
+      return this.$props.items ? this.$props.items.length - 1 : 0
     }
   },
   props: {

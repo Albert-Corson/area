@@ -1,26 +1,29 @@
 <template>
-  <div
-    v-if="widget.requires_auth"
-    class="widget locked"
-    @click="signinToService"
-  >
-    <p>
-      This widget is locked
-    </p>
-    <p>
-      Please click this card to sign in to the associated service
-    </p>
+  <div>
+    <span class="widget-name">{{ widget.name }}</span>
+    <div
+      v-if="widget.requires_auth"
+      class="widget locked"
+      @click="signinToService"
+    >
+      <p>
+        This widget is locked
+      </p>
+      <p>
+        Please click this card to sign in to the associated service
+      </p>
+    </div>
+    <slider v-else :items="data.items" class="widget">
+      <template v-slot="{ item, visible }">
+        <widget-view :widget="item" :visible="visible" />
+      </template>
+    </slider>
   </div>
-  <slider v-else :items="data.items" class="widget">
-    <template v-slot="{ item, visible }">
-      <widget-view :widget="item" :visible="visible" />
-    </template>
-  </slider>
 </template>
 
 <script>
 import WidgetView from "@/components/widgets/WidgetView"
-import Slider from "@/components/widgets/Slider"
+import Slider from "@/components/Slider"
 
 export default {
   name: "widget",
@@ -80,14 +83,15 @@ export default {
   border-radius: $borderRadius;
   box-shadow: $upShadow, $downShadow;
 
-  /* opacity: 1; */
-  /* transition: 0.15s opacity ease-in-out; */
-  /* &:hover { */
-  /*   opacity: 0.6; */
-  /* } */
   position: relative;
 
   &.locked {
+    opacity: 1;
+    transition: 0.15s opacity ease-in-out;
+    &:hover {
+      opacity: 0.6;
+    }
+
     &::after {
       content: "";
       position: absolute;

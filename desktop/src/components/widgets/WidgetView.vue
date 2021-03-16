@@ -25,19 +25,6 @@ export default {
     widget: Object,
     visible: Boolean
   },
-  watch: {
-    visible(isVisible) {
-      const player = this.$refs.plyr?.player
-      if (!player) {
-        return
-      }
-      if (isVisible) {
-        player.play()
-      } else {
-        player.stop()
-      }
-    }
-  },
   computed: {
     isVideo() {
       const extension = this.widget.image?.split(".").pop()
@@ -47,13 +34,32 @@ export default {
       return this.widget.image && this.isVideo === false
     }
   },
-  mounted() {
-    const player = this.$refs.plyr?.player
-    if (!player) {
-      return
+  watch: {
+    visible(isVisible) {
+      if (isVisible) {
+        this.playVideo()
+      } else {
+        this.stopVideo()
+      }
     }
+  },
+  mounted() {
     if (this.visible) {
-      player.play()
+      this.playVideo()
+    }
+  },
+  methods: {
+    playVideo() {
+      const player = this.$refs.plyr?.player
+      if (player) {
+        player.play()
+      }
+    },
+    stopVideo() {
+      const player = this.$refs.plyr?.player
+      if (player) {
+        player.stop()
+      }
     }
   }
 }

@@ -5,8 +5,8 @@ body {
   margin: 0;
   font-family: Dosis, Arial, Helvetica, sans-serif;
   font-weight: 400;
-  color: #2c3e50;
-  background: #e7e7e7;
+  color: $textColor;
+  background: $bgColor;
   text-align: center;
 
   * {
