@@ -50,8 +50,6 @@ docker-compose build && docker-compose up
 
 ### How to launch the Mobile app? 📲
 
-**TODO**  
-
 ```bash
 # install dependencies
 cd mobile && yarn
