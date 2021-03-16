@@ -51,8 +51,14 @@ docker-compose build && docker-compose up
 ### How to launch the Mobile app? 📲
 
 **TODO**  
-🚧 To be defined by [Louis Viot](https://github.com/lviot) 🚧  
-cf: [issue #71](https://github.com/Albert-Corson/area/issues/71)
+
+```bash
+# install dependencies
+cd mobile && yarn
+# start expo
+yarn start
+# in expo shell, press i to start ios emulator, or a for android
+```
 
 ## Services and Widgets implemented
 
