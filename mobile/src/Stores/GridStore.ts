@@ -6,6 +6,7 @@ import {Size} from '../Types/Block'
 import {Widget} from '../Types/Widgets'
 import {RootStore} from './RootStore'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import {block} from 'react-native-reanimated'
 
 configure({enforceActions: 'always'})
 
@@ -159,6 +160,9 @@ export class GridStore {
   };
 
   public isBlockMutable = (blockIndex: number): boolean => {
+    console.log('index: ', blockIndex)
+    console.log('length: ', this._blocks.length)
+    console.log('blocks: ', this._blocks.map(block => ({name: block.name,})))
     if (blockIndex < 0 || blockIndex >= this._blocks.length) return false
 
     return this._blocks[blockIndex] && this._blocks[blockIndex].unactive ? !this._blocks[blockIndex].unactive : this._modifying
@@ -175,8 +179,8 @@ export class GridStore {
   public isTimePickerVisible = (): boolean => this._timePickerVisible === true
 
   private saveGridProfile = (): void => {
-    console.log(this._rootStore.user?.user?.id)
-    if (this._rootStore.user?.user?.id == null) return
+    console.log(this._rootStore.user?.user)
+    if (this._rootStore.user?.user?.id == null) return 
 
     const profile: Record<number, Record<string, any>> = {}
 
@@ -192,7 +196,6 @@ export class GridStore {
 
   @action
   private applyProfile = async () => {
-    console.log(this._rootStore.user?.user?.id)
     if (this._rootStore.user?.user?.id == null) return
 
     try {
@@ -201,20 +204,22 @@ export class GridStore {
       if (profile) {
         const object = JSON.parse(profile)
 
-        const copy = this._blocks.map((block) => {
-          return {
-            ...block,
-            size: object[block.id] ? object[block.id].size : Size.normal,
-          }
+        runInAction(() => {
+          const copy = [...this._blocks].map((block) => {
+            return {
+              ...block,
+              size: object[block.id] ? object[block.id].size : Size.normal,
+            }
+          })
+
+          const final: Widget[] = []
+
+          Object.keys(object).map((key, index) => {
+            final[object[key].index] = copy[index]
+          })
+
+          this._blocks = final
         })
-
-        const final: Widget[] = []
-
-        Object.keys(object).map((key, index) => {
-          final[object[key].index] = copy[index]
-        })
-
-        this._blocks = final
       }
     } catch (e) {
       console.warn(e)
