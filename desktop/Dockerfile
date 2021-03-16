@@ -4,6 +4,4 @@ WORKDIR /app
 
 EXPOSE 8080
 
-RUN npm install
-RUN npm rebuild node-sass
-CMD npm run serve
+CMD yarn install && npm rebuild node-sass && yarn serve
