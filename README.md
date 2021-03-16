@@ -34,6 +34,7 @@ The application is similar to [Netvibes](https://www.netvibes.com/fr)
 ## Prerequisites
 
 - Docker 🐳
+- Android SDK / Xcode
 
 ## How to launch the project? 📲
 
@@ -56,6 +57,7 @@ cd mobile && yarn
 # start expo
 yarn start
 # in expo shell, press i to start ios emulator, or a for android
+# you can run the app directly on your phone thanks to the expo app
 ```
 
 ## Services and Widgets implemented
