@@ -111,7 +111,7 @@ export default {
   .popup {
     left: 50%;
     transform: translateX(-50%);
-    min-width: 500px;
+    min-width: 70vw;
     max-width: 95vw;
     max-height: 80vh;
     overflow-y: auto;
@@ -122,6 +122,7 @@ export default {
     border-radius: $borderRadius;
     transition-duration: 300ms;
     transition-property: opacity, top;
+    overflow: hidden;
 
     .popup-header,
     .popup-body,
@@ -131,6 +132,11 @@ export default {
       &:not(:last-child) {
         border-bottom: 1px solid #ccc;
       }
+    }
+
+    .popup-body {
+      max-height: 70vh;
+      overflow: auto;
     }
 
     .popup-header {

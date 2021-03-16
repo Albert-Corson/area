@@ -13,9 +13,17 @@
         Please click this card to sign in to the associated service
       </p>
     </div>
+    <div v-else-if="data.items && data.items.length === 0" class="widget">
+      Nothing to be displayed
+    </div>
     <slider v-else :items="data.items" transition="fade" class="widget">
       <template v-slot="{ item, visible }">
-        <widget-view :widget="item" :visible="visible" @refresh="refresh" />
+        <widget-view
+          :widget="item"
+          :visible="visible"
+          @refresh="refresh"
+          @unsubscribe="unsubscribe"
+        />
       </template>
     </slider>
   </div>
@@ -50,6 +58,11 @@ export default {
     }
   },
   methods: {
+    unsubscribe() {
+      this.$store
+        .dispatch("Widget/unsubscribeFromWidget", this.widget.id)
+        .then(() => this.$router.go(0))
+    },
     refresh() {
       this.$store
         .dispatch("Widget/callWidget", this.widget.id)

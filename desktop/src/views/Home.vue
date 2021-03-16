@@ -11,7 +11,7 @@
       <template v-slot:body>
         <services-info-list
           :services="sortedServices"
-          :widgets="widgets"
+          :widgets="missingWidgets"
           @select="addWidget"
         />
       </template>
@@ -55,6 +55,13 @@ export default {
     },
     widgets() {
       return this.$store.state.Widget.widgets
+    },
+    missingWidgets() {
+      return this.widgets.filter(needle => {
+        return !this.myWidgets.find(widget => {
+          return widget.id === needle.id
+        })
+      })
     }
   },
   methods: {
@@ -77,25 +84,29 @@ export default {
 <style lang="scss" scoped>
 @import "@/styles/vars";
 
-.add-widgets-button {
-  font-family: sans-serif;
-  font-size: 4rem;
-  font-weight: 500;
-  color: white;
-  position: fixed;
-  right: 2rem;
-  bottom: 2rem;
-  padding: 2.25rem;
-  background: $accentColor;
-  border-radius: 90px;
-  box-shadow: $upShadow, $downShadow;
+.home {
+  padding-top: 1em;
 
-  &::after {
-    content: "+";
-    position: absolute;
-    left: 50%;
-    top: 50;
-    transform: translate(-50%, -50%);
+  .add-widgets-button {
+    font-family: sans-serif;
+    font-size: 4rem;
+    font-weight: 500;
+    color: white;
+    position: fixed;
+    right: 2rem;
+    bottom: 2rem;
+    padding: 2.25rem;
+    background: $accentColor;
+    border-radius: 90px;
+    box-shadow: $upShadow, $downShadow;
+
+    &::after {
+      content: "+";
+      position: absolute;
+      left: 50%;
+      top: 50;
+      transform: translate(-50%, -50%);
+    }
   }
 }
 </style>

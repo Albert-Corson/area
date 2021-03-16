@@ -1,11 +1,12 @@
 <template>
   <div class="services-list">
-    <services-list-item
-      v-for="service in services"
-      :key="service.id"
-      :service="service"
-      :widgets="serviceWidgets(service)"
-    />
+    <div v-for="(service, index) in services" :key="index">
+      <services-list-item
+        v-if="serviceWidgets(service).length > 0"
+        :service="service"
+        :widgets="serviceWidgets(service)"
+      />
+    </div>
   </div>
 </template>
 

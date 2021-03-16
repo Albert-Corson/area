@@ -1,12 +1,8 @@
 <template>
   <div class="nav-menu">
-    <div class="profile">{{ username }}</div>
     <div class="links">
       <router-link to="/">
         Dashboard
-      </router-link>
-      <router-link to="/services">
-        Services
       </router-link>
       <router-link to="/auth/signout">
         Sign out
@@ -33,8 +29,10 @@ export default {
 @import "@/styles/vars";
 
 .nav-menu {
-  width: 20vw;
-  height: 100vh;
+  z-index: 99;
+  line-height: 4em;
+  width: 100%;
+  height: 4em;
   position: fixed;
   background: #414956;
   left: 0;
@@ -52,16 +50,7 @@ export default {
   .links > * {
     color: inherit;
     text-decoration: none;
-    display: block;
-    padding: 1rem;
-    transition: all 0.2s ease-out;
-    box-shadow: inset 0px 0 0 0 #4886d8;
-
-    &.selected,
-    &:hover {
-      background-color: #3b414d;
-      box-shadow: inset 6px 0 0 0 #4886d8;
-    }
+    padding: 1em;
   }
 }
 </style>

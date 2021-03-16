@@ -39,6 +39,6 @@ export default {
 @import "@/styles/transitions.scss";
 
 .site {
-  margin-left: 20vw;
+  margin-top: 4em;
 }
 </style>
