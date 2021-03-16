@@ -90,7 +90,7 @@ namespace Area.API.Controllers
             };
         }
 
-        [HttpPost(RouteConstants.Auth.ChangePassword)]
+        [HttpPatch(RouteConstants.Auth.ChangePassword)]
         [SwaggerOperation(
             Summary = "Change password",
             Description = "## Allow the user to change his password"
