@@ -7,13 +7,9 @@
       @click="openWidgetsList"
       title="Add widgets"
     ></button>
-    <popup title="Greetings" ref="popup">
+    <popup title="Select widgets to add to your dashboard" ref="popup">
       <template v-slot:body>
-        AAAAAAAAAAAAAAAAAAAH
-      </template>
-      <template v-slot:footer>
-        <button class="primary">Primary</button>
-        <button class="secondary">Secondary</button>
+        <services-info-list :services="sortedServices" :widgets="widgets" />
       </template>
     </popup>
   </div>
@@ -22,15 +18,23 @@
 <script>
 import ServicesList from "@/components/services/ServicesList"
 import Popup from "@/components/Popup"
+import ServicesInfoList from "@/components/services/ServicesInfoList"
 
 export default {
   name: "home",
   components: {
     ServicesList,
-    Popup
+    Popup,
+    ServicesInfoList
   },
   created() {
     this.refresh()
+    if (this.$store.state.Service.services.length === 0) {
+      this.$store.dispatch("Service/listServices")
+    }
+    if (this.$store.state.Widget.widgets.length === 0) {
+      this.$store.dispatch("Widget/listWidgets")
+    }
   },
   computed: {
     mySortedServices() {
@@ -38,6 +42,15 @@ export default {
     },
     myWidgets() {
       return this.$store.state.Widget.myWidgets
+    },
+    sortedServices() {
+      return this.$store.getters["Service/sortedServices"]
+    },
+    myServices() {
+      return this.$store.state.Service.myServices
+    },
+    widgets() {
+      return this.$store.state.Widget.widgets
     }
   },
   methods: {

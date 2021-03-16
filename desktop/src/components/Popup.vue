@@ -7,7 +7,7 @@
   >
     <div class="popup">
       <div class="popup-header">
-        <p class="popup-title" v-if="title">Greetings</p>
+        <p class="popup-title" v-if="title">{{ title }}</p>
         <button class="popup-close" @click="close">×</button>
       </div>
       <div class="popup-body" v-if="hasBody">
@@ -24,8 +24,7 @@
 export default {
   name: "popup",
   props: {
-    title: String,
-    actions: Array
+    title: String
   },
   data() {
     return {
