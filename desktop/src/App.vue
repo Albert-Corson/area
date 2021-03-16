@@ -36,16 +36,7 @@ export default {
 
 <style lang="scss">
 @import "@/styles/defaults.scss";
-
-.fade-enter,
-.fade-leave-to {
-  opacity: 0;
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.2s ease;
-}
+@import "@/styles/transitions.scss";
 
 .site {
   margin-left: 20vw;

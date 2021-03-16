@@ -13,7 +13,7 @@
         Please click this card to sign in to the associated service
       </p>
     </div>
-    <slider v-else :items="data.items" class="widget">
+    <slider v-else :items="data.items" transition="fade" class="widget">
       <template v-slot="{ item, visible }">
         <widget-view :widget="item" :visible="visible" />
       </template>
@@ -78,7 +78,6 @@ export default {
   height: 15rem;
   width: 15rem;
   margin: 1rem;
-  cursor: pointer;
 
   border-radius: $borderRadius;
   box-shadow: $upShadow, $downShadow;
@@ -91,6 +90,7 @@ export default {
     &:hover {
       opacity: 0.6;
     }
+    cursor: pointer;
 
     &::after {
       content: "";

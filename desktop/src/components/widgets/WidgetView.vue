@@ -1,19 +1,27 @@
 <template>
-  <div class="widget-view">
-    <div class="header">
+  <div
+    class="widget-view"
+    :class="{ clickable: isClickable }"
+    @click="redirect"
+    @mouseenter="unmuteVideo"
+    @mouseleave="muteVideo"
+  >
+    <div class="legend">
       {{ widget.header }}
     </div>
-    <div
-      v-if="isImage"
-      class="image-preview"
-      :style="`background-image: url(${widget.image})`"
-    ></div>
-    <div v-else-if="isVideo" class="video-preview">
-      <vue-plyr ref="plyr">
-        <video crossorigin>
-          <source :src="widget.image" type="video/mp4" />
-        </video>
-      </vue-plyr>
+    <div class="media-preview">
+      <div
+        v-if="isImage"
+        class="image-preview"
+        :style="`background-image: url(${widget.image})`"
+      ></div>
+      <div v-else-if="isVideo" class="video-preview">
+        <vue-plyr ref="plyr">
+          <video crossorigin>
+            <source :src="widget.image" type="video/mp4" />
+          </video>
+        </vue-plyr>
+      </div>
     </div>
   </div>
 </template>
@@ -32,6 +40,9 @@ export default {
     },
     isImage() {
       return this.widget.image && this.isVideo === false
+    },
+    isClickable() {
+      return Boolean(this.widget.link)
     }
   },
   watch: {
@@ -43,12 +54,24 @@ export default {
       }
     }
   },
-  mounted() {
-    if (this.visible) {
-      this.playVideo()
-    }
-  },
   methods: {
+    redirect() {
+      if (this.widget.link) {
+        window.open(this.widget.link)
+      }
+    },
+    muteVideo() {
+      const player = this.$refs.plyr?.player
+      if (player) {
+        player.volume = 0
+      }
+    },
+    unmuteVideo() {
+      const player = this.$refs.plyr?.player
+      if (player) {
+        player.volume = 1
+      }
+    },
     playVideo() {
       const player = this.$refs.plyr?.player
       if (player) {
@@ -69,13 +92,39 @@ export default {
 @import "@/styles/vars";
 
 .widget-view {
-  .header {
-    z-index: 2;
+  &.clickable {
+    cursor: pointer;
+  }
+
+  .legend {
+    z-index: 1;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 2.5em;
+    padding: 0 0.5rem;
+    width: 100%;
+    line-height: 2.5em;
+    display: block;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    border-radius: $borderRadius $borderRadius 0 0;
+    background: $bgColor;
+    box-shadow: 0 1em 0 0 $bgColor;
+  }
+
+  .media-preview {
+    position: absolute;
+    height: calc(100% - 2.5em);
+    width: 100%;
+    left: 0;
+    bottom: 0;
   }
 
   .image-preview,
   .video-preview {
-    z-index: 1;
+    z-index: 2;
     height: 100%;
     width: 100%;
     left: 0;

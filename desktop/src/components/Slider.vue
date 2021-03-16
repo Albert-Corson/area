@@ -1,28 +1,38 @@
 <template>
-  <div class="slider">
+  <div class="slider" @mouseenter="stopSliding" @mouseleave="resumeSliding">
     <div class="counter">
       <div class="prev" @click="slidePrev">&lt;</div>
       {{ index + 1 }} / {{ size + 1 }}
       <div class="next" @click="slideNext">&gt;</div>
     </div>
-    <div
-      v-for="(item, index) in items"
-      :key="index"
-      class="slider-item"
-      v-show="isSelected(index)"
-      ref="sliderItem"
-    >
-      <slot :item="item" v-bind="$attrs" :visible="isSelected(index)" />
-    </div>
+    <transition-group :name="transition" mode="out-in">
+      <div
+        v-for="(item, index) in items"
+        :key="index"
+        class="slider-item"
+        v-show="isSelected(index)"
+        ref="sliderItem"
+      >
+        <slot :item="item" v-bind="$attrs" :visible="isSelected(index)" />
+      </div>
+    </transition-group>
   </div>
 </template>
 
 <script>
 export default {
   name: "slider",
+  props: {
+    items: Array,
+    transition: {
+      type: String,
+      default: "none"
+    }
+  },
   data() {
     return {
-      index: 0
+      index: 0,
+      isSliding: true
     }
   },
   computed: {
@@ -30,10 +40,20 @@ export default {
       return this.$props.items ? this.$props.items.length - 1 : 0
     }
   },
-  props: {
-    items: Array
+  mounted() {
+    window.setInterval(() => {
+      if (this.isSliding) {
+        this.slideNext()
+      }
+    }, 5 * 1000)
   },
   methods: {
+    stopSliding() {
+      this.isSliding = false
+    },
+    resumeSliding() {
+      this.isSliding = true
+    },
     isSelected(index) {
       return index === this.index
     },
@@ -55,6 +75,7 @@ export default {
 
 <style lang="scss" scoped>
 @import "@/styles/vars";
+@import "@/styles/transitions";
 
 .slider {
   position: relative;
@@ -76,6 +97,7 @@ export default {
     &,
     .next,
     .prev {
+      z-index: 3;
       position: absolute;
       background-color: rgb(55, 55, 55);
       border-radius: $borderRadius;
