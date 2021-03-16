@@ -12,6 +12,8 @@ namespace Area.API.Constants
         {
             private const string Root = Api + "/auth";
 
+            public const string ResetPassword = Root + "/password";
+            public const string ChangePassword = Root + "/password";
             public const string SignIn = Root + "/token";
             public const string RefreshAccessToken = Root + "/refresh";
             public const string ExchangeCode = Root + "/code";

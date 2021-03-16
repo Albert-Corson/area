@@ -31,6 +31,9 @@ namespace Area.AcceptanceTests
         public async Task<ResponseHolder<ResponseModel<TokensModel>>> SignIn(SignInModel form) =>
             await Client.PostAsync<ResponseModel<TokensModel>>(RouteConstants.Auth.SignIn, form);
 
+        public async Task<ResponseHolder<StatusModel>> ChangePassword(ChangePasswordModel form) =>
+            await Client.PatchAsync<StatusModel>(RouteConstants.Auth.ChangePassword, form);
+
         public async Task<ResponseHolder<StatusModel>> DeleteMyUser() =>
             await Client.DeleteAsync(RouteConstants.Users.DeleteMyUser);
 
