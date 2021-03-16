@@ -32,7 +32,7 @@ export default {
   data() {
     return {
       index: 0,
-      isSliding: false
+      isSliding: true
     }
   },
   computed: {
@@ -52,7 +52,7 @@ export default {
       this.isSliding = false
     },
     resumeSliding() {
-      /* this.isSliding = true */
+      this.isSliding = true
     },
     isSelected(index) {
       return index === this.index
