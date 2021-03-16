@@ -6,6 +6,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using Area.API.Attributes;
 using Area.API.Constants;
 using Area.API.Exceptions.Http;
 using Area.API.Extensions;
@@ -90,6 +91,7 @@ namespace Area.API.Controllers
         }
 
         [HttpPatch(RouteConstants.Auth.ChangePassword)]
+        [ValidateIpAddress]
         [SwaggerOperation(
             Summary = "Change password",
             Description = "## Allow the user to change his password"
