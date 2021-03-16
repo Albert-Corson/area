@@ -41,7 +41,7 @@ namespace Area.AcceptanceTests.Tests.Password
         {
             var response = await AreaApi.GetMyUser();
 
-            AssertExtension.FailedApiResponse(response, HttpStatusCode.Unauthorized);
+            AssertExtension.FailedApiResponse(response, HttpStatusCode.Forbidden);
         }
 
         [Fact, Priority(3)]

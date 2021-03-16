@@ -92,11 +92,12 @@ namespace Area.API.Controllers
 
         [HttpPost(RouteConstants.Auth.ChangePassword)]
         [SwaggerOperation(
-            Summary = "Change pawword",
-            Description = "## Allow the user to change his passowrd"
+            Summary = "Change password",
+            Description = "## Allow the user to change his password"
         )]
         public async Task<StatusModel> ChangePassword(
             [FromBody]
+            [SwaggerRequestBody("The user's new and old password", Required = true)]
             ChangePasswordModel body
         )
         {

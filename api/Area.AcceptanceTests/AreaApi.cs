@@ -10,7 +10,7 @@ namespace Area.AcceptanceTests
 {
     public class AreaApi
     {
-        public readonly AreaHttpClient Client = new AreaHttpClient("http://localhost:5000");
+        public readonly AreaHttpClient Client = new AreaHttpClient("http://localhost:8080");
 
         private TokensModel? _tokens;
 
@@ -32,7 +32,7 @@ namespace Area.AcceptanceTests
             await Client.PostAsync<ResponseModel<TokensModel>>(RouteConstants.Auth.SignIn, form);
 
         public async Task<ResponseHolder<StatusModel>> ChangePassword(ChangePasswordModel form) =>
-            await Client.PostAsync<StatusModel, ChangePasswordModel>(RouteConstants.Auth.ChangePassword, form);
+            await Client.PostAsync<StatusModel>(RouteConstants.Auth.ChangePassword, form);
 
         public async Task<ResponseHolder<StatusModel>> DeleteMyUser() =>
             await Client.DeleteAsync(RouteConstants.Users.DeleteMyUser);

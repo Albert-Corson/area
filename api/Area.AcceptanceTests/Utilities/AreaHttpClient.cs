@@ -79,5 +79,49 @@ namespace Area.AcceptanceTests.Utilities
 
         public async Task<ResponseHolder<StatusModel>> DeleteAsync(string endpoint) =>
             await DeleteAsync<StatusModel>(endpoint);
+
+        public async Task<ResponseHolder<TResponse>> PutAsync<TResponse>(string endpoint, object form)
+            where TResponse : StatusModel
+        {
+            var serializedForm = JsonConvert.SerializeObject(form);
+            var response = await _client.PutAsync(endpoint,
+                new StringContent(serializedForm, Encoding.UTF8, "application/json"));
+
+            return new ResponseHolder<TResponse> {
+                Content = JsonConvert.DeserializeObject<TResponse>(await response.Content.ReadAsStringAsync()),
+                Status = response.StatusCode
+            };
+        }
+
+        public async Task<ResponseHolder<TResponse>> PutAsync<TResponse>(string endpoint)
+            where TResponse : StatusModel => await PutAsync<TResponse>(endpoint, new object());
+
+        public async Task<ResponseHolder<StatusModel>> PutAsync(string endpoint) =>
+            await PutAsync<StatusModel>(endpoint, new object());
+
+        public async Task<ResponseHolder<StatusModel>> PutAsync(string endpoint, object form) =>
+            await PutAsync<StatusModel>(endpoint, form);
+
+        public async Task<ResponseHolder<TResponse>> PatchAsync<TResponse>(string endpoint, object form)
+            where TResponse : StatusModel
+        {
+            var serializedForm = JsonConvert.SerializeObject(form);
+            var response = await _client.PatchAsync(endpoint,
+                new StringContent(serializedForm, Encoding.UTF8, "application/json"));
+
+            return new ResponseHolder<TResponse> {
+                Content = JsonConvert.DeserializeObject<TResponse>(await response.Content.ReadAsStringAsync()),
+                Status = response.StatusCode
+            };
+        }
+
+        public async Task<ResponseHolder<TResponse>> PatchAsync<TResponse>(string endpoint)
+            where TResponse : StatusModel => await PatchAsync<TResponse>(endpoint, new object());
+
+        public async Task<ResponseHolder<StatusModel>> PatchAsync(string endpoint) =>
+            await PatchAsync<StatusModel>(endpoint, new object());
+
+        public async Task<ResponseHolder<StatusModel>> PatchAsync(string endpoint, object form) =>
+            await PatchAsync<StatusModel>(endpoint, form);
     }
 }
