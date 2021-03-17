@@ -10,6 +10,7 @@ namespace Area.API.Constants
         public const long AccessTokenLifespanTicks = TimeSpan.TicksPerDay * 2;
         public const long AccessTokenLifespanSeconds = AccessTokenLifespanTicks / TimeSpan.TicksPerSecond;
         public const long RefreshTokenLifespanTicks = TimeSpan.TicksPerDay * 14;
+        public const long ResetPasswordTokenLifespanTicks = TimeSpan.TicksPerDay;
 
         public static class IpData
         {
@@ -67,6 +68,17 @@ namespace Area.API.Constants
         {
             public const string Base = nameof(CatApi);
             public const string Key = Base + ":" + nameof(Key);
+        }
+
+        public static class SendGrid
+        {
+            public const string Base = nameof(SendGrid);
+            public const string Key = Base + ":" + nameof(Key);
+            public const string SenderMail = Base + ":" + nameof(SenderMail);
+            public const string SenderName = Base + ":" + nameof(SenderName);
+
+            public const string Templates = Base + ":" + nameof(Templates);
+            public const string TemplateResetPassword = Templates + ":" + "ResetPassword";
         }
 
     }

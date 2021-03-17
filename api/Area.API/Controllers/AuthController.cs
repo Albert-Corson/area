@@ -7,11 +7,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using Area.API.Attributes;
+using Area.API.Class;
 using Area.API.Constants;
 using Area.API.Exceptions.Http;
 using Area.API.Extensions;
 using Area.API.Models;
 using Area.API.Models.Request;
+using Area.API.Models.Request.Password;
 using Area.API.Models.Table;
 using Area.API.Repositories;
 using Area.API.Services;
@@ -41,8 +43,9 @@ namespace Area.API.Controllers
         private readonly FacebookClient _facebook;
         private readonly GoogleClient _google;
         private readonly IConfidentialClientApplication _microsoft;
+        private readonly IEmailSender _emailSender;
 
-        public AuthController(AuthService authService, UserRepository userRepository, IConfiguration configuration)
+        public AuthController(AuthService authService, IEmailSender emailSender, UserRepository userRepository, IConfiguration configuration)
         {
             _authService = authService;
             _userRepository = userRepository;
@@ -64,6 +67,7 @@ namespace Area.API.Controllers
                 .WithClientSecret(configuration[AuthConstants.Microsoft.ClientSecret])
                 .WithRedirectUri(configuration[AuthConstants.Microsoft.AuthRedirectUri])
                 .Build();
+            _emailSender = emailSender;
         }
 
         [HttpPost(RouteConstants.Auth.SignIn)]
@@ -115,6 +119,31 @@ namespace Area.API.Controllers
             {
                 _userRepository.RemoveDevices(user.Id);
             }
+            return new StatusModel(true);
+        }
+
+        [HttpPost(RouteConstants.Auth.ResetPassword)]
+        [AllowAnonymous]
+        [SwaggerOperation(
+            Summary = "Reset the password (step 1)",
+            Description = "## Ask for a email to reset the password of an user"
+        )]
+        public async Task<StatusModel> ResetPasswordRequest(
+            [FromBody] [SwaggerRequestBody("The redirect_url redirects the front to it's reset password form. The identifier can be the username or the email of the user.", Required = true)]
+            ResetPasswordRequestModel body
+        )
+        {
+            var user = _userRepository.GetUserFromIdentifier(body.Identifier);
+
+            if (user == null)
+            {
+                return new StatusModel(true);
+            }
+
+            var token = _authService.GenerateResetPasswordToken(user.Id);
+            var data = new ResetPasswordMailDataModel() { Url = body.RedirectUrl + "/token=" + token };
+            await _emailSender.SendResetPasswordEmailAsync(user.Email, "ZiArea Reset Password Request", data);
+
             return new StatusModel(true);
         }
 

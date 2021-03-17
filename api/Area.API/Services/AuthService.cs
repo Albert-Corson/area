@@ -101,6 +101,16 @@ namespace Area.API.Services
             return await GenerateTokenWithDevice(userId, DateTime.UtcNow.AddTicks(AuthConstants.RefreshTokenLifespanTicks), ipAddress, claims);
         }
 
+        public string GenerateResetPasswordToken(int userId)
+        {
+            var claims = new List<Claim>(new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Typ, "reset_token")
+            });
+
+            return GenerateToken(userId, DateTime.UtcNow.AddTicks(AuthConstants.ResetPasswordTokenLifespanTicks), claims, "");
+        }
+
         private string GenerateToken(int userId, DateTime expiryTime, ICollection<Claim> claims, string issuer)
         {
             claims.Add(new Claim(ClaimTypeUserId, userId.ToString()));

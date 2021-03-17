@@ -28,6 +28,7 @@ namespace Area.API
             services.AddAreaAuthentication(_configuration)
                 .AddAreaDbContext(_configuration)
                 .AddAreaSwagger()
+                .AddAreaSendGrid(_configuration)
                 .AddAreaRepositories()
                 .AddAreaWidgets()
                 .AddAreaServices();
