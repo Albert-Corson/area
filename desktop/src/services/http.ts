@@ -1,4 +1,4 @@
-import axios, { AxiosResponse, AxiosRequestConfig } from "axios"
+import axios, { AxiosResponse, AxiosRequestConfig, AxiosError } from "axios"
 
 let accessToken = window.localStorage.getItem("access_token")
 
@@ -21,8 +21,15 @@ $axios.interceptors.request.use((config: AxiosRequestConfig) => {
   }
   return config
 })
-$axios.interceptors.response.use((response: AxiosResponse) => {
-  return response.data
-})
+$axios.interceptors.response.use(
+  (response: AxiosResponse) => {
+    return response.data
+  },
+  (error: AxiosError) => {
+    if (error.response?.status === 403) {
+      window.location.href = `${window.location.origin}/auth/signout`
+    }
+  }
+)
 
 export default $axios
