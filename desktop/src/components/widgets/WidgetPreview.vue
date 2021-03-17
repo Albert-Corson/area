@@ -14,6 +14,12 @@
           @click="refresh"
           title="Update widget feed"
         ></div>
+        <div
+          class="settings-button"
+          v-if="hasParams"
+          @click="openSettings"
+          title="Edit widget parameters"
+        ></div>
       </div>
       <div v-if="widget.requires_auth" @click="signinToService">
         <p>
@@ -37,18 +43,30 @@
         </template>
       </slider>
     </div>
+    <popup v-if="hasParams" title="Widget parameters" ref="settings">
+      <template v-slot:body>
+        <widget-params-form
+          @submit.prevent="callWithParams"
+          :params="widget.params"
+        />
+      </template>
+    </popup>
   </div>
 </template>
 
 <script>
 import WidgetView from "@/components/widgets/WidgetView"
+import Popup from "@/components/Popup"
 import Slider from "@/components/Slider"
+import WidgetParamsForm from "@/components/widgets/WidgetParamsForm"
 
 export default {
   name: "widget",
   components: {
     WidgetView,
-    Slider
+    Slider,
+    Popup,
+    WidgetParamsForm
   },
   props: {
     widget: Object
@@ -56,6 +74,11 @@ export default {
   data() {
     return {
       data: {}
+    }
+  },
+  computed: {
+    hasParams() {
+      return this.widget.params.length > 0
     }
   },
   created() {
@@ -76,8 +99,23 @@ export default {
     },
     refresh() {
       this.$store
-        .dispatch("Widget/callWidget", this.widget.id)
+        .dispatch("Widget/callWidget", { widgetId: this.widget.id })
         .then(({ data }) => (this.data = data))
+    },
+    callWithParams({ target }) {
+      this.$refs.settings.close()
+      const payload = { ...Object.fromEntries(new FormData(target).entries()) }
+      this.$store
+        .dispatch("Widget/callWidget", {
+          widgetId: this.widget.id,
+          params: payload
+        })
+        .then(({ data }) => (this.data = data))
+    },
+    openSettings() {
+      if (this.$refs.settings) {
+        this.$refs.settings.open()
+      }
     },
     signinToService() {
       this.$store
@@ -125,7 +163,8 @@ export default {
   }
 
   .refresh-button,
-  .unsubscribe-button {
+  .unsubscribe-button,
+  .settings-button {
     cursor: pointer;
     position: absolute;
     background-color: rgb(55, 55, 55);
@@ -159,6 +198,14 @@ export default {
     top: 0;
     left: 0;
     background-image: url("../../assets/cross.svg");
+  }
+
+  .settings-button {
+    background-size: 60%;
+    transform: translate(-75%, 75%);
+    top: 0;
+    left: 100%;
+    background-image: url("../../assets/settings.svg");
   }
 
   & > * {

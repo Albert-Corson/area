@@ -29,10 +29,11 @@ export default {
   },
   computed: {
     username() {
-      return this.$store.state.User.username?.slice(
-        0,
-        this.$store.state.User.username.indexOf("@")
-      )
+      const username = this.$store.state.User.username
+      if (username && username.indexOf("@") === -1) {
+        return username
+      }
+      return username?.slice(0, username.indexOf("@"))
     }
   }
 }

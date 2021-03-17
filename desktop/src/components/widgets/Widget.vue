@@ -23,7 +23,7 @@ export default {
   created() {
     if (this.widget.requires_auth === false) {
       this.$store
-        .dispatch("Widget/callWidget", this.widget.id)
+        .dispatch("Widget/callWidget", { widgetId: this.widget.id })
         .then(({ data }) => (this.data = data))
     }
   },

@@ -46,7 +46,7 @@ const WidgetModule = {
       return response
     },
 
-    async callWidget(_, widgetId, params = {}) {
+    async callWidget(_, { widgetId, params }) {
       return await WidgetRepository.callWidget(widgetId, params)
     },
 
