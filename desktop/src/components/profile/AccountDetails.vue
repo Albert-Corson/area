@@ -73,7 +73,10 @@ export default {
         return
       }
       delete payload.confirm_new_password
-      this.$store.dispatch("Auth/changePassword", payload)
+      this.$store
+        .dispatch("Auth/changePassword", payload)
+        .then(() => this.$router.go(0))
+        .catch(() => alert("Failed to change password"))
     }
   }
 }
