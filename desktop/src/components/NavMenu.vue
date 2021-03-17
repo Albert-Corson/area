@@ -1,13 +1,17 @@
 <template>
   <div class="nav-menu">
     <div class="nav-left">
-      <h2 class="nav-button">AREA</h2>
+      <h2 class="nav-button">
+        <router-link to="/">
+          AREA
+        </router-link>
+      </h2>
     </div>
     <div class="nav-center"></div>
     <div class="nav-right">
-      <div class="nav-button">
+      <router-link to="/users/me" class="nav-button">
         {{ username }}
-      </div>
+      </router-link>
       <router-link to="/auth/signout" class="nav-button">
         Sign out
       </router-link>
@@ -56,23 +60,27 @@ export default {
     flex: 1;
   }
 
+  .nav-item,
   .nav-button {
-    cursor: pointer;
     display: inline-block;
     height: 4em;
     margin: 0;
     padding: 0 2rem;
 
-    box-shadow: inset 0 0 0 0 $accentColor;
-    transition: box-shadow 0.2s ease-out;
-    &:hover {
-      box-shadow: inset 0 -8px 0 0 $accentColor;
-    }
-
     &,
     * {
       color: inherit;
       text-decoration: none;
+    }
+  }
+
+  .nav-button {
+    cursor: pointer;
+
+    box-shadow: inset 0 0 0 0 $accentColor;
+    transition: box-shadow 0.2s ease-out;
+    &:hover {
+      box-shadow: inset 0 -8px 0 0 $accentColor;
     }
   }
 }

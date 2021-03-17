@@ -12,11 +12,11 @@ export const UserRepository = {
     return $axios.get("/api/users/me")
   },
 
-  signup(payload: Register): Promise<Response<Status>> {
+  signup(payload: Register): Promise<Status> {
     return $axios.post("/api/users", payload)
   },
 
-  deleteAccount(): Promise<Response> {
+  deleteAccount(): Promise<Status> {
     return $axios.delete("/api/users/me")
   },
 
@@ -24,7 +24,7 @@ export const UserRepository = {
     return $axios.get("/api/users/me/devices")
   },
 
-  forgetDevice(deviceId: number): Promise<Response> {
+  forgetDevice(deviceId: number): Promise<Status> {
     return $axios.delete(`/api/users/me/devices/${deviceId}`)
   }
 }

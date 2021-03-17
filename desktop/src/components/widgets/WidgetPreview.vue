@@ -153,6 +153,7 @@ export default {
   }
 
   .unsubscribe-button {
+    background-color: rgb(242, 116, 97);
     background-size: 40%;
     transform: translate(-25%, -25%);
     top: 0;

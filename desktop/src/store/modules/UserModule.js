@@ -51,6 +51,10 @@ const UserModule = {
         )
       }
       return response
+    },
+
+    async forgetDevice(_, deviceId) {
+      return await UserRepository.forgetDevice(deviceId)
     }
   }
 }

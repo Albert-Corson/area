@@ -50,22 +50,22 @@ const routes: Array<RouteConfig> = [
     }
   },
   {
-    path: "/services",
-    name: "Services list",
-    meta: { requiresAuth: true },
-    component: () => {
-      return import(
-        /* webpackChunkName: "callback" */ "../views/services/Home.vue"
-      )
-    }
-  },
-  {
     path: "/services/callback",
     name: "Services auth callback",
     meta: { requiresAuth: true },
     component: () => {
       return import(
         /* webpackChunkName: "callback" */ "../views/services/Callback.vue"
+      )
+    }
+  },
+  {
+    path: "/users/me",
+    name: "User profile",
+    meta: { requiresAuth: true },
+    component: () => {
+      return import(
+        /* webpackChunkName: "callback" */ "../views/users/Profile.vue"
       )
     }
   },

@@ -97,6 +97,7 @@ export default {
     bottom: 2rem;
     padding: 2.25rem;
     background: $accentColor;
+    background: linear-gradient(to right, #d564a8, #5469ca);
     border-radius: 90px;
     box-shadow: $upShadow, $downShadow;
 
