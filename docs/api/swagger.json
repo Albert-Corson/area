@@ -65,6 +65,70 @@
         }
       }
     },
+    "/api/auth/password": {
+      "patch": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Change password",
+        "description": "## Allow the user to change his password",
+        "requestBody": {
+          "description": "The user's new and old password",
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePassword"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePassword"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePassword"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePassword"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Status"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
     "/api/auth/refresh": {
       "post": {
         "tags": [
@@ -1188,6 +1252,45 @@
         },
         "additionalProperties": false
       },
+      "ChangePassword": {
+        "required": [
+          "new_password",
+          "old_password"
+        ],
+        "type": "object",
+        "properties": {
+          "old_password": {
+            "type": "string",
+            "description": "The old password."
+          },
+          "new_password": {
+            "type": "string",
+            "description": "The new password."
+          },
+          "reset_devices": {
+            "type": "boolean",
+            "description": "A boolean to reset the connection of all the other devices connected to this account."
+          }
+        },
+        "additionalProperties": false
+      },
+      "Status": {
+        "required": [
+          "successful"
+        ],
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Message describing the error if any"
+          },
+          "successful": {
+            "type": "boolean",
+            "description": "State of the request (failed or successful)"
+          }
+        },
+        "additionalProperties": false
+      },
       "RefreshToken": {
         "required": [
           "refresh_token"
@@ -1395,23 +1498,6 @@
           "data": {
             "$ref": "#/components/schemas/Service"
           },
-          "error": {
-            "type": "string",
-            "description": "Message describing the error if any"
-          },
-          "successful": {
-            "type": "boolean",
-            "description": "State of the request (failed or successful)"
-          }
-        },
-        "additionalProperties": false
-      },
-      "Status": {
-        "required": [
-          "successful"
-        ],
-        "type": "object",
-        "properties": {
           "error": {
             "type": "string",
             "description": "Message describing the error if any"
@@ -1793,7 +1879,6 @@
       "SpotifyTrack": {
         "required": [
           "artists",
-          "popularity",
           "preview"
         ],
         "type": "object",
@@ -1809,11 +1894,6 @@
               "type": "string"
             },
             "description": "The artists who collaborated on making the track"
-          },
-          "popularity": {
-            "type": "integer",
-            "description": "The popularity rank of the song",
-            "format": "int32"
           },
           "preview": {
             "type": "string",
