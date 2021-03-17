@@ -1,11 +1,12 @@
 import {
   action, configure, makeAutoObservable, observable, runInAction,
 } from 'mobx'
-import { block } from 'react-native-reanimated'
 import Grid from '../Tools/Grid'
 import {Size} from '../Types/Block'
 import {Widget} from '../Types/Widgets'
 import {RootStore} from './RootStore'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import {block} from 'react-native-reanimated'
 
 configure({enforceActions: 'always'})
 
@@ -69,7 +70,7 @@ export class GridStore {
 
   @action
   private parseWidgetDisplayItems = (item: Widget): any => {
-    if (item.params?.items?.length) {
+    if (item?.params?.items?.length) {
       const max = item.params?.items?.length
 
       if (item.currentParam == undefined) {
@@ -89,6 +90,8 @@ export class GridStore {
   @action
   public setBlocks = (arr: Widget[]): void => {
     this._blocks = arr.map(block => ({...block, currentParam: undefined}))
+
+    // this.applyProfile()
   };
   
   @action
@@ -100,6 +103,8 @@ export class GridStore {
     copy[index] = {...old, ...widget, currentParam: undefined}
 
     this._blocks = copy
+
+    // this.applyProfile()
   };
 
   private addEmptyBlock = (blocks: Widget[], index: number): void => {
@@ -117,6 +122,8 @@ export class GridStore {
 
     blocks[index1] = blocks[index2]
     blocks[index2] = tmp
+
+    // this.saveGridProfile()
   };
 
   @action
@@ -142,6 +149,8 @@ export class GridStore {
     }
 
     this._blocks = copy
+
+    // this.saveGridProfile()
   };
 
   public getBlockSize = (blockIndex: number): number => {
@@ -151,9 +160,12 @@ export class GridStore {
   };
 
   public isBlockMutable = (blockIndex: number): boolean => {
+    console.log('index: ', blockIndex)
+    console.log('length: ', this._blocks.length)
+    console.log('blocks: ', this._blocks.map(block => ({name: block.name,})))
     if (blockIndex < 0 || blockIndex >= this._blocks.length) return false
 
-    return this._blocks[blockIndex].unactive ? !this._blocks[blockIndex].unactive : this._modifying
+    return this._blocks[blockIndex] && this._blocks[blockIndex].unactive ? !this._blocks[blockIndex].unactive : this._modifying
   };
 
   public openTimePicker = (): void => {
@@ -165,4 +177,52 @@ export class GridStore {
   }
 
   public isTimePickerVisible = (): boolean => this._timePickerVisible === true
+
+  private saveGridProfile = (): void => {
+    console.log(this._rootStore.user?.user)
+    if (this._rootStore.user?.user?.id == null) return 
+
+    const profile: Record<number, Record<string, any>> = {}
+
+    this._blocks.map((block, index) => {
+      profile[block.id] = {
+        size: block.size || Size.normal,
+        index,
+      }
+    })
+
+    AsyncStorage.setItem(`@profile_${this._rootStore.user.user.id || -1}`, JSON.stringify(profile))
+  }
+
+  @action
+  private applyProfile = async () => {
+    if (this._rootStore.user?.user?.id == null) return
+
+    try {
+      const profile = await AsyncStorage.getItem(`@profile_${this._rootStore.user.user.id}`)
+
+      if (profile) {
+        const object = JSON.parse(profile)
+
+        runInAction(() => {
+          const copy = [...this._blocks].map((block) => {
+            return {
+              ...block,
+              size: object[block.id] ? object[block.id].size : Size.normal,
+            }
+          })
+
+          const final: Widget[] = []
+
+          Object.keys(object).map((key, index) => {
+            final[object[key].index] = copy[index]
+          })
+
+          this._blocks = final
+        })
+      }
+    } catch (e) {
+      console.warn(e)
+    }
+  }
 }

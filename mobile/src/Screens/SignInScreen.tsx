@@ -18,7 +18,6 @@ import {RootStackParamList} from '../Navigation/StackNavigator'
 import RootStoreContext from '../Stores/RootStore'
 import FlatButton from '../Components/FlatButton'
 import {FontAwesome, FontAwesome5} from '@expo/vector-icons'
-import {WebViewNavigation} from 'react-native-webview'
 import absFetch from '../Tools/Network'
 
 interface Props {
@@ -96,7 +95,7 @@ const SignInScreen = observer(({navigation}: Props): JSX.Element => {
                 if (await store.auth.signIn()) {
                   navigation.reset({
                     index: 0,
-                    routes: [{ name: 'Dashboard' }],
+                    routes: [{name: 'Dashboard'}],
                   })
                 }
               }}
