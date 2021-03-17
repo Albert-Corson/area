@@ -113,6 +113,7 @@ namespace Area.API.Services
             ICollection<UserParamModel> userParams, IQueryCollection queryParams)
         {
             List<ParamModel> callParams = new List<ParamModel>();
+            List<UserParamModel> newParams = new List<UserParamModel>();
 
             foreach (var (key, value) in queryParams) {
                 var userParam = userParams.FirstOrDefault(model => model.Param.WidgetId == widgetId && model.Param.Name == key);
@@ -127,15 +128,18 @@ namespace Area.API.Services
                     userParam.Value = value;
                     callParams.Add(new ParamModel(userParam));
                 } else if (defaultParam != null) {
-                    userParams.Add(new UserParamModel {
+                    newParams.Add(new UserParamModel {
                         Value = value,
-                        ParamId = defaultParam.Id,
+                        ParamId = defaultParam.Id
                     });
                     callParams.Add(new ParamModel(defaultParam) {
                         Value = value
                     });
                 }
             }
+
+            foreach (var param in newParams)
+                userParams.Add(param);
 
             callParams.AddRange(from userParam in userParams
                 where userParam.Param?.WidgetId == widgetId && !queryParams.ContainsKey(userParam.Param.Name)
