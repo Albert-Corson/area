@@ -1,0 +1,41 @@
+@import "@/styles/vars";
+
+* {
+  outline: none;
+}
+
+button {
+  font-family: Dosis;
+  font-weight: 300;
+  font-size: 20px;
+  color: #545454;
+  opacity: 1;
+  transition: 0.15s opacity ease-in-out;
+  padding: 0.6rem 3rem;
+  border-radius: $borderRadius;
+  border: none;
+  background: none;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.6;
+  }
+
+  &.gradient {
+    font-weight: 600;
+    color: white;
+    background: $gradient;
+    box-shadow: $upShadow,
+      $downShadow;
+  }
+}
+
+input {
+  background: none;
+  border: none;
+  box-shadow: inset $upShadow,
+    inset $downShadow;
+  font-size: 17px;
+  padding: 15px 20px;
+  border-radius: $borderRadius;
+}
