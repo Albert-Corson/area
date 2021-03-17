@@ -1,31 +1,42 @@
 <template>
-  <div>
+  <div class="widget-preview">
     <span class="widget-name">{{ widget.name }}</span>
-    <div
-      v-if="widget.requires_auth"
-      class="widget locked"
-      @click="signinToService"
-    >
-      <p>
-        This widget is locked
-      </p>
-      <p>
-        Please click this card to sign in to the associated service
-      </p>
+    <div class="widget" :class="{ locked: widget.requires_auth }">
+      <div class="controls">
+        <div
+          class="unsubscribe-button"
+          @click="unsubscribe"
+          title="Remove this widget from your dashboard"
+        ></div>
+        <div
+          class="refresh-button"
+          v-if="!widget.requires_auth"
+          @click="refresh"
+          title="Update widget feed"
+        ></div>
+      </div>
+      <div v-if="widget.requires_auth" @click="signinToService">
+        <p>
+          This widget is locked
+        </p>
+        <p>
+          Please click this card to sign in to the associated service
+        </p>
+      </div>
+      <div v-else-if="data.items && data.items.length === 0">
+        Nothing to be displayed
+      </div>
+      <slider v-else :items="data.items" transition="fade">
+        <template v-slot="{ item, visible }">
+          <widget-view
+            :widget="item"
+            :visible="visible"
+            @refresh="refresh"
+            @unsubscribe="unsubscribe"
+          />
+        </template>
+      </slider>
     </div>
-    <div v-else-if="data.items && data.items.length === 0" class="widget">
-      Nothing to be displayed
-    </div>
-    <slider v-else :items="data.items" transition="fade" class="widget">
-      <template v-slot="{ item, visible }">
-        <widget-view
-          :widget="item"
-          :visible="visible"
-          @refresh="refresh"
-          @unsubscribe="unsubscribe"
-        />
-      </template>
-    </slider>
   </div>
 </template>
 
@@ -81,13 +92,6 @@ export default {
 @import "@/styles/vars.scss";
 
 .widget {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-
-  padding: 1rem;
   height: 15rem;
   width: 15rem;
   margin: 1rem;
@@ -97,7 +101,7 @@ export default {
 
   position: relative;
 
-  &.locked {
+  &.locked > div:not(.controls) {
     opacity: 1;
     transition: 0.15s opacity ease-in-out;
     &:hover {
@@ -118,6 +122,58 @@ export default {
       background-position: center;
       opacity: 0.12;
     }
+  }
+
+  .refresh-button,
+  .unsubscribe-button {
+    cursor: pointer;
+    position: absolute;
+    background-color: rgb(55, 55, 55);
+    opacity: 0.4;
+    z-index: 3;
+    color: $bgColor;
+    height: 2rem;
+    width: 2rem;
+    border-radius: 90px;
+    transition: opacity 0.2s ease-out;
+    background-repeat: no-repeat;
+    background-position: center;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  .refresh-button {
+    background-size: 60%;
+    transform: translate(-75%, -25%);
+    top: 0;
+    left: 100%;
+    background-image: url("../../assets/refresh.svg");
+  }
+
+  .unsubscribe-button {
+    background-size: 40%;
+    transform: translate(-25%, -25%);
+    top: 0;
+    left: 0;
+    background-image: url("../../assets/cross.svg");
+  }
+
+  & > * {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+
+    padding: 1rem;
   }
 }
 </style>

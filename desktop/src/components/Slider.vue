@@ -1,6 +1,6 @@
 <template>
   <div class="slider" @mouseenter="stopSliding" @mouseleave="resumeSliding">
-    <div class="counter" v-if="size > 0">
+    <div class="controls counter" v-if="size > 0">
       <div class="prev" @click="slidePrev">&lt;</div>
       {{ index + 1 }} / {{ size + 1 }}
       <div class="next" @click="slideNext">&gt;</div>
@@ -8,7 +8,7 @@
     <transition-group :name="transition" mode="out-in">
       <div
         v-for="(item, index) in items"
-        :key="index"
+        :key="`item-${index}`"
         class="slider-item"
         v-show="isSelected(index)"
         ref="sliderItem"
@@ -109,13 +109,13 @@ export default {
     .prev {
       top: 0;
       left: 0;
-      transform: translateX(-100%);
+      transform: translateX(-110%);
     }
 
     .next {
       top: 0;
       right: 0;
-      transform: translateX(100%);
+      transform: translateX(110%);
     }
   }
 }

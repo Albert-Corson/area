@@ -1,7 +1,5 @@
 <template>
   <div>
-    <div class="unsubscribe-button" @click="unsubscribe"></div>
-    <div class="refresh-button" @click="refresh"></div>
     <div
       class="widget-view"
       :class="{ clickable: isClickable }"
@@ -73,12 +71,6 @@ export default {
     }
   },
   methods: {
-    unsubscribe() {
-      this.$emit("unsubscribe")
-    },
-    refresh() {
-      this.$emit("refresh")
-    },
     redirect() {
       if (this.widget.link) {
         window.open(this.widget.link)
@@ -114,42 +106,6 @@ export default {
 
 <style lang="scss" scoped>
 @import "@/styles/vars";
-
-.refresh-button,
-.unsubscribe-button {
-  cursor: pointer;
-  position: absolute;
-  background-color: rgb(55, 55, 55);
-  opacity: 0.4;
-  z-index: 3;
-  color: $bgColor;
-  height: 2rem;
-  width: 2rem;
-  border-radius: 90px;
-  transition: opacity 0.2s ease-out;
-  background-repeat: no-repeat;
-  background-position: center;
-
-  &:hover {
-    opacity: 1;
-  }
-}
-
-.refresh-button {
-  background-size: 60%;
-  transform: translate(25%, -25%);
-  top: 0;
-  right: 0;
-  background-image: url("../../assets/refresh.svg");
-}
-
-.unsubscribe-button {
-  background-size: 40%;
-  transform: translate(-25%, -25%);
-  top: 0;
-  left: 0;
-  background-image: url("../../assets/cross.svg");
-}
 
 .widget-view {
   &.clickable {
