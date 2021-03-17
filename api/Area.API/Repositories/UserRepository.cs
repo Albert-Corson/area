@@ -121,6 +121,13 @@ namespace Area.API.Repositories
             return await _userManager.ChangePasswordAsync(user, changePassword.Old, changePassword.New);
         }
 
+        public async Task<IdentityResult> ResetPassword(UserModel user, string password)
+        {
+            var res = await _userManager.RemovePasswordAsync(user);
+
+            return await _userManager.AddPasswordAsync(user, password);
+        }
+
         public bool AddWidgetSubscription(int userId, int widgetId)
         {
             var dbSet = _database.Set<UserWidgetModel>();

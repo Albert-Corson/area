@@ -147,6 +147,39 @@ namespace Area.API.Controllers
             return new StatusModel(true);
         }
 
+        [HttpPut(RouteConstants.Auth.ResetPassword)]
+        [AllowAnonymous]
+        [SwaggerOperation(
+            Summary = "Reset the password (step 2)",
+            Description = "## Reset the password thanks to the token send by mail"
+        )]
+        public async Task<StatusModel> ResetPassword(
+            [FromBody] [SwaggerRequestBody("password is the new one of the user. The token is the one send by mail to the user.")]
+            ResetPasswordModel body
+        )
+        {
+            if (!_authService.TryGetPrincipalFromToken(body.Token, out var principal)
+                || !principal.TryGetUserId(out var userId))
+            {
+                throw new BadRequestHttpException();
+            }
+
+            var user = _userRepository.GetUser(userId, asNoTracking: false);
+            if (user == null)
+            {
+                throw new BadRequestHttpException();
+            }
+
+            if (!principal.TryGetExpiry(out var expiry)
+                || new DateTime(expiry) >= DateTime.UtcNow)
+            {
+                throw new UnauthorizedHttpException("This token has expired");
+            }
+
+            var res = await _userRepository.ResetPassword(user, body.Password);
+            return new StatusModel(res.Succeeded);
+        }
+
         [HttpPost(RouteConstants.Auth.RefreshAccessToken)]
         [AllowAnonymous]
         [SwaggerOperation(
