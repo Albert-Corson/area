@@ -126,26 +126,33 @@ namespace Area.API.Services
             if (country != null)
                 device.Country = country;
 
-            var authTime = AssociateDeviceToUser(userId, device);
+            device = AssociateDeviceToUser(userId, device);
 
-            claims.Add(new Claim(JwtRegisteredClaimNames.AuthTime, authTime.ToString()));
+            claims.Add(new Claim(JwtRegisteredClaimNames.AuthTime, device.FirstUsed.ToString()));
 
             return GenerateToken(userId, expiryTime, claims, device.Id.ToString());
         }
 
-        private long AssociateDeviceToUser(int userId, UserDeviceModel device)
+        private UserDeviceModel AssociateDeviceToUser(int userId, UserDeviceModel device)
         {
             var user = _userRepository.GetUser(userId, asNoTracking: false);
 
-            var existingDevice = user!.Devices.FirstOrDefault(model => model.Id == device.Id);
+            var existingDevice = user!.Devices
+                                    .FirstOrDefault(model => model.UserId == device.UserId
+                                    && model.Architecture == device.Architecture
+                                    && model.Browser == device.Browser
+                                    && model.Country == device.Country
+                                    && model.Os == device.Os
+                                    && model.BrowserVersion == device.BrowserVersion
+                                    && model.OsVersion == device.OsVersion);
 
             if (existingDevice != null) {
                 existingDevice.LastUsed = device.LastUsed;
-                return existingDevice.FirstUsed;
+                return existingDevice;
             }
 
             user.Devices.Add(device);
-            return device.FirstUsed;
+            return device;
         }
 
         public async Task<bool> ValidateDeviceUse(ClaimsPrincipal principal, UserModel user, IPAddress? ipv4 = null)

@@ -102,7 +102,6 @@ namespace Area.AcceptanceTests.Tests
 
             AssertExtension.SuccessfulApiResponse(response);
             Assert.NotEqual(_currentDeviceId, response.Content.Data!.CurrentDevice);
-
         }
     }
 }
