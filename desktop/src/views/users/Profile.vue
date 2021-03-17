@@ -5,6 +5,8 @@
     <devices-list :devices="devices" :currentDevice="currentDevice" />
     <h2>Account details</h2>
     <account-details />
+    <h2>Delete my account</h2>
+    <button class="gradient" @click="deleteAccount">Delete my account</button>
   </div>
 </template>
 
@@ -29,6 +31,15 @@ export default {
   },
   created() {
     this.$store.dispatch("User/listDevices")
+  },
+  methods: {
+    deleteAccount() {
+      if (confirm("Are you sure you want to delete your account ?")) {
+        this.$store
+          .dispatch("User/deleteAccount")
+          .then(() => this.$router.push("/auth/signout"))
+      }
+    }
   }
 }
 </script>

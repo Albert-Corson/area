@@ -86,6 +86,10 @@ const AuthModule = {
 
     async signout({ commit }) {
       commit("UNSET_TOKEN")
+    },
+
+    async changePassword(_, payload) {
+      return await AuthRepository.changePassword(payload)
     }
   }
 }

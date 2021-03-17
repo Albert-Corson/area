@@ -11,6 +11,12 @@ const UserModule = {
     currentDevice: null
   },
 
+  getters: {
+    isAuthenticatedWithProvider(state) {
+      return state.username === state.email
+    }
+  },
+
   mutations: {
     SET_INFO(state, payload) {
       state.id = payload.id
@@ -37,6 +43,10 @@ const UserModule = {
     async signup(_, payload) {
       const response = await UserRepository.signup(payload)
       return response
+    },
+
+    async deleteAccount() {
+      return await UserRepository.deleteAccount()
     },
 
     async listDevices({ commit }) {

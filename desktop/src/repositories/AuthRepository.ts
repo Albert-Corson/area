@@ -6,8 +6,10 @@ import {
   RefreshToken,
   ExchangeCode,
   ExternalAuth,
-  AuthenticationRedirect
+  AuthenticationRedirect,
+  Status
 } from "@/types/models"
+import { ChangePassword } from "@/types/models/auth/ChangePassword"
 
 export const AuthRepository = {
   signin(payload: Signin): Promise<Response<UserToken>> {
@@ -50,5 +52,9 @@ export const AuthRepository = {
         payload.redirect_url
       }&state=${payload.state || ""}`
     )
+  },
+
+  async changePassword(payload: ChangePassword): Promise<Status> {
+    return $axios.patch("/api/auth/password", payload)
   }
 }
