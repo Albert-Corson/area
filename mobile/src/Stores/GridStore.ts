@@ -91,7 +91,7 @@ export class GridStore {
   public setBlocks = (arr: Widget[]): void => {
     this._blocks = arr.map(block => ({...block, currentParam: undefined}))
 
-    this.applyProfile()
+    // this.applyProfile()
   };
   
   @action
@@ -104,7 +104,7 @@ export class GridStore {
 
     this._blocks = copy
 
-    this.applyProfile()
+    // this.applyProfile()
   };
 
   private addEmptyBlock = (blocks: Widget[], index: number): void => {
@@ -123,7 +123,7 @@ export class GridStore {
     blocks[index1] = blocks[index2]
     blocks[index2] = tmp
 
-    this.saveGridProfile()
+    // this.saveGridProfile()
   };
 
   @action
@@ -150,7 +150,7 @@ export class GridStore {
 
     this._blocks = copy
 
-    this.saveGridProfile()
+    // this.saveGridProfile()
   };
 
   public getBlockSize = (blockIndex: number): number => {
