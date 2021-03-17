@@ -3,16 +3,20 @@
     <h1>My account</h1>
     <h2>My devices</h2>
     <devices-list :devices="devices" :currentDevice="currentDevice" />
+    <h2>Account details</h2>
+    <account-details />
   </div>
 </template>
 
 <script>
 import DevicesList from "@/components/profile/DevicesList"
+import AccountDetails from "@/components/profile/AccountDetails"
 
 export default {
   name: "profile",
   components: {
-    DevicesList
+    DevicesList,
+    AccountDetails
   },
   computed: {
     devices() {
